@@ -172,7 +172,6 @@
                 android:id="@+id/tv_budget_amount_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/EUR"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_hint"
                 android:textSize="20sp"
@@ -180,7 +179,8 @@
                 app:layout_constraintBottom_toBottomOf="@id/et_budget_amount"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/barrier"
-                app:layout_constraintTop_toTopOf="@id/et_budget_amount" />
+                app:layout_constraintTop_toTopOf="@id/et_budget_amount"
+                tools:text="@string/EUR" />
 
             <TextView
                 android:id="@+id/tv_question_3"
@@ -248,6 +248,7 @@
             android:id="@+id/rv_metrics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:itemCount="6"
             tools:listitem="@layout/metric_item" />
 
 

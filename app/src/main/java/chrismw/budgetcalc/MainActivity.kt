@@ -2,6 +2,7 @@ package chrismw.budgetcalc
 
 import MetricAdapter
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -58,17 +59,27 @@ class MainActivity : AppCompatActivity() {
 
     private var metricAdapter: MetricAdapter? = null
 
+    private var settings: SharedPreferences? = null
+    private var settingsEditor: SharedPreferences.Editor? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        settings = applicationContext.getSharedPreferences(
+            Constants.SHARED_PREFERENCES_FILENAME,
+            MODE_PRIVATE
+        )
+        settingsEditor = settings!!.edit()
 
         etBudgetAmount = binding?.etBudgetAmount
         etPaymentCycleLength = binding?.etPaymentCycleLength
         tvStartDate = binding?.tvStartDate
         tvTargetDate = binding?.tvTargetDate
 
-        etBudgetAmount?.hint = Constants.defaultBudgetAmountInEurosPerDay.toString()
+        binding?.tvBudgetAmountUnit?.text = Constants.defaultCurrency
+
 
         val btnEasyAdjust = binding?.btnEasyAdjust
         btnEasyAdjust?.setOnClickListener {
@@ -86,19 +97,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         etBudgetAmount?.doOnTextChanged { text, start, before, count ->
-            budgetAmount = if (text == null || text.toString().isEmpty()) {
-                defaultBudgetAmount
+            if (text == null || text.toString().isEmpty()) {
+                budgetAmount = defaultBudgetAmount
+                deleteValueFromSettings(Constants.LATEST_BUDGET_AMOUNT)
             } else {
-                text.toString().toInt()
+                budgetAmount = text.toString().toInt()
+                updateValueInSettings(Constants.LATEST_BUDGET_AMOUNT, text.toString().toInt())
             }
             updateCalculationsInUI()
         }
 
         etPaymentCycleLength?.doOnTextChanged { text, start, before, count ->
-            lengthOfPaymentCycleInDays = if (text == null || text.toString().isEmpty()) {
-                defaultLengthOfPaymentCycleInDays
+            if (text == null || text.toString().isEmpty()) {
+                lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
+                deleteValueFromSettings(Constants.LATEST_PAYMENT_CYCLE_LENGTH)
             } else {
-                text.toString().toInt()
+                lengthOfPaymentCycleInDays = text.toString().toInt()
+                updateValueInSettings(
+                    Constants.LATEST_PAYMENT_CYCLE_LENGTH,
+                    text.toString().toInt()
+                )
             }
             updateCalculationsInUI()
         }
@@ -130,19 +148,57 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun setBudgetAmountToLastKnown() {
+        val latestBudgetAmount = settings!!.getInt(Constants.LATEST_BUDGET_AMOUNT, -1)
+        etBudgetAmount?.setText(latestBudgetAmount.toString(), TextView.BufferType.EDITABLE)
+        budgetAmount = latestBudgetAmount
+    }
+
+    private fun setPaymentCycleLengthToLastKnown() {
+        val latestPaymentCycleLength = settings!!.getInt(Constants.LATEST_PAYMENT_CYCLE_LENGTH, -1)
+        etPaymentCycleLength?.setText(
+            latestPaymentCycleLength.toString(),
+            TextView.BufferType.EDITABLE
+        )
+        lengthOfPaymentCycleInDays = latestPaymentCycleLength
+    }
+
+    private fun updateValueInSettings(key: String, value: Int) {
+        settingsEditor?.putInt(key, value)
+        settingsEditor?.apply()
+    }
+
+    private fun deleteValueFromSettings(key: String) {
+        if (settings?.contains(key) == true) {
+            settingsEditor?.remove(key)
+        }
+        settingsEditor?.apply()
+    }
+
     private fun initializeDataAndUI() {
         initializeMetricStrings()
         initializeLatestPaymentDate()
         setStartDateToLatestPaymentDate()
         updateDefaultValuesAndHintTexts()
-        initializeValuesBasedOnDefaults()
+        initializeValuesBasedOnDefaultsOrLastKnownData()
         updateTargetDateInUI()
         updateCalculationsInUI()
     }
 
-    private fun initializeValuesBasedOnDefaults() {
-        lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
-        budgetAmount = defaultBudgetAmount
+    private fun initializeValuesBasedOnDefaultsOrLastKnownData() {
+        if (settings!!.contains(Constants.LATEST_BUDGET_AMOUNT)) {
+            setBudgetAmountToLastKnown()
+        } else {
+            budgetAmount = defaultBudgetAmount
+        }
+
+        if (settings!!.contains(Constants.LATEST_PAYMENT_CYCLE_LENGTH)) {
+            setPaymentCycleLengthToLastKnown()
+        } else {
+            lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
+        }
+
+        etBudgetAmount?.hint = Constants.defaultBudgetAmountInEurosPerDay.toString()
     }
 
     private fun updateDefaultLengthOfPaymentCycleInDays() {
