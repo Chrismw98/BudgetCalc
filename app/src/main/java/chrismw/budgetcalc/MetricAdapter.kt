@@ -1,5 +1,6 @@
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import chrismw.budgetcalc.Metric
 import chrismw.budgetcalc.MetricUnit
@@ -10,6 +11,18 @@ import kotlin.math.abs
 
 class MetricAdapter(private val metrics: ArrayList<Metric>) :
     RecyclerView.Adapter<MetricAdapter.ViewHolder>() {
+
+    /**
+     * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
+     * A binding variable is created in its constructor for the item layout
+     */
+    class ViewHolder(binding: MetricItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        // Holds the TextView that will add each item to
+        val llMetricItem = binding.llMetricItem
+        val tvMetricName = binding.tvMetricName
+        val tvMetricValue = binding.tvMetricValue
+        val tvMetricUnit = binding.tvMetricUnit
+    }
 
     /**
      * Inflates the item views which is designed in xml layout file
@@ -35,7 +48,7 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
      * layout file.
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        val context = holder.itemView.context
         val metric = metrics[position]
 
         holder.tvMetricName.text = metric.name
@@ -50,15 +63,21 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
             }
 
             if (metric.value < 0) {
-                holder.tvMetricValue.setTextColor(holder.tvMetricValue.context.resources.getColor(R.color.red))
-                holder.tvMetricUnit.setTextColor(holder.tvMetricUnit.context.resources.getColor(R.color.red))
+                holder.tvMetricValue.setTextColor(ContextCompat.getColor(context, R.color.red))
+                holder.tvMetricUnit.setTextColor(ContextCompat.getColor(context, R.color.red))
             } else {
-                holder.tvMetricValue.setTextColor(holder.tvMetricValue.context.resources.getColor(R.color.text_normal))
-                holder.tvMetricUnit.setTextColor(holder.tvMetricUnit.context.resources.getColor(R.color.text_normal))
+                holder.tvMetricValue.setTextColor(ContextCompat.getColor(context, R.color.text_normal))
+                holder.tvMetricUnit.setTextColor(ContextCompat.getColor(context, R.color.text_normal))
             }
         } else {
             holder.tvMetricValue.text = String.format("%.2f", metric.value)
             setMetricUnitStrings(holder, metric)
+        }
+
+        if (position % 2 == 0){
+            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_secondary_faded))
+        } else {
+            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
     }
 
@@ -78,14 +97,4 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
         return metrics.size
     }
 
-    /**
-     * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
-     * A binding variable is created in its constructor for the item layout
-     */
-    class ViewHolder(binding: MetricItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        // Holds the TextView that will add each item to
-        val tvMetricName = binding.tvMetricName
-        val tvMetricValue = binding.tvMetricValue
-        val tvMetricUnit = binding.tvMetricUnit
-    }
 }

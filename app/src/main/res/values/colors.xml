@@ -15,4 +15,5 @@
     <color name="color_secondary">#778DA9</color>
     <color name="text_normal">#E0E1DD</color>
     <color name="text_hint">#A4A5A2</color>
+    <color name="color_secondary_faded">#1A778DA9</color>
 </resources>
