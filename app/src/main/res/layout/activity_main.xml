@@ -10,7 +10,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:orientation="vertical"
         android:padding="12dp"
         tools:context=".MainActivity">
@@ -19,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Enter your data to calculate your daily budget."
+            android:text="@string/title_instructions"
             android:textAlignment="center"
             android:textColor="@color/text_normal"
             android:textSize="22sp"
@@ -40,7 +39,7 @@
                 android:id="@+id/tv_question_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Budget start date\n(excl.)"
+                android:text="@string/budget_start_date_excl"
                 android:textAlignment="center"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
@@ -77,7 +76,7 @@
                 android:id="@+id/btn_easy_adjust"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Easy adjust"
+                android:text="@string/easy_adjust"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_question_1" />
@@ -93,7 +92,7 @@
                 android:id="@+id/tv_question_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Target date\n(incl.)"
+                android:text="@string/target_date_incl"
                 android:textAlignment="center"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
@@ -119,7 +118,7 @@
                 android:id="@+id/btn_jump_to_today"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Today"
+                android:text="@string/today"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_question_4" />
@@ -136,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:barrierDirection="start"
-                app:constraint_referenced_ids="tv_divide_by_unit, tv_budget_amount_unit"
+                app:constraint_referenced_ids="tv_payment_cycle_length_unit, tv_budget_amount_unit"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -144,7 +143,7 @@
                 android:id="@+id/tv_question_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Budget amount"
+                android:text="@string/budget_amount"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
@@ -173,7 +172,7 @@
                 android:id="@+id/tv_budget_amount_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="€"
+                android:text="@string/EUR"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_hint"
                 android:textSize="20sp"
@@ -188,7 +187,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Divide by"
+                android:text="@string/payment_cycle_length"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
@@ -198,7 +197,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_question_2" />
 
             <EditText
-                android:id="@+id/et_divide_by"
+                android:id="@+id/et_payment_cycle_length"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
@@ -215,18 +214,18 @@
                 tools:hint="30" />
 
             <TextView
-                android:id="@+id/tv_divide_by_unit"
+                android:id="@+id/tv_payment_cycle_length_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Days"
+                android:text="@string/days"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_hint"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/et_divide_by"
+                app:layout_constraintBottom_toBottomOf="@id/et_payment_cycle_length"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/barrier"
-                app:layout_constraintTop_toTopOf="@id/et_divide_by" />
+                app:layout_constraintTop_toTopOf="@id/et_payment_cycle_length" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -239,7 +238,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="Results:"
+            android:text="@string/results"
             android:textAlignment="textStart"
             android:textColor="@color/text_normal"
             android:textSize="22sp"

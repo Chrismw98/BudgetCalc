@@ -27,34 +27,34 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var formatter = DateTimeFormatter.ofPattern("EEE, dd.MM.yyyy", Locale.getDefault());
+    private var formatter = DateTimeFormatter.ofPattern("EEE, dd.MM.yyyy", Locale.getDefault());
 
-    var binding: ActivityMainBinding? = null
+    private var binding: ActivityMainBinding? = null
 
-    var etBudgetAmount: EditText? = null
-    var etDivideBy: EditText? = null
+    private var etBudgetAmount: EditText? = null
+    private var etPaymentCycleLength: EditText? = null
 
-    var tvStartDate: TextView? = null
-    var tvTargetDate: TextView? = null
-    var startDate: LocalDate? = null
-    val today = LocalDate.now()
+    private var tvStartDate: TextView? = null
+    private var tvTargetDate: TextView? = null
+    private var startDate: LocalDate? = null
+    private val today = LocalDate.now()
 
-    var targetDate = today
-    var latestPaymentDate: LocalDate? = null
+    private var targetDate = today
+    private var latestPaymentDate: LocalDate? = null
 
-    var budgetAmount: Int = Constants.defaultBudgetAmount
-    var totalDays: Int = Constants.defaultNumberOfDays
+    private var budgetAmount: Int = Constants.defaultBudgetAmount
+    private var totalDays: Int = Constants.defaultLengthOfPaymentCycleInDays
 
-    var dailyBudgetMetric = Metric("Daily budget", 0.0, MetricUnit.EURO_PER_DAY)
-    var currentBudgetMetric = Metric("Budget until today", 0.0, MetricUnit.EURO)
-    var remainingBudgetMetric = Metric("Remaining budget", 0.0, MetricUnit.EURO)
-    var daysSinceStartMetric = Metric("Days since start", 0.0, MetricUnit.DAYS)
-    var daysRemainingMetric = Metric("Days remaining", 0.0, MetricUnit.DAYS)
+    private var dailyBudgetMetric = Metric("", 0.0, MetricUnit.EURO_PER_DAY)
+    private var currentBudgetMetric = Metric("", 0.0, MetricUnit.EURO)
+    private var remainingBudgetMetric = Metric("", 0.0, MetricUnit.EURO)
+    private var daysSinceStartMetric = Metric("", 0.0, MetricUnit.DAYS)
+    private var daysRemainingMetric = Metric("", 0.0, MetricUnit.DAYS)
 
-    var startDatePicker: MaterialDatePicker<Long>? = null
-    var targetDatePicker: MaterialDatePicker<Long>? = null
+    private var startDatePicker: MaterialDatePicker<Long>? = null
+    private var targetDatePicker: MaterialDatePicker<Long>? = null
 
-    var metricAdapter: MetricAdapter? = null
+    private var metricAdapter: MetricAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +62,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         etBudgetAmount = binding?.etBudgetAmount
-        etDivideBy = binding?.etDivideBy
+        etPaymentCycleLength = binding?.etPaymentCycleLength
         tvStartDate = binding?.tvStartDate
         tvTargetDate = binding?.tvTargetDate
 
         etBudgetAmount?.hint = Constants.defaultBudgetAmount.toString()
-        etDivideBy?.hint = Constants.defaultNumberOfDays.toString()
+        etPaymentCycleLength?.hint = Constants.defaultLengthOfPaymentCycleInDays.toString()
 
         val btnEasyAdjust = binding?.btnEasyAdjust
         btnEasyAdjust?.setOnClickListener {
@@ -92,9 +92,9 @@ class MainActivity : AppCompatActivity() {
             updateCalculationsInUI()
         }
 
-        etDivideBy?.doOnTextChanged { text, start, before, count ->
+        etPaymentCycleLength?.doOnTextChanged { text, start, before, count ->
             totalDays = if (text == null || text!!.isEmpty()) {
-                Constants.defaultNumberOfDays
+                Constants.defaultLengthOfPaymentCycleInDays
             } else {
                 text.toString().toInt()
             }
@@ -103,18 +103,13 @@ class MainActivity : AppCompatActivity() {
 
         binding?.ibHint?.setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setTitle("Hint")
-                .setItems(arrayOf(Constants.hintText)) { dialog, which ->
-
-                }
+                .setTitle(resources.getString(R.string.hint))
+                .setIcon(R.drawable.ic_info)
+                .setMessage(resources.getString(R.string.hint_message))
                 .show()
         }
 
-        setLatestPaymentDate()
-
-        setStartDateToLatestPaymentDate()
-        updateTargetDateInUI()
-        updateCalculationsInUI()
+        initializeDataAndUI()
 
         tvStartDate?.setOnClickListener {
             resetStartDatePicker()
@@ -133,6 +128,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun initializeDataAndUI() {
+        initializeMetricStrings()
+        initializeLatestPaymentDate()
+        setStartDateToLatestPaymentDate()
+        updateTargetDateInUI()
+        updateCalculationsInUI()
+    }
+
     private fun getMetricsList(): ArrayList<Metric> {
         return arrayListOf(
             daysSinceStartMetric,
@@ -141,6 +144,14 @@ class MainActivity : AppCompatActivity() {
             currentBudgetMetric,
             remainingBudgetMetric,
         )
+    }
+
+    private fun initializeMetricStrings() {
+        dailyBudgetMetric.name = resources.getString(R.string.daily_budget)
+        currentBudgetMetric.name = resources.getString(R.string.budget_until_today)
+        remainingBudgetMetric.name = resources.getString(R.string.remaining_budget)
+        daysSinceStartMetric.name = resources.getString(R.string.days_since_start)
+        daysRemainingMetric.name = resources.getString(R.string.days_remaining)
     }
 
     private fun resetStartDatePicker() {
@@ -205,7 +216,7 @@ class MainActivity : AppCompatActivity() {
 //        binding?.tvDaysRemainingValue?.text = "$daysRemainingMetric Days"
     }
 
-    private fun setLatestPaymentDate() {
+    private fun initializeLatestPaymentDate() {
         val dayOfMonth = today.dayOfMonth
         if (dayOfMonth < Constants.defaultPaymentDayOfMonth) {
             latestPaymentDate = today.minusMonths(1)

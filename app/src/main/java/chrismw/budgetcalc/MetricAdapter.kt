@@ -3,6 +3,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import chrismw.budgetcalc.Metric
 import chrismw.budgetcalc.MetricUnit
+import chrismw.budgetcalc.R
 import chrismw.budgetcalc.databinding.MetricItemBinding
 import kotlin.math.abs
 
@@ -43,14 +44,30 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
             holder.tvMetricValue.text = String.format("%.0f", metric.value)
 
             if (abs(metric.value) == 1.0) {
-                holder.tvMetricUnit.text = "Day"
+                holder.tvMetricUnit.text = holder.tvMetricUnit.context.getString(R.string.day)
             } else {
-                holder.tvMetricUnit.text = metric.unit.unitString
+                holder.tvMetricUnit.text = holder.tvMetricUnit.context.getString(R.string.days)
             }
 
+            if (metric.value < 0) {
+                holder.tvMetricValue.setTextColor(holder.tvMetricValue.context.resources.getColor(R.color.red))
+                holder.tvMetricUnit.setTextColor(holder.tvMetricUnit.context.resources.getColor(R.color.red))
+            } else {
+                holder.tvMetricValue.setTextColor(holder.tvMetricValue.context.resources.getColor(R.color.text_normal))
+                holder.tvMetricUnit.setTextColor(holder.tvMetricUnit.context.resources.getColor(R.color.text_normal))
+            }
         } else {
             holder.tvMetricValue.text = String.format("%.2f", metric.value)
-            holder.tvMetricUnit.text = metric.unit.unitString
+            setMetricUnitStrings(holder, metric)
+        }
+    }
+
+    private fun setMetricUnitStrings(holder: ViewHolder, metric: Metric) {
+        val tvContext = holder.tvMetricUnit.context
+        holder.tvMetricUnit.text = when (metric.unit) {
+            MetricUnit.EURO -> tvContext.getString(R.string.EUR)
+            MetricUnit.EURO_PER_DAY -> tvContext.getString(R.string.EUR_per_day)
+            MetricUnit.DAYS -> tvContext.getString(R.string.days)
         }
     }
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BudgetCalc</string>
+    <string name="title_instructions">Füllen Sie die Felder aus um das tägliche Budget zu berechnen.</string>
+    <string name="budget_start_date_excl">Budget Startdatum\n(exkl.)</string>
+    <string name="target_date_incl">Prüfungstag\n(inkl.)</string>
+    <string name="easy_adjust">Einfach anpassen</string>
+    <string name="today">Heute</string>
+    <string name="budget_amount">Budgetbetrag</string>
+    <string name="payment_cycle_length">Zahlungszykluslänge</string>
+    <string name="results">Ergebnisse:</string>
+    <string name="hint">Hilfe</string>
+    <string name="hint_message">* Das Budget wird ab dem nächsten Tag kalkuliert.\n
+                ** \"Einfach Anpassen\" wird das Start Datum des Budgets an den 25. des letzten Monats
+        setzen. Sollte dieser Tag auf ein Wochenende fallen, wird der sofort vorangehende Freitag
+        ausgewählt.\n
+                *** Das Startdatum muss vor dem Prüfungstag liegen.</string>
+
+    <string name="days_since_start">Tage seit Start</string>
+    <string name="days_remaining">Übrige Tage</string>
+    <string name="daily_budget">Tägliches Budget</string>
+    <string name="budget_until_today">Budget bis heute</string>
+    <string name="remaining_budget">Übriges Budget</string>
+
+    <string name="EUR">€</string>
+    <string name="day">Tag</string>
+    <string name="days">Tage</string>
+    <string name="EUR_per_day">€/Tag</string>
+</resources>

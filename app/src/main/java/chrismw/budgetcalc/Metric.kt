@@ -1,11 +1,11 @@
 package chrismw.budgetcalc
 
-data class Metric(val name: String, var value: Double, val unit: MetricUnit) {
+data class Metric(var name: String, var value: Double, val unit: MetricUnit) {
 
 }
 
-enum class MetricUnit(val unitString: String) {
-    DAYS("Days"),
-    EURO_PER_DAY("€/Day"),
-    EURO("€"),
+enum class MetricUnit() {
+    DAYS,
+    EURO_PER_DAY,
+    EURO,
 }

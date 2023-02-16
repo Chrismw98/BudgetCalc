@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">BudgetCalc</string>
+    <string name="title_instructions">Enter your data to calculate your daily budget.</string>
+    <string name="budget_start_date_excl">Budget start date\n(excl.)</string>
+    <string name="target_date_incl">Target date\n(incl.)</string>
+    <string name="easy_adjust">Easy adjust</string>
+    <string name="today">Today</string>
+    <string name="budget_amount">Budget amount</string>
+    <string name="payment_cycle_length">Payment cycle length</string>
+    <string name="results">Results:</string>
+    <string name="hint">Hint</string>
+    <string name="hint_message">* The budget will start counting from the next day.\n
+        ** \"Easy Adjust\" will snap the budget start date to the 25th of the last month. If this falls
+        on a weekend, then to the Friday before that weekend.\n
+        *** The start date has to be before the target date.</string>
+
+    <string name="days_since_start">Days since start</string>
+    <string name="days_remaining">Days remaining</string>
+    <string name="daily_budget">Daily budget</string>
+    <string name="budget_until_today">Budget until today</string>
+    <string name="remaining_budget">Remaining budget</string>
+
+    <string name="EUR">€</string>
+    <string name="day">Day</string>
+    <string name="days">Days</string>
+    <string name="EUR_per_day">€/Day</string>
 </resources>
