@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_primary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:orientation="vertical"
+        android:padding="12dp"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Enter your data to calculate your daily budget."
+            android:textAlignment="center"
+            android:textColor="@color/text_normal"
+            android:textSize="22sp"
+            android:textStyle="normal" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            app:dividerColor="@color/text_hint" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/tv_question_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Budget start date\n(excl.)"
+                android:textAlignment="center"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/ib_hint"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/item_info_ripple"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="@id/tv_start_date"
+                app:layout_constraintTop_toBottomOf="@id/tv_start_date" />
+
+            <TextView
+                android:id="@+id/tv_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/item_rectangle_ripple"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/btn_easy_adjust"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Th, 25.08.2022" />
+
+            <Button
+                android:id="@+id/btn_easy_adjust"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Easy adjust"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_question_1" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/tv_question_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Target date\n(incl.)"
+                android:textAlignment="center"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_target_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/item_rectangle_ripple"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/btn_jump_to_today"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="We, 07.09.2022" />
+
+            <Button
+                android:id="@+id/btn_jump_to_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_question_4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="tv_divide_by_unit, tv_budget_amount_unit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_question_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Budget amount"
+                android:textAlignment="textStart"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@id/et_budget_amount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/et_budget_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxWidth="80dp"
+                android:minWidth="80dp"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_normal"
+                android:textColorHint="@color/text_hint"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/barrier"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:hint="600" />
+
+            <TextView
+                android:id="@+id/tv_budget_amount_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="€"
+                android:textAlignment="textStart"
+                android:textColor="@color/text_hint"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/et_budget_amount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/barrier"
+                app:layout_constraintTop_toTopOf="@id/et_budget_amount" />
+
+            <TextView
+                android:id="@+id/tv_question_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Divide by"
+                android:textAlignment="textStart"
+                android:textColor="@color/text_normal"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_question_2" />
+
+            <EditText
+                android:id="@+id/et_divide_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:maxWidth="80dp"
+                android:minWidth="80dp"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_normal"
+                android:textColorHint="@color/text_hint"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/barrier"
+                app:layout_constraintTop_toBottomOf="@id/et_budget_amount"
+                tools:hint="30" />
+
+            <TextView
+                android:id="@+id/tv_divide_by_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Days"
+                android:textAlignment="textStart"
+                android:textColor="@color/text_hint"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/et_divide_by"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/barrier"
+                app:layout_constraintTop_toTopOf="@id/et_divide_by" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:dividerColor="@color/text_hint" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="Results:"
+            android:textAlignment="textStart"
+            android:textColor="@color/text_normal"
+            android:textSize="22sp"
+            android:textStyle="normal" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_metrics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/metric_item" />
+
+
+    </LinearLayout>
+
+</ScrollView>
