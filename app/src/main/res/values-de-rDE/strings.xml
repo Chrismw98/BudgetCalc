@@ -12,8 +12,7 @@
     <string name="hint">Hilfe</string>
     <string name="hint_message">* Das Budget wird ab dem nächsten Tag kalkuliert.\n
                 ** \"Einfach Anpassen\" wird das Start Datum des Budgets an den 25. des letzten Monats
-        setzen. Sollte dieser Tag auf ein Wochenende fallen, wird der sofort vorangehende Freitag
-        ausgewählt.\n
+        setzen.\n
                 *** Das Startdatum muss vor dem Prüfungstag liegen.</string>
 
     <string name="days_since_start">Tage seit Start</string>
@@ -22,7 +21,6 @@
     <string name="budget_until_today">Budget bis heute</string>
     <string name="remaining_budget">Übriges Budget</string>
 
-    <string name="EUR">€</string>
     <string name="day">Tag</string>
     <string name="days">Tage</string>
     <string name="EUR_per_day">€/Tag</string>

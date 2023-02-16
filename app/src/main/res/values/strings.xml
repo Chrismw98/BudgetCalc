@@ -10,8 +10,7 @@
     <string name="results">Results:</string>
     <string name="hint">Hint</string>
     <string name="hint_message">* The budget will start counting from the next day.\n
-        ** \"Easy Adjust\" will snap the budget start date to the 25th of the last month. If this falls
-        on a weekend, then to the Friday before that weekend.\n
+        ** \"Easy Adjust\" will snap the budget start date to the 25th of the last month.\n
         *** The start date has to be before the target date.</string>
 
     <string name="days_since_start">Days since start</string>
@@ -20,7 +19,7 @@
     <string name="budget_until_today">Budget until today</string>
     <string name="remaining_budget">Remaining budget</string>
 
-    <string name="EUR">€</string>
+    <string name="EUR" translatable="false">€</string>
     <string name="day">Day</string>
     <string name="days">Days</string>
     <string name="EUR_per_day">€/Day</string>
