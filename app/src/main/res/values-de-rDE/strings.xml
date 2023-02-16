@@ -18,7 +18,7 @@
     <string name="days_since_start">Tage seit Start</string>
     <string name="days_remaining">Übrige Tage</string>
     <string name="daily_budget">Tägliches Budget</string>
-    <string name="budget_until_today">Budget bis heute</string>
+    <string name="budget_until_target_date">Budget bis Prüfungstag</string>
     <string name="remaining_budget">Übriges Budget</string>
 
     <string name="day">Tag</string>

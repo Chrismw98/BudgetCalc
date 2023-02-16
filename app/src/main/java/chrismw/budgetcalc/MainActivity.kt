@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeMetricStrings() {
         dailyBudgetMetric.name = resources.getString(R.string.daily_budget)
-        currentBudgetMetric.name = resources.getString(R.string.budget_until_today)
+        currentBudgetMetric.name = resources.getString(R.string.budget_until_target_date)
         remainingBudgetMetric.name = resources.getString(R.string.remaining_budget)
         daysSinceStartMetric.name = resources.getString(R.string.days_since_start)
         daysRemainingMetric.name = resources.getString(R.string.days_remaining)

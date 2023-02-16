@@ -16,7 +16,7 @@
     <string name="days_since_start">Days since start</string>
     <string name="days_remaining">Days remaining</string>
     <string name="daily_budget">Daily budget</string>
-    <string name="budget_until_today">Budget until today</string>
+    <string name="budget_until_target_date">Budget until target date</string>
     <string name="remaining_budget">Remaining budget</string>
 
     <string name="EUR" translatable="false">€</string>
