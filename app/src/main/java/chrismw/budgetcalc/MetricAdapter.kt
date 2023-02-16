@@ -75,9 +75,9 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
         }
 
         if (position % 2 == 0){
-            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_secondary_faded))
+            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_background_faded))
         } else {
-            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
+            holder.llMetricItem.setBackgroundColor(ContextCompat.getColor(context, R.color.color_background))
         }
     }
 
