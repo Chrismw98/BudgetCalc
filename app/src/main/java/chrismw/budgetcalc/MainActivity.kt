@@ -41,10 +41,11 @@ class MainActivity : AppCompatActivity() {
 
     private var targetDate = today
     private var latestPaymentDate: LocalDate? = null
+    private var defaultBudgetAmount: Int = 0
     private var defaultLengthOfPaymentCycleInDays: Int = 0
 
-    private var budgetAmount: Int = Constants.defaultBudgetAmount
-    private var lengthOfPaymentCycleInDays: Int? = null
+    private var budgetAmount: Int = 0
+    private var lengthOfPaymentCycleInDays: Int = 0
 
     private var dailyBudgetMetric = Metric("", 0.0, MetricUnit.EURO_PER_DAY)
     private var currentBudgetMetric = Metric("", 0.0, MetricUnit.EURO)
@@ -67,13 +68,13 @@ class MainActivity : AppCompatActivity() {
         tvStartDate = binding?.tvStartDate
         tvTargetDate = binding?.tvTargetDate
 
-        etBudgetAmount?.hint = Constants.defaultBudgetAmount.toString()
+        etBudgetAmount?.hint = Constants.defaultBudgetAmountInEurosPerDay.toString()
 
         val btnEasyAdjust = binding?.btnEasyAdjust
         btnEasyAdjust?.setOnClickListener {
             setStartDateToLatestPaymentDate()
             adjustTargetDateIfNeeded()
-            updateDefaultLengthOfPaymentCycleInDays()
+            updateDefaultValuesAndHintTexts()
             updateCalculationsInUI()
         }
 
@@ -85,8 +86,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         etBudgetAmount?.doOnTextChanged { text, start, before, count ->
-            budgetAmount = if (text == null || text!!.isEmpty()) {
-                Constants.defaultBudgetAmount
+            budgetAmount = if (text == null || text.toString().isEmpty()) {
+                defaultBudgetAmount
             } else {
                 text.toString().toInt()
             }
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         etPaymentCycleLength?.doOnTextChanged { text, start, before, count ->
-            lengthOfPaymentCycleInDays = if (text == null || text!!.isEmpty()) {
+            lengthOfPaymentCycleInDays = if (text == null || text.toString().isEmpty()) {
                 defaultLengthOfPaymentCycleInDays
             } else {
                 text.toString().toInt()
@@ -133,22 +134,27 @@ class MainActivity : AppCompatActivity() {
         initializeMetricStrings()
         initializeLatestPaymentDate()
         setStartDateToLatestPaymentDate()
-        updateDefaultLengthOfPaymentCycleInDays()
-        initializeLengthOfPaymentCycleInDays()
+        updateDefaultValuesAndHintTexts()
+        initializeValuesBasedOnDefaults()
         updateTargetDateInUI()
         updateCalculationsInUI()
     }
 
-    private fun initializeLengthOfPaymentCycleInDays() {
-        if (lengthOfPaymentCycleInDays == null){
-            lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
-        }
+    private fun initializeValuesBasedOnDefaults() {
+        lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
+        budgetAmount = defaultBudgetAmount
     }
 
     private fun updateDefaultLengthOfPaymentCycleInDays() {
         defaultLengthOfPaymentCycleInDays =
             ChronoUnit.DAYS.between(startDate, startDate?.plusMonths(1)).toInt()
         etPaymentCycleLength?.hint = defaultLengthOfPaymentCycleInDays.toString()
+    }
+
+    private fun updateDefaultBudgetAmount() {
+        defaultBudgetAmount =
+            Constants.defaultBudgetAmountInEurosPerDay * defaultLengthOfPaymentCycleInDays
+        etBudgetAmount?.hint = defaultBudgetAmount.toString()
     }
 
     private fun getMetricsList(): ArrayList<Metric> {
@@ -178,10 +184,15 @@ class MainActivity : AppCompatActivity() {
         startDatePicker?.addOnPositiveButtonClickListener {
             startDate = millisToLocalDate(it)
             adjustTargetDateIfNeeded()
-            updateDefaultLengthOfPaymentCycleInDays()
+            updateDefaultValuesAndHintTexts()
             updateStartDateInUI()
             updateCalculationsInUI()
         }
+    }
+
+    private fun updateDefaultValuesAndHintTexts() {
+        updateDefaultLengthOfPaymentCycleInDays()
+        updateDefaultBudgetAmount()
     }
 
     private fun resetTargetDatePicker() {
@@ -213,18 +224,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCalculationsInUI() {
-        dailyBudgetMetric.value = budgetAmount.toDouble() / lengthOfPaymentCycleInDays!!.toDouble()
+        dailyBudgetMetric.value = budgetAmount.toDouble() / lengthOfPaymentCycleInDays.toDouble()
 
         daysSinceStartMetric.value = ChronoUnit.DAYS.between(startDate, targetDate).toDouble()
-        Log.d("TEST","Length of payment cycle: $lengthOfPaymentCycleInDays")
-        Log.d("TEST","Days since start: ${daysSinceStartMetric.value}")
-        daysRemainingMetric.value = lengthOfPaymentCycleInDays!! - daysSinceStartMetric.value
-        Log.d("TEST","Days remaining: ${daysRemainingMetric.value}")
+        Log.d("TEST", "Length of payment cycle: $lengthOfPaymentCycleInDays")
+        Log.d("TEST", "Days since start: ${daysSinceStartMetric.value}")
+        daysRemainingMetric.value = lengthOfPaymentCycleInDays - daysSinceStartMetric.value
+        Log.d("TEST", "Days remaining: ${daysRemainingMetric.value}")
 
         currentBudgetMetric.value =
-            if (daysSinceStartMetric.value <= lengthOfPaymentCycleInDays!!) daysSinceStartMetric.value * dailyBudgetMetric.value else budgetAmount.toDouble()
+            if (daysSinceStartMetric.value <= lengthOfPaymentCycleInDays) daysSinceStartMetric.value * dailyBudgetMetric.value else budgetAmount.toDouble()
         remainingBudgetMetric.value =
-            if (daysSinceStartMetric.value <= lengthOfPaymentCycleInDays!!) budgetAmount - currentBudgetMetric.value else 0.0
+            if (daysSinceStartMetric.value <= lengthOfPaymentCycleInDays) budgetAmount - currentBudgetMetric.value else 0.0
 
         metricAdapter?.notifyDataSetChanged()
 
