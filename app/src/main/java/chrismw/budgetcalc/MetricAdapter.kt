@@ -1,7 +1,10 @@
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import chrismw.budgetcalc.Constants
 import chrismw.budgetcalc.Metric
 import chrismw.budgetcalc.MetricUnit
 import chrismw.budgetcalc.R
@@ -10,7 +13,11 @@ import kotlin.math.abs
 
 
 class MetricAdapter(private val metrics: ArrayList<Metric>) :
+
+
     RecyclerView.Adapter<MetricAdapter.ViewHolder>() {
+
+    private var settings: SharedPreferences? = null
 
     /**
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
@@ -31,6 +38,10 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
      * {@link ViewHolder} and initializes some private fields to be used by RecyclerView.
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        settings = parent.context.getSharedPreferences(
+            Constants.SHARED_PREFERENCES_FILENAME,
+            MODE_PRIVATE
+        )
         return ViewHolder(
             MetricItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
@@ -84,8 +95,8 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
     private fun setMetricUnitStrings(holder: ViewHolder, metric: Metric) {
         val tvContext = holder.tvMetricUnit.context
         holder.tvMetricUnit.text = when (metric.unit) {
-            MetricUnit.EURO -> tvContext.getString(R.string.EUR) //TODO: Update these to take the correct currency
-            MetricUnit.EURO_PER_DAY -> tvContext.getString(R.string.EUR_per_day)
+            MetricUnit.CURRENCY -> settings!!.getString(Constants.LATEST_CURRENCY, Constants.defaultCurrency)
+            MetricUnit.CURRENCY_PER_DAY -> settings!!.getString(Constants.LATEST_CURRENCY, Constants.defaultCurrency) + tvContext.getString(R.string.per_day)
             MetricUnit.DAYS -> tvContext.getString(R.string.days)
         }
     }

@@ -1,10 +1,15 @@
 package chrismw.budgetcalc
 
+import android.content.Context
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import chrismw.budgetcalc.databinding.ActivitySettingsBinding
 
@@ -13,7 +18,7 @@ class SettingsActivity : AppCompatActivity() {
     private var binding: ActivitySettingsBinding? = null
 
     private var etPaymentDayOfMonth: EditText? = null
-    private var etBudgetInCurrencyPerDay: EditText? = null
+    private var etBudgetInMonetaryUnitsPerDay: EditText? = null
     private var etCurrency: EditText? = null
 
     private var settings: SharedPreferences? = null
@@ -39,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
         settingsEditor = settings!!.edit()
 
         etPaymentDayOfMonth = binding?.etPaymentDayOfMonth
-        etBudgetInCurrencyPerDay = binding?.etBudgetInCurrencyPerDay
+        etBudgetInMonetaryUnitsPerDay = binding?.etBudgetInMonetaryUnitsPerDay
         etCurrency = binding?.etCurrency
 
         initializeEditTextFilters()
@@ -57,12 +62,12 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        etBudgetInCurrencyPerDay?.doOnTextChanged { text, _, _, _ ->
+        etBudgetInMonetaryUnitsPerDay?.doOnTextChanged { text, _, _, _ ->
             if (text == null || text.toString().isEmpty()) {
-                deleteValueFromSettings(Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY)
+                deleteValueFromSettings(Constants.LATEST_BUDGET_AMOUNT_IN_MONETARY_UNITS_PER_DAY)
             } else {
                 updateIntValueInSettings(
-                    Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY,
+                    Constants.LATEST_BUDGET_AMOUNT_IN_MONETARY_UNITS_PER_DAY,
                     text.toString().toInt()
                 )
             }
@@ -79,15 +84,20 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initializeEditTextFilters() {
-        etPaymentDayOfMonth?.filters = arrayOf(InputFilterMinMax(1,31)) //Because a month can only have 1 to 31 days at most (2023-02-16)
+        etPaymentDayOfMonth?.filters = arrayOf(
+            InputFilterMinMax(
+                1,
+                31
+            )
+        ) //Because a month can only have 1 to 31 days at most (2023-02-16)
     }
 
     private fun initializeFieldValuesIfKnown() {
         if (settings!!.contains(Constants.LATEST_PAYMENT_DAY_OF_MONTH)) {
             setPaymentDayOfMonthToLastKnown()
         }
-        if (settings!!.contains(Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY)) {
-            setBudgetInCurrencyPerDayToLastKnown()
+        if (settings!!.contains(Constants.LATEST_BUDGET_AMOUNT_IN_MONETARY_UNITS_PER_DAY)) {
+            setBudgetInMonetaryUnitsPerDayToLastKnown()
         }
         if (settings!!.contains(Constants.LATEST_CURRENCY)) {
             setCurrencyToLastKnown()
@@ -96,7 +106,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initializeHintTexts() {
         etPaymentDayOfMonth?.hint = Constants.defaultPaymentDayOfMonth.toString()
-        etBudgetInCurrencyPerDay?.hint = Constants.defaultBudgetAmountInCurrencyPerDay.toString()
+        etBudgetInMonetaryUnitsPerDay?.hint =
+            Constants.defaultBudgetAmountInMonetaryUnitsPerDay.toString()
         etCurrency?.hint = Constants.defaultCurrency
     }
 
@@ -108,10 +119,10 @@ class SettingsActivity : AppCompatActivity() {
         )
     }
 
-    private fun setBudgetInCurrencyPerDayToLastKnown() {
+    private fun setBudgetInMonetaryUnitsPerDayToLastKnown() {
         val latestBudgetInCurrencyPerDay =
-            settings!!.getInt(Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY, -1)
-        etBudgetInCurrencyPerDay?.setText(
+            settings!!.getInt(Constants.LATEST_BUDGET_AMOUNT_IN_MONETARY_UNITS_PER_DAY, -1)
+        etBudgetInMonetaryUnitsPerDay?.setText(
             latestBudgetInCurrencyPerDay.toString(),
             TextView.BufferType.EDITABLE
         )
@@ -137,6 +148,24 @@ class SettingsActivity : AppCompatActivity() {
             settingsEditor?.remove(key)
         }
         settingsEditor?.apply()
+    }
+
+    //Taken from https://stackoverflow.com/questions/4828636/edittext-clear-focus-on-touch-outside
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v: View? = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm: InputMethodManager =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     override fun onDestroy() {

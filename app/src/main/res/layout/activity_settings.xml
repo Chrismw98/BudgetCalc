@@ -14,7 +14,7 @@
         android:theme="@style/CustomToolbarStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tv_toolbar_title"
@@ -24,7 +24,7 @@
             android:textAlignment="center"
             android:textColor="@color/text_normal"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -51,7 +51,7 @@
 
                 <TextView
                     android:id="@+id/tv_payment_day_of_month"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/default_payment_date"
                     android:textAlignment="center"
@@ -59,12 +59,13 @@
                     android:textSize="20sp"
                     android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="@id/et_payment_day_of_month"
+                    app:layout_constraintEnd_toStartOf="@id/et_payment_day_of_month"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/et_payment_day_of_month" />
 
                 <EditText
                     android:id="@+id/et_payment_day_of_month"
-                    android:layout_width="0dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxWidth="120dp"
@@ -98,21 +99,22 @@
                 android:layout_marginTop="@dimen/margin_top_constraint_layout_row">
 
                 <TextView
-                    android:id="@+id/tv_budget_in_currency_per_day"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_budget_in_monetary_units_per_day"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/budget_in_currency_per_day"
+                    android:text="@string/budget_in_monetary_units_per_day"
                     android:textAlignment="center"
                     android:textColor="@color/text_normal"
                     android:textSize="20sp"
                     android:textStyle="normal"
-                    app:layout_constraintBottom_toBottomOf="@id/et_budget_in_currency_per_day"
+                    app:layout_constraintBottom_toBottomOf="@id/et_budget_in_monetary_units_per_day"
+                    app:layout_constraintEnd_toStartOf="@id/et_budget_in_monetary_units_per_day"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/et_budget_in_currency_per_day" />
+                    app:layout_constraintTop_toTopOf="@id/et_budget_in_monetary_units_per_day" />
 
                 <EditText
-                    android:id="@+id/et_budget_in_currency_per_day"
-                    android:layout_width="0dp"
+                    android:id="@+id/et_budget_in_monetary_units_per_day"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxWidth="120dp"
@@ -135,7 +137,7 @@
 
                 <TextView
                     android:id="@+id/tv_currency"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/currency"
                     android:textAlignment="center"
@@ -143,16 +145,17 @@
                     android:textSize="20sp"
                     android:textStyle="normal"
                     app:layout_constraintBottom_toBottomOf="@id/et_currency"
+                    app:layout_constraintEnd_toStartOf="@id/et_currency"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/et_currency" />
 
                 <EditText
                     android:id="@+id/et_currency"
-                    android:maxLength="10"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:maxWidth="120dp"
+                    android:maxLength="10"
                     android:minWidth="120dp"
                     android:textAlignment="textEnd"
                     android:textColor="@color/text_normal"

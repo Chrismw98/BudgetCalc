@@ -22,27 +22,26 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:paddingStart="6dp"
+                android:paddingEnd="12dp"
                 android:text="@string/title_instructions"
                 android:textAlignment="center"
                 android:textColor="@color/text_normal"
                 android:textSize="22sp"
                 android:textStyle="normal"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/ib_settings"
-                app:layout_constraintTop_toTopOf="parent"
-                android:paddingEnd="12dp"
-                android:paddingStart="6dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/ib_settings"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:scaleType="fitXY"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/item_settings_ripple"
-                />
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

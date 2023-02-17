@@ -23,5 +23,9 @@
 
     <string name="day">Tag</string>
     <string name="days">Tage</string>
-    <string name="EUR_per_day">€/Tag</string>
+    <string name="per_day">/Tag</string>
+    <string name="default_payment_date">Zahlungsdatum\n(Tag des Monats)</string>
+    <string name="budget_in_monetary_units_per_day">Budget in Geldeinheit(en) pro Tag</string>
+    <string name="currency">Währung</string>
+    <string name="settings">Einstellungen</string>
 </resources>

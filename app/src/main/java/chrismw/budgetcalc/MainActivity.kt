@@ -49,9 +49,9 @@ class MainActivity : AppCompatActivity() {
     private var budgetAmount: Int = 0
     private var lengthOfPaymentCycleInDays: Int = 0
 
-    private var dailyBudgetMetric = Metric("", 0.0, MetricUnit.EURO_PER_DAY)
-    private var currentBudgetMetric = Metric("", 0.0, MetricUnit.EURO)
-    private var remainingBudgetMetric = Metric("", 0.0, MetricUnit.EURO)
+    private var dailyBudgetMetric = Metric("", 0.0, MetricUnit.CURRENCY_PER_DAY)
+    private var currentBudgetMetric = Metric("", 0.0, MetricUnit.CURRENCY)
+    private var remainingBudgetMetric = Metric("", 0.0, MetricUnit.CURRENCY)
     private var daysSinceStartMetric = Metric("", 0.0, MetricUnit.DAYS)
     private var daysRemainingMetric = Metric("", 0.0, MetricUnit.DAYS)
 
@@ -198,8 +198,8 @@ class MainActivity : AppCompatActivity() {
             Constants.defaultPaymentDayOfMonth
         )
         defaultBudgetAmountInCurrencyPerDay = settings!!.getInt(
-            Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY,
-            Constants.defaultBudgetAmountInCurrencyPerDay
+            Constants.LATEST_BUDGET_AMOUNT_IN_MONETARY_UNITS_PER_DAY,
+            Constants.defaultBudgetAmountInMonetaryUnitsPerDay
         )
         defaultCurrency = settings!!.getString(
             Constants.LATEST_CURRENCY,
@@ -313,33 +313,9 @@ class MainActivity : AppCompatActivity() {
             if (daysSinceStartMetric.value <= lengthOfPaymentCycleInDays) budgetAmount - currentBudgetMetric.value else 0.0
 
         metricAdapter?.notifyDataSetChanged()
-
-//        binding?.tvDaysValue?.text = "$daysSinceStartMetric Days"
-//        binding?.tvDailyBudgetValue?.text = "${String.format("%.2f", dailyBudgetMetric)} €/Day"
-//        binding?.tvTotalUntilTargetValue?.text = "${String.format("%.2f", currentBudgetMetric)} €"
-//        binding?.tvBudgetRemainingValue?.text = "${String.format("%.2f", remainingBudgetMetric)} €"
-//        binding?.tvDaysRemainingValue?.text = "$daysRemainingMetric Days"
     }
 
     private fun initializeLatestPaymentDate() {
-//        val dayOfMonth =
-//            today.dayOfMonth
-//        if (dayOfMonth < defaultPaymentDayOfMonth) {
-//            latestPaymentDate = today.minusMonths(1)
-//            val maxLengthOfPaymentMonth =
-//                latestPaymentDate!!.month.length(latestPaymentDate!!.isLeapYear)
-//            latestPaymentDate = if (maxLengthOfPaymentMonth < defaultPaymentDayOfMonth) {
-//                latestPaymentDate!!.withDayOfMonth(maxLengthOfPaymentMonth)
-//            } else {
-//                latestPaymentDate!!.withDayOfMonth(defaultPaymentDayOfMonth)
-//            }
-//        } else if (dayOfMonth > defaultPaymentDayOfMonth) {
-//            latestPaymentDate =
-//                today.withDayOfMonth(defaultPaymentDayOfMonth)
-//        } else {
-//            latestPaymentDate = today.minusMonths(1)
-//        }
-
         val todayAsDayOfMonth = today.dayOfMonth
         val lastMonth = today.minusMonths(1)
 

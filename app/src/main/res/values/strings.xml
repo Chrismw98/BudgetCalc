@@ -10,7 +10,7 @@
     <string name="results">Results:</string>
     <string name="hint">Hint</string>
     <string name="hint_message">* The budget will start counting from the next day.\n
-        ** \"Easy Adjust\" will snap the budget start date to the default payment date of the last month.\n
+        ** \"Easy Adjust\" will snap the budget start date to the configured default payment date of the last month.\n
         *** The start date has to be before the target date.</string>
 
     <string name="days_since_start">Days since start</string>
@@ -22,9 +22,9 @@
     <string name="EUR" translatable="false">€</string>
     <string name="day">Day</string>
     <string name="days">Days</string>
-    <string name="EUR_per_day">€/Day</string>
+    <string name="per_day">/Day</string>
     <string name="default_payment_date">Default payment date\n(day of month)</string>
-    <string name="budget_in_currency_per_day">Budget in currency per day</string>
+    <string name="budget_in_monetary_units_per_day">Budget in monetary units per day</string>
     <string name="currency">Currency</string>
     <string name="settings">Settings</string>
 </resources>
