@@ -2,6 +2,7 @@ package chrismw.budgetcalc
 
 import MetricAdapter
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
@@ -54,6 +55,10 @@ class MainActivity : AppCompatActivity() {
     private var daysSinceStartMetric = Metric("", 0.0, MetricUnit.DAYS)
     private var daysRemainingMetric = Metric("", 0.0, MetricUnit.DAYS)
 
+    private var defaultBudgetAmountInCurrencyPerDay: Int = 0
+    private var defaultPaymentDayOfMonth: Int = 0
+    private var defaultCurrency: String = ""
+
     private var startDatePicker: MaterialDatePicker<Long>? = null
     private var targetDatePicker: MaterialDatePicker<Long>? = null
 
@@ -73,13 +78,15 @@ class MainActivity : AppCompatActivity() {
         )
         settingsEditor = settings!!.edit()
 
+        binding?.ibSettings?.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent) //TODO: Change animation to slide
+        }
+
         etBudgetAmount = binding?.etBudgetAmount
         etPaymentCycleLength = binding?.etPaymentCycleLength
         tvStartDate = binding?.tvStartDate
         tvTargetDate = binding?.tvTargetDate
-
-        binding?.tvBudgetAmountUnit?.text = Constants.defaultCurrency
-
 
         val btnEasyAdjust = binding?.btnEasyAdjust
         btnEasyAdjust?.setOnClickListener {
@@ -176,29 +183,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeDataAndUI() {
+        initializeConfigurableValuesBasedOnDefaultsOrSettings()
         initializeMetricStrings()
         initializeLatestPaymentDate()
         setStartDateToLatestPaymentDate()
         updateDefaultValuesAndHintTexts()
-        initializeValuesBasedOnDefaultsOrLastKnownData()
         updateTargetDateInUI()
         updateCalculationsInUI()
     }
 
-    private fun initializeValuesBasedOnDefaultsOrLastKnownData() {
-        if (settings!!.contains(Constants.LATEST_BUDGET_AMOUNT)) {
-            setBudgetAmountToLastKnown()
-        } else {
-            budgetAmount = defaultBudgetAmount
-        }
+    private fun initializeConfigurableValuesBasedOnDefaultsOrSettings() {
+        defaultPaymentDayOfMonth = settings!!.getInt(
+            Constants.LATEST_PAYMENT_DAY_OF_MONTH,
+            Constants.defaultPaymentDayOfMonth
+        )
+        defaultBudgetAmountInCurrencyPerDay = settings!!.getInt(
+            Constants.LATEST_BUDGET_AMOUNT_IN_CURRENCY_PER_DAY,
+            Constants.defaultBudgetAmountInCurrencyPerDay
+        )
+        defaultCurrency = settings!!.getString(
+            Constants.LATEST_CURRENCY,
+            Constants.defaultCurrency
+        ).toString()
+        binding?.tvBudgetAmountUnit?.text = defaultCurrency
 
-        if (settings!!.contains(Constants.LATEST_PAYMENT_CYCLE_LENGTH)) {
-            setPaymentCycleLengthToLastKnown()
-        } else {
-            lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
-        }
-
-        etBudgetAmount?.hint = Constants.defaultBudgetAmountInEurosPerDay.toString()
     }
 
     private fun updateDefaultLengthOfPaymentCycleInDays() {
@@ -209,7 +217,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDefaultBudgetAmount() {
         defaultBudgetAmount =
-            Constants.defaultBudgetAmountInEurosPerDay * defaultLengthOfPaymentCycleInDays
+            defaultBudgetAmountInCurrencyPerDay * defaultLengthOfPaymentCycleInDays
         etBudgetAmount?.hint = defaultBudgetAmount.toString()
     }
 
@@ -248,7 +256,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDefaultValuesAndHintTexts() {
         updateDefaultLengthOfPaymentCycleInDays()
+        if (settings!!.contains(Constants.LATEST_PAYMENT_CYCLE_LENGTH)) {
+            setPaymentCycleLengthToLastKnown()
+        } else {
+            lengthOfPaymentCycleInDays = defaultLengthOfPaymentCycleInDays
+        }
+
         updateDefaultBudgetAmount()
+        if (settings!!.contains(Constants.LATEST_BUDGET_AMOUNT)) {
+            setBudgetAmountToLastKnown()
+        } else {
+            budgetAmount = defaultBudgetAmount
+        }
     }
 
     private fun resetTargetDatePicker() {
@@ -303,15 +322,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeLatestPaymentDate() {
-        val dayOfMonth = today.dayOfMonth
-        if (dayOfMonth < Constants.defaultPaymentDayOfMonth) {
-            latestPaymentDate = today.minusMonths(1)
-            latestPaymentDate =
-                latestPaymentDate!!.withDayOfMonth(Constants.defaultPaymentDayOfMonth)
-        } else if (dayOfMonth > Constants.defaultPaymentDayOfMonth) {
-            latestPaymentDate = today.withDayOfMonth(Constants.defaultPaymentDayOfMonth)
-        } else {
-            latestPaymentDate = today.minusMonths(1)
+//        val dayOfMonth =
+//            today.dayOfMonth
+//        if (dayOfMonth < defaultPaymentDayOfMonth) {
+//            latestPaymentDate = today.minusMonths(1)
+//            val maxLengthOfPaymentMonth =
+//                latestPaymentDate!!.month.length(latestPaymentDate!!.isLeapYear)
+//            latestPaymentDate = if (maxLengthOfPaymentMonth < defaultPaymentDayOfMonth) {
+//                latestPaymentDate!!.withDayOfMonth(maxLengthOfPaymentMonth)
+//            } else {
+//                latestPaymentDate!!.withDayOfMonth(defaultPaymentDayOfMonth)
+//            }
+//        } else if (dayOfMonth > defaultPaymentDayOfMonth) {
+//            latestPaymentDate =
+//                today.withDayOfMonth(defaultPaymentDayOfMonth)
+//        } else {
+//            latestPaymentDate = today.minusMonths(1)
+//        }
+
+        val todayAsDayOfMonth = today.dayOfMonth
+        val lastMonth = today.minusMonths(1)
+
+        latestPaymentDate = when {
+            todayAsDayOfMonth < defaultPaymentDayOfMonth -> {
+                val maxLengthOfLastMonth = lastMonth.month.length(lastMonth.isLeapYear)
+                if (maxLengthOfLastMonth < defaultPaymentDayOfMonth) {
+                    lastMonth.withDayOfMonth(maxLengthOfLastMonth)
+                } else {
+                    lastMonth.withDayOfMonth(defaultPaymentDayOfMonth)
+                }
+            }
+            todayAsDayOfMonth > defaultPaymentDayOfMonth -> {
+                today.withDayOfMonth(defaultPaymentDayOfMonth)
+            }
+            else -> {
+                lastMonth
+            }
         }
     }
 
@@ -357,6 +403,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initializeDataAndUI()
     }
 
     override fun onDestroy() {

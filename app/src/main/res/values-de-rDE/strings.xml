@@ -11,7 +11,7 @@
     <string name="results">Ergebnisse:</string>
     <string name="hint">Hilfe</string>
     <string name="hint_message">* Das Budget wird ab dem nächsten Tag kalkuliert.\n
-                ** \"Einfach Anpassen\" wird das Start Datum des Budgets an den 25. des letzten Monats
+                ** \"Einfach Anpassen\" wird das Start Datum des Budgets konfigurierte Zahlungsdatum des letzten Monats
         setzen.\n
                 *** Das Startdatum muss vor dem Stichtag liegen.</string>
 

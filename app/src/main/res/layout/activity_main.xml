@@ -11,18 +11,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="12dp"
+        android:padding="@dimen/main_padding"
         tools:context=".MainActivity">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/title_instructions"
-            android:textAlignment="center"
-            android:textColor="@color/text_normal"
-            android:textSize="22sp"
-            android:textStyle="normal" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/title_instructions"
+                android:textAlignment="center"
+                android:textColor="@color/text_normal"
+                android:textSize="22sp"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ib_settings"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingEnd="12dp"
+                android:paddingStart="6dp"/>
+
+            <ImageButton
+                android:id="@+id/ib_settings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/item_settings_ripple"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -33,7 +56,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="@dimen/margin_top_constraint_layout_row">
 
             <TextView
                 android:id="@+id/tv_question_1"
@@ -86,7 +109,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="@dimen/margin_top_constraint_layout_row">
 
             <TextView
                 android:id="@+id/tv_question_4"
@@ -128,7 +151,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="@dimen/margin_top_constraint_layout_row">
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"

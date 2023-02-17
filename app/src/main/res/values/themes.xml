@@ -13,4 +13,9 @@
         <item name="android:statusBarColor" >@color/color_accent</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="CustomToolbarStyle">
+        <item name="android:textColorPrimary">@color/text_normal</item>
+        <item name="android:colorControlNormal">@color/text_normal</item>
+    </style>
 </resources>

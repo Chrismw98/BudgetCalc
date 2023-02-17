@@ -84,7 +84,7 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
     private fun setMetricUnitStrings(holder: ViewHolder, metric: Metric) {
         val tvContext = holder.tvMetricUnit.context
         holder.tvMetricUnit.text = when (metric.unit) {
-            MetricUnit.EURO -> tvContext.getString(R.string.EUR)
+            MetricUnit.EURO -> tvContext.getString(R.string.EUR) //TODO: Update these to take the correct currency
             MetricUnit.EURO_PER_DAY -> tvContext.getString(R.string.EUR_per_day)
             MetricUnit.DAYS -> tvContext.getString(R.string.days)
         }
