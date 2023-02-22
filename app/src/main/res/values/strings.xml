@@ -23,7 +23,7 @@
     <string name="day">Day</string>
     <string name="days">Days</string>
     <string name="per_day">/Day</string>
-    <string name="default_payment_date">Default payment date\n(day of month)</string>
+    <string name="default_payment_date">Default payment date (day of month)</string>
     <string name="budget_in_monetary_units_per_day">Budget in monetary units per day</string>
     <string name="currency">Currency</string>
     <string name="settings">Settings</string>
