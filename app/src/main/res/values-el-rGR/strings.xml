@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BudgetCalc</string>
+    <string name="title_instructions">Συμπληρώστε τα δεδομένα για να υπολογίσετε το ημερήσιο budget.</string>
+    <string name="budget_start_date_excl">Πρώτη μέρα του budget (εξαιρείται)</string>
+    <string name="target_date_incl">Ημερομηνία ελέγχου (περιλαμβάνεται)</string>
+    <string name="easy_adjust">Αυτόματη προσαρμογή</string>
+    <string name="today">Σήμερα</string>
+    <string name="budget_amount">Συνολικό budget</string>
+    <string name="payment_cycle_length">Διάρκεια κύκλου πληρωμής</string>
+    <string name="results">Αποτελέσματα:</string>
+    <string name="hint">Βοήθεια</string>
+    <string name="hint_message">* Το budget θα αρχίσει να μετράει από την επόμενη μέρα.\n
+        ** \"Αυτόματη προσαρμογή\" θα θέσει την πρώτη ημέρα του budget στην ρυθμισμένη ημερομηνία πληρωμής του προηγούμενου μήνα.\n
+        *** Η πρώτη μέρα πρέπει να βρίσκεται πριν την ημερομηνία ελέγχου.</string>
+    <string name="days_since_start">Περασμένες μέρες</string>
+    <string name="days_remaining">Υπόλοιπες μέρες</string>
+    <string name="daily_budget">Ημερήσιο budget</string>
+    <string name="budget_until_target_date">Budget μέχρι ημερομηνία ελέγχου</string>
+    <string name="remaining_budget">Υπόλοιπο budget</string>
+    <string name="day">Ημέρα</string>
+    <string name="days">Ημέρες</string>
+    <string name="per_day">/Ημ.</string>
+    <string name="default_payment_date">Ημέρα πληρωμής (ως μέρα του μήνα)</string>
+    <string name="budget_in_monetary_units_per_day">Budget σε νομισματικές μονάδες ανά ημέρα</string>
+    <string name="currency">Νόμισμα</string>
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="settings_hint">Όλες οι ρυθμίσεις χρησιμοποιούνται για να διευκολύνουν τον υπολογισμό των προεπιλεγμένων τιμών. Προεπιλεγμένες τιμές είναι αυτές, οι οποίες φαίνονται σε γκρί χρώμα στην αρχική σελίδα, όταν ΔΕΝ έχουν εισαχθεί στοιχεία. Με αυτόν τον τρόπο μπορούν να υπολογιστούν τα αποτελέσματα απευθείας όταν ανοίγετε την εφαρμογή, χωρίς να χρειάζεται κάποια εισαγωγή δεδομένων.</string>
+</resources>

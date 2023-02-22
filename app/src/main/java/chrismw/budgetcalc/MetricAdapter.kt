@@ -81,7 +81,7 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
                 holder.tvMetricUnit.setTextColor(ContextCompat.getColor(context, R.color.text_normal))
             }
         } else {
-            holder.tvMetricValue.text = String.format("%.2f", metric.value)
+            holder.tvMetricValue.text = String.format("%.2f", metric.value) //TODO: Add 1000's separators, respective of the Locale (2023-02-20)
             setMetricUnitStrings(holder, metric)
         }
 
