@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">BudgetCalc</string>
     <string name="title_instructions">Füllen Sie die Felder aus um das tägliche Budget zu berechnen.</string>
-    <string name="budget_start_date_excl">Budget Startdatum\n(exkl.)</string>
-    <string name="target_date_incl">Stichtag\n(inkl.)</string>
+    <string name="budget_start_date_excl">Budget Startdatum (exkl.)</string>
+    <string name="target_date_incl">Stichtag (inkl.)</string>
     <string name="easy_adjust">Einfach anpassen</string>
     <string name="today">Heute</string>
     <string name="budget_amount">Budgetbetrag</string>
@@ -28,5 +28,5 @@
     <string name="budget_in_monetary_units_per_day">Budget in Geldeinheit(en) pro Tag</string>
     <string name="currency">Währung</string>
     <string name="settings">Einstellungen</string>
-    <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standartwerte zu vereinfachen. Standartwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
+    <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standardwerte zu vereinfachen. Standardwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
 </resources>

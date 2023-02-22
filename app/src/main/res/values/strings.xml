@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">BudgetCalc</string>
     <string name="title_instructions">Enter your data to calculate your daily budget.</string>
-    <string name="budget_start_date_excl">Budget start date\n(excl.)</string>
-    <string name="target_date_incl">Target date\n(incl.)</string>
+    <string name="budget_start_date_excl">Budget start date (excl.)</string>
+    <string name="target_date_incl">Target date (incl.)</string>
     <string name="easy_adjust">Easy adjust</string>
     <string name="today">Today</string>
     <string name="budget_amount">Budget amount</string>

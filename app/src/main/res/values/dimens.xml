@@ -2,4 +2,7 @@
 <resources>
     <dimen name="main_padding">12dp</dimen>
     <dimen name="margin_top_constraint_layout_row">6dp</dimen>
+    <dimen name="padding_question_name_tv">6dp</dimen>
+    <dimen name="margin_date_to_button">6dp</dimen>
+    <dimen name="vertical_margin_divider_main_activity">3dp</dimen>
 </resources>

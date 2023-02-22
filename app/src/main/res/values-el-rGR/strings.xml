@@ -18,10 +18,10 @@
     <string name="daily_budget">Ημερήσιο budget</string>
     <string name="budget_until_target_date">Budget μέχρι ημερομηνία ελέγχου</string>
     <string name="remaining_budget">Υπόλοιπο budget</string>
-    <string name="day">Ημέρα</string>
-    <string name="days">Ημέρες</string>
+    <string name="day">Mέρα</string>
+    <string name="days">Mέρες</string>
     <string name="per_day">/Ημ.</string>
-    <string name="default_payment_date">Ημέρα πληρωμής (ως μέρα του μήνα)</string>
+    <string name="default_payment_date">Ημέρα πληρωμής (μέρα του μήνα)</string>
     <string name="budget_in_monetary_units_per_day">Budget σε νομισματικές μονάδες ανά ημέρα</string>
     <string name="currency">Νόμισμα</string>
     <string name="settings">Ρυθμίσεις</string>

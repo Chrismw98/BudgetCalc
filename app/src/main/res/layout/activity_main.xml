@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/main_padding"
         tools:context=".MainActivity">
@@ -59,15 +59,18 @@
 
             <TextView
                 android:id="@+id/tv_question_1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/padding_question_name_tv"
                 android:text="@string/budget_start_date_excl"
-                android:textAlignment="center"
+                android:textAlignment="viewStart"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
                 android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@id/tv_start_date"
+                app:layout_constraintEnd_toStartOf="@id/tv_start_date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/tv_start_date" />
 
             <ImageButton
                 android:id="@+id/ib_hint"
@@ -82,6 +85,7 @@
                 android:id="@+id/tv_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_date_to_button"
                 android:background="@drawable/item_rectangle_ripple"
                 android:clickable="true"
                 android:focusable="true"
@@ -99,9 +103,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/easy_adjust"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_question_1" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -112,20 +116,24 @@
 
             <TextView
                 android:id="@+id/tv_question_4"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/padding_question_name_tv"
                 android:text="@string/target_date_incl"
-                android:textAlignment="center"
+                android:textAlignment="viewStart"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
                 android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="@id/tv_target_date"
+                app:layout_constraintEnd_toStartOf="@id/tv_target_date"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/tv_target_date" />
 
             <TextView
                 android:id="@+id/tv_target_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_date_to_button"
                 android:background="@drawable/item_rectangle_ripple"
                 android:textAlignment="textEnd"
                 android:textColor="@color/text_normal"
@@ -141,9 +149,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/today"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_question_4" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -163,7 +171,7 @@
 
             <TextView
                 android:id="@+id/tv_question_2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/budget_amount"
                 android:textAlignment="textStart"
@@ -171,8 +179,9 @@
                 android:textSize="20sp"
                 android:textStyle="normal"
                 app:layout_constraintBottom_toBottomOf="@id/et_budget_amount"
+                app:layout_constraintEnd_toStartOf="@id/et_budget_amount"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/et_budget_amount" />
 
             <EditText
                 android:id="@+id/et_budget_amount"
@@ -206,17 +215,17 @@
 
             <TextView
                 android:id="@+id/tv_question_3"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:text="@string/payment_cycle_length"
                 android:textAlignment="textStart"
                 android:textColor="@color/text_normal"
                 android:textSize="20sp"
                 android:textStyle="normal"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/et_payment_cycle_length"
+                app:layout_constraintEnd_toStartOf="@id/et_payment_cycle_length"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_question_2" />
+                app:layout_constraintTop_toTopOf="@id/et_payment_cycle_length" />
 
             <EditText
                 android:id="@+id/et_payment_cycle_length"
@@ -253,6 +262,7 @@
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
+            android:layout_marginVertical="@dimen/vertical_margin_divider_main_activity"
             android:layout_height="wrap_content"
             app:dividerColor="@color/text_hint" />
 
