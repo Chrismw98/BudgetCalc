@@ -9,6 +9,7 @@ import chrismw.budgetcalc.Metric
 import chrismw.budgetcalc.MetricUnit
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.databinding.MetricItemBinding
+import java.text.NumberFormat
 import kotlin.math.abs
 
 
@@ -81,7 +82,11 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
                 holder.tvMetricUnit.setTextColor(ContextCompat.getColor(context, R.color.text_normal))
             }
         } else {
-            holder.tvMetricValue.text = String.format("%.2f", metric.value) //TODO: Add 1000's separators, respective of the Locale (2023-02-20)
+            val numberFormat = NumberFormat.getNumberInstance()
+            numberFormat.maximumFractionDigits = 2
+            numberFormat.minimumFractionDigits = 2
+            val metricValueString = numberFormat.format(metric.value)
+            holder.tvMetricValue.text = metricValueString
             setMetricUnitStrings(holder, metric)
         }
 

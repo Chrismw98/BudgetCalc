@@ -88,6 +88,8 @@ class MainActivity : AppCompatActivity() {
         tvStartDate = binding?.tvStartDate
         tvTargetDate = binding?.tvTargetDate
 
+        initializeEditTextFilters()
+
         val btnEasyAdjust = binding?.btnEasyAdjust
         btnEasyAdjust?.setOnClickListener {
             setStartDateToLatestPaymentDate()
@@ -361,6 +363,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun millisToLocalDate(millis: Long): LocalDate {
         return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+    }
+
+    private fun initializeEditTextFilters() {
+        etBudgetAmount?.filters = arrayOf(
+            InputFilterMinMax(
+                1,
+                Integer.MAX_VALUE
+            )
+        )
+        etPaymentCycleLength?.filters = arrayOf(
+            InputFilterMinMax(
+                1,
+                Integer.MAX_VALUE
+            )
+        )
     }
 
     //Taken from https://stackoverflow.com/questions/4828636/edittext-clear-focus-on-touch-outside
