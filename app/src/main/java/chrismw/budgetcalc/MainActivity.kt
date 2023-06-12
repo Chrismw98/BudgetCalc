@@ -12,11 +12,34 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import chrismw.budgetcalc.components.ButtonProgressbar
+import chrismw.budgetcalc.components.CircularProgressbar
 import chrismw.budgetcalc.databinding.ActivityMainBinding
+import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.time.Instant
@@ -25,9 +48,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import kotlin.random.Random
 
-
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private var formatter = DateTimeFormatter.ofPattern("EEE, dd.MM.yyyy", Locale.getDefault());
 
@@ -71,6 +94,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+//        setContent {
+//            BudgetCalcTheme (darkTheme = false) {
+//                MyApp()
+//            }
+//        }
 
         settings = applicationContext.getSharedPreferences(
             Constants.SHARED_PREFERENCES_FILENAME,
@@ -142,16 +170,16 @@ class MainActivity : AppCompatActivity() {
 
         tvStartDate?.setOnClickListener {
             resetStartDatePicker()
-            startDatePicker?.show(supportFragmentManager, startDatePicker!!.tag)
+//            startDatePicker?.show(supportFragmentManager, startDatePicker!!.tag) //TODO: These need to be adjusted
         }
 
         tvTargetDate?.setOnClickListener {
             resetTargetDatePicker()
-            targetDatePicker?.show(supportFragmentManager, targetDatePicker!!.tag)
+//            targetDatePicker?.show(supportFragmentManager, targetDatePicker!!.tag) //TODO: These need to be adjusted
         }
 
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
-        binding!!.rvMetrics.layoutManager = layoutManager
+        binding?.rvMetrics?.layoutManager = layoutManager
         metricAdapter = MetricAdapter(getMetricsList())
         binding?.rvMetrics?.adapter = metricAdapter
 
@@ -409,5 +437,41 @@ class MainActivity : AppCompatActivity() {
         targetDatePicker?.onDestroy()
 
         binding = null
+    }
+}
+
+@Composable
+private fun MyApp() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        var remainingBudget by rememberSaveable {
+            mutableStateOf(420f)
+        }
+
+        val maxBudget = 600f
+
+        CircularProgressbar(
+            maxBudget = maxBudget,
+            remainingBudget = remainingBudget,
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        ButtonProgressbar {
+            remainingBudget = (Random.nextDouble() * (maxBudget + 1)).toFloat()
+        }
+    }
+}
+
+@Preview
+@Composable
+fun DefaultPreview() {
+    BudgetCalcTheme {
+        MyApp()
     }
 }
