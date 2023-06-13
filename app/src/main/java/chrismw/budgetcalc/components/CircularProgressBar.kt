@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +32,7 @@ import java.text.NumberFormat
 
 @Composable
 fun CircularProgressbar(
-    size: Dp = 260.dp,
+    modifier: Modifier = Modifier,
     foregroundIndicatorColor: Color = Color(0xFF35898f),
     shadowColor: Color = Color.LightGray,
     indicatorThickness: Dp = 24.dp,
@@ -71,13 +71,11 @@ fun CircularProgressbar(
     }
 
     Box(
-        modifier = Modifier
-            .size(size),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         Canvas(
-            modifier = Modifier
-                .size(size)
+            modifier = Modifier.matchParentSize()
         ) {
             // For shadow
             drawCircle(
@@ -93,7 +91,7 @@ fun CircularProgressbar(
             // This is the white circle that appears on the top of the shadow circle
             drawCircle(
                 color = Color.White,
-                radius = (size / 2 - indicatorThickness).toPx(),
+                radius = ((this.size.toDpSize().width / 2) - indicatorThickness).toPx(),
                 center = Offset(x = this.size.width / 2, y = this.size.height / 2)
             )
 
@@ -108,8 +106,8 @@ fun CircularProgressbar(
                 useCenter = false,
                 style = Stroke(width = indicatorThickness.toPx(), cap = StrokeCap.Round),
                 size = Size(
-                    width = (size - indicatorThickness).toPx(),
-                    height = (size - indicatorThickness).toPx()
+                    width = (this.size.toDpSize().width - indicatorThickness).toPx(),
+                    height = (this.size.toDpSize().height - indicatorThickness).toPx()
                 ),
                 topLeft = Offset(
                     x = (indicatorThickness / 2).toPx(),
@@ -152,10 +150,47 @@ private fun DisplayNumberText(
     }
 }
 
-@Preview
+@Preview(showBackground = false, widthDp = 100, heightDp = 100)
 @Composable
-fun DefaultPreview() {
+fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
-        CircularProgressbar(maxBudget = 100f, remainingBudget = 47f)
+        CircularProgressbar(
+            maxBudget = 100f,
+            remainingBudget = 47f
+        )
+    }
+}
+
+@Preview(showBackground = false, widthDp = 250, heightDp = 250)
+@Composable
+fun CircularProgressBarPreviewNormal() {
+    BudgetCalcTheme {
+        CircularProgressbar(
+            maxBudget = 100f,
+            remainingBudget = 47f
+        )
+    }
+}
+
+@Preview(showBackground = false, widthDp = 500, heightDp = 500)
+@Composable
+fun CircularProgressBarPreviewLarge() {
+    BudgetCalcTheme {
+        CircularProgressbar(
+            maxBudget = 100f,
+            remainingBudget = 47f
+        )
+    }
+}
+
+@Preview(showBackground = false, widthDp = 500, heightDp = 500)
+@Composable
+fun CircularProgressBarPreviewCustom() {
+    BudgetCalcTheme {
+        CircularProgressbar(
+            maxBudget = 100f,
+            remainingBudget = 47f,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

@@ -14,14 +14,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,7 +48,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 //        setContent {
-//            BudgetCalcTheme (darkTheme = false) {
+//            BudgetCalcTheme(darkTheme = false) {
 //                MyApp()
 //            }
 //        }
@@ -182,7 +183,6 @@ class MainActivity : ComponentActivity() {
         binding?.rvMetrics?.layoutManager = layoutManager
         metricAdapter = MetricAdapter(getMetricsList())
         binding?.rvMetrics?.adapter = metricAdapter
-
     }
 
     private fun setBudgetAmountToLastKnown() {
@@ -236,7 +236,6 @@ class MainActivity : ComponentActivity() {
             Constants.defaultCurrency
         ).toString()
         binding?.tvBudgetAmountUnit?.text = defaultCurrency
-
     }
 
     private fun updateDefaultLengthOfPaymentCycleInDays() {
@@ -358,9 +357,11 @@ class MainActivity : ComponentActivity() {
                     lastMonth.withDayOfMonth(defaultPaymentDayOfMonth)
                 }
             }
+
             todayAsDayOfMonth > defaultPaymentDayOfMonth -> {
                 today.withDayOfMonth(defaultPaymentDayOfMonth)
             }
+
             else -> {
                 lastMonth
             }
@@ -442,29 +443,38 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MyApp() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Surface(modifier = Modifier
+        .background(Color.Transparent)
     ) {
-        var remainingBudget by rememberSaveable {
-            mutableStateOf(420f)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            var remainingBudget by rememberSaveable {
+                mutableStateOf(420f)
+            }
+
+            val maxBudget = 600f
+
+            CircularProgressbar(
+                maxBudget = maxBudget,
+                remainingBudget = remainingBudget,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            ButtonProgressbar {
+                remainingBudget = (Random.nextDouble() * (maxBudget + 1)).toFloat()
+            }
         }
 
-        val maxBudget = 600f
-
-        CircularProgressbar(
-            maxBudget = maxBudget,
-            remainingBudget = remainingBudget,
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        ButtonProgressbar {
-            remainingBudget = (Random.nextDouble() * (maxBudget + 1)).toFloat()
-        }
     }
 }
 
