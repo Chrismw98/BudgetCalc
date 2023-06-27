@@ -11,16 +11,16 @@ import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 
 @Composable
 fun ButtonProgressbar(
-    backgroundColor: Color = Color(0xFF35898f),
+//    backgroundColor: Color = Color(0xFF35898f),
     onClickButton: () -> Unit
 ) {
     Button(
         onClick = {
             onClickButton()
         },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor
-        )
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = backgroundColor
+//        )
     ) {
         Text(
             text = "Animate with Random Value",

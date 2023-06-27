@@ -11,8 +11,9 @@
     <color name="light_gray">#C4C4C4</color>
     <color name="red">#FF0000</color>
 
-    <color name="color_background">#1B263B</color>
+    <color name="color_background">#FF1B263B</color>
     <color name="color_background_faded">#1A778DA9</color>
+    <color name="color_background_faded_compose">#24324E</color>
     <color name="color_accent">#778DA9</color>
     <color name="text_normal">#E0E1DD</color>
     <color name="text_hint">#A4A5A2</color>

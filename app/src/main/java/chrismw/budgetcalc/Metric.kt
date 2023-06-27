@@ -1,6 +1,6 @@
 package chrismw.budgetcalc
 
-data class Metric(var name: String, var value: Double, val unit: MetricUnit) {
+data class Metric(var name: String, var value: Number, val unit: MetricUnit) {
 
 }
 

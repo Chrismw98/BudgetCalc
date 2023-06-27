@@ -68,13 +68,13 @@ class MetricAdapter(private val metrics: ArrayList<Metric>) :
         if (metric.unit == MetricUnit.DAYS) {
             holder.tvMetricValue.text = String.format("%.0f", metric.value)
 
-            if (abs(metric.value) == 1.0) {
+            if (abs(metric.value.toDouble()) == 1.0) {
                 holder.tvMetricUnit.text = holder.tvMetricUnit.context.getString(R.string.day)
             } else {
                 holder.tvMetricUnit.text = holder.tvMetricUnit.context.getString(R.string.days)
             }
 
-            if (metric.value < 0) {
+            if (metric.value.toDouble() < 0) {
                 holder.tvMetricValue.setTextColor(ContextCompat.getColor(context, R.color.red))
                 holder.tvMetricUnit.setTextColor(ContextCompat.getColor(context, R.color.red))
             } else {
