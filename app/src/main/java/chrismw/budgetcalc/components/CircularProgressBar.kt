@@ -40,7 +40,7 @@ fun CircularProgressbar(
     foregroundIndicatorColor: Color = MaterialTheme.colorScheme.primary,
     shadowColor: Color = Color.LightGray,
     indicatorThickness: Dp = 24.dp,
-    remainingBudget: Float = 380f,
+    remainingBudget: Float = 380f, //TODO: Handle case 0f
     maxBudget: Float = 600f,
     animationDurationInMs: Int = 750
 ) {

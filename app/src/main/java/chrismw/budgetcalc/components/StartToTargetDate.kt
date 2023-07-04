@@ -59,7 +59,7 @@ fun StartToTargetDate(
             modifier = Modifier.weight(1f),
             value = startDate.format(formatter),
             onClick = onClickStartDate,
-            label = "Start date (excl.)",
+            label = stringResource(id = R.string.budget_start_date_excl),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Today,
                     contentDescription = null)
@@ -71,7 +71,7 @@ fun StartToTargetDate(
             modifier = Modifier.weight(1f),
             value = endDate.format(formatter),
             onClick = onClickTargetDate,
-            label = "Target date (incl.)",
+            label = stringResource(id = R.string.target_date_incl),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Event,
                     contentDescription = null)
