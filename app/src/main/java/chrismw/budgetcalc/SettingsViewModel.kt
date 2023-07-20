@@ -1,18 +1,19 @@
 package chrismw.budgetcalc
 
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.prefdatastore.BudgetData
+import chrismw.budgetcalc.prefdatastore.CustomTemporalUnit
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,75 +21,109 @@ class SettingsViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-//    private val dataStore = DataStoreManager(context)
-
-    private val _uiState = MutableStateFlow(SettingsState())
-    val uiState: StateFlow<SettingsState> = _uiState.asStateFlow()
+    val viewState: StateFlow<SettingsState> = dataStoreManager
+        .getFromDataStore()
+        .map { budgetData ->
+            budgetData.toSettingsState()
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = SettingsState()
+        )
 
     fun setIsBudgetConstant(value: Boolean) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                isBudgetConstant = value
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        isBudgetConstant = value
+                    )
+                )
             )
         }
     }
 
     fun setConstantBudgetAmount(value: String) {
-        _uiState.update { currentState ->
-            val newConstantBudgetAmount = value.toFloatOrNull()
-            currentState.copy(
-                constantBudgetAmount = newConstantBudgetAmount
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        constantBudgetAmount = value.toFloatOrNull()
+                    )
+                )
             )
         }
     }
 
     fun setBudgetRateAmount(value: String) {
-        _uiState.update { currentState ->
-            val newBudgetRateAmount = value.toFloatOrNull()
-            currentState.copy(
-                budgetRateAmount = newBudgetRateAmount
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        budgetRateAmount = value.toFloatOrNull()
+                    )
+                )
             )
         }
     }
 
-    fun setBudgetRateUnit(value: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                budgetRateUnit = value
+    fun setBudgetRateUnit(value: String) { //TODO: This needs to be looked over again 2023-07-20
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        budgetRateUnit = value
+                    )
+                )
             )
         }
     }
 
     fun setDefaultPaymentDay(value: String) {
-        val newDefaultPaymentDay = value.toIntOrNull()
-        _uiState.update { currentState ->
-            currentState.copy(
-                defaultPaymentDay = newDefaultPaymentDay
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        defaultPaymentDay = value.toIntOrNull()
+                    )
+                )
             )
         }
     }
 
     fun setCurrency(value: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                currency = value
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        currency = value
+                    )
+                )
             )
         }
     }
 
     fun setPaymentCycleLength(value: String) {
-        val newPaymentCycleLength = value.toIntOrNull()
-        _uiState.update { currentState ->
-            currentState.copy(
-                paymentCycleLength = newPaymentCycleLength
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        paymentCycleLength = value.toIntOrNull()
+                    )
+                )
             )
         }
     }
 
-    fun setPaymentCycleUnit(value: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                paymentCycleUnit = value
+    fun setPaymentCycleUnit(value: String) { //TODO: This needs to be looked over again 2023-07-20
+        viewModelScope.launch {
+            dataStoreManager.saveToDataStore(
+                BudgetData.fromSettingsState(viewState.value
+                    .copy(
+                        paymentCycleLengthUnit = value
+                    )
+                )
             )
         }
     }
@@ -98,9 +133,9 @@ data class SettingsState(
     val isBudgetConstant: Boolean = false,
     val constantBudgetAmount: Float? = null,
     val budgetRateAmount: Float? = null,
-    val budgetRateUnit: String? = null,
+    val budgetRateUnit: String? = null, //TODO: Make this not use CustomTemporalUnit 2023-07-20
     val defaultPaymentDay: Int? = null,
     val currency: String? = null,
     val paymentCycleLength: Int? = null,
-    val paymentCycleUnit: String? = null
+    val paymentCycleLengthUnit: String? = null //TODO: Make this not use CustomTemporalUnit 2023-07-20
 )

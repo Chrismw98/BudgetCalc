@@ -84,7 +84,7 @@ class ComposableSettingsActivity : ComponentActivity() {
         val viewModel : SettingsViewModel by viewModels()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
+                viewModel.viewState.collect {
 
                     setContent {
                         BudgetCalcTheme(darkTheme = false) {
