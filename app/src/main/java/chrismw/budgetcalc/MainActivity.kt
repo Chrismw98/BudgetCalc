@@ -84,6 +84,7 @@ import chrismw.budgetcalc.databinding.ActivityMainBinding
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.Instant
@@ -97,6 +98,7 @@ import java.util.Locale
 val decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault())
 val decimalFormat = DecimalFormat("#,##0.00", decimalFormatSymbols)
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     //Old variables and constants
@@ -500,7 +502,7 @@ private fun MyApp() {
                 },
                 actions = {
                     IconButton(onClick = {
-                        val intent = Intent(context, SettingsActivity::class.java)
+                        val intent = Intent(context, ComposableSettingsActivity::class.java)
                         context.startActivity(intent)
                     }) {
                         Icon(imageVector = Icons.Default.Settings,
@@ -518,7 +520,6 @@ private fun MyApp() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
-
         ) {
             Column(
                 modifier = Modifier

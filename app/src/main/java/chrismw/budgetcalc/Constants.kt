@@ -1,7 +1,10 @@
 package chrismw.budgetcalc
 
 object Constants {
+    //Constants for Compose
+    const val PREFERENCES_NAME = "default_datastore"
 
+    //Old constants
     const val defaultBudgetAmountInMonetaryUnitsPerDay = 20
     const val defaultPaymentDayOfMonth = 25
     const val defaultCurrency = "€"
