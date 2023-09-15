@@ -1,9 +1,8 @@
-package chrismw.budgetcalc
+package chrismw.budgetcalc.screens
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import chrismw.budgetcalc.prefdatastore.BudgetData
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,13 +68,6 @@ class SettingsViewModel @Inject constructor(
                     isBudgetConstant = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        isBudgetConstant = value
-//                    )
-//                )
-//            )
         }
     }
 
@@ -106,13 +98,6 @@ class SettingsViewModel @Inject constructor(
                     constantBudgetAmount = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        constantBudgetAmount = value
-//                    )
-//                )
-//            )
         }
     }
 
@@ -123,13 +108,6 @@ class SettingsViewModel @Inject constructor(
                     budgetRateAmount = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        budgetRateAmount = value
-//                    )
-//                )
-//            )
         }
     }
 
@@ -140,13 +118,6 @@ class SettingsViewModel @Inject constructor(
                     budgetRateUnit = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        budgetRateUnit = value
-//                    )
-//                )
-//            )
         }
     }
 
@@ -160,13 +131,6 @@ class SettingsViewModel @Inject constructor(
                             defaultPaymentDay = value
                         )
                     }
-//                    dataStoreManager.saveToDataStore(
-//                        BudgetData.fromSettingsState(viewState.value
-//                            .copy(
-//                                defaultPaymentDay = value
-//                            )
-//                        )
-//                    )
                 }
             }
         }
@@ -179,13 +143,6 @@ class SettingsViewModel @Inject constructor(
                     currency = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        currency = value
-//                    )
-//                )
-//            )
         }
     }
 
@@ -197,13 +154,6 @@ class SettingsViewModel @Inject constructor(
                         paymentCycleLength = value
                     )
                 }
-//                dataStoreManager.saveToDataStore(
-//                    BudgetData.fromSettingsState(viewState.value
-//                        .copy(
-//                            paymentCycleLength = value
-//                        )
-//                    )
-//                )
             }
         }
     }
@@ -215,13 +165,6 @@ class SettingsViewModel @Inject constructor(
                     paymentCycleLengthUnit = value
                 )
             }
-//            dataStoreManager.saveToDataStore(
-//                BudgetData.fromSettingsState(viewState.value
-//                    .copy(
-//                        paymentCycleLengthUnit = value
-//                    )
-//                )
-//            )
         }
     }
 }

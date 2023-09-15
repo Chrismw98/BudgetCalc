@@ -1,4 +1,4 @@
-package chrismw.budgetcalc
+package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
@@ -6,11 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
+class MainScreenViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 

@@ -9,9 +9,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import chrismw.budgetcalc.MainScreen
-import chrismw.budgetcalc.SettingsScreen
-import chrismw.budgetcalc.SettingsViewModel
+import chrismw.budgetcalc.screens.MainScreen
+import chrismw.budgetcalc.screens.SettingsScreen
+import chrismw.budgetcalc.screens.SettingsViewModel
 
 private const val MAIN_SCREEN_ROUTE = "main_screen"
 private const val SETTINGS_SCREEN_ROUTE = "settings_screen"

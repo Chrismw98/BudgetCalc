@@ -13,14 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import chrismw.budgetcalc.Constants
-import chrismw.budgetcalc.Metric
-import chrismw.budgetcalc.MetricUnit
+import chrismw.budgetcalc.helpers.Constants
+import chrismw.budgetcalc.helpers.Metric
+import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import java.text.NumberFormat

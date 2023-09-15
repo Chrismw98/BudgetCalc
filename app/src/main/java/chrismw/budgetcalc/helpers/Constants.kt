@@ -1,4 +1,4 @@
-package chrismw.budgetcalc
+package chrismw.budgetcalc.helpers
 
 object Constants {
     //Constants for Compose

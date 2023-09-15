@@ -27,8 +27,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import chrismw.budgetcalc.Metric
-import chrismw.budgetcalc.MetricUnit
+import chrismw.budgetcalc.helpers.Metric
+import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
