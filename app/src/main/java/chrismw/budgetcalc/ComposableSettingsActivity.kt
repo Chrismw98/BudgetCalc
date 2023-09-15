@@ -37,20 +37,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -60,8 +58,9 @@ import chrismw.budgetcalc.databinding.ActivitySettingsBinding
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.security.AccessController.getContext
-import javax.inject.Inject
+import java.text.NumberFormat
+
+val numberFormat = NumberFormat.getNumberInstance()
 
 @AndroidEntryPoint
 class ComposableSettingsActivity : ComponentActivity() {
@@ -81,7 +80,9 @@ class ComposableSettingsActivity : ComponentActivity() {
 //        setContentView(binding?.root)
 
 //        val viewModel = SettingsViewModel()
-        val viewModel : SettingsViewModel by viewModels()
+        numberFormat.maximumFractionDigits = 2
+        numberFormat.minimumFractionDigits = 2
+        val viewModel: SettingsViewModel by viewModels()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.viewState.collect {
@@ -90,6 +91,12 @@ class ComposableSettingsActivity : ComponentActivity() {
                         BudgetCalcTheme(darkTheme = false) {
                             SettingsScreen(
                                 state = it,
+                                onNavigateBack = {
+                                    lifecycleScope.launch {
+                                        viewModel.saveSettings()
+                                    }
+                                },
+                                onLoadSettings = viewModel::loadSettings,
                                 onClickConstantBudget = {
                                     if (!it.isBudgetConstant) {
                                         viewModel.setIsBudgetConstant(true)
@@ -104,7 +111,7 @@ class ComposableSettingsActivity : ComponentActivity() {
                                 onBudgetRateAmountChanged = viewModel::setBudgetRateAmount,
                                 onDefaultPaymentDayChanged = viewModel::setDefaultPaymentDay,
                                 onCurrencyChanged = viewModel::setCurrency,
-                                onPaymentCycleLengthChanged = viewModel::setPaymentCycleLength
+                                onPaymentCycleLengthChanged = viewModel::setPaymentCycleLength,
                             )
                         }
                     }
@@ -259,8 +266,10 @@ class ComposableSettingsActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsScreen(
+internal fun SettingsScreen(
     state: SettingsState,
+    onNavigateBack: () -> Unit,
+    onLoadSettings: () -> Unit,
     onClickConstantBudget: () -> Unit,
     onClickBudgetRate: () -> Unit,
     onConstantBudgetAmountChanged: (String) -> Unit,
@@ -269,6 +278,9 @@ private fun SettingsScreen(
     onCurrencyChanged: (String) -> Unit,
     onPaymentCycleLengthChanged: (String) -> Unit,
 ) {
+    LaunchedEffect(key1 = true) {
+        onLoadSettings()
+    }
 
     Scaffold(
         topBar = {
@@ -277,7 +289,7 @@ private fun SettingsScreen(
                     Text(text = stringResource(id = R.string.settings))
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(imageVector = Icons.Default.ArrowBack,
                             contentDescription = null
                         )
@@ -314,7 +326,7 @@ private fun SettingsScreen(
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = state.constantBudgetAmount?.toString().orEmpty(),
+                    value = state.constantBudgetAmount.orEmpty(),
                     onValueChange = onConstantBudgetAmountChanged,
                     label = {
                         Text(
@@ -333,7 +345,7 @@ private fun SettingsScreen(
                 ) {
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
-                        value = state.budgetRateAmount?.toString().orEmpty(),
+                        value = state.budgetRateAmount.orEmpty(),
                         onValueChange = onBudgetRateAmountChanged,
                         label = {
                             Text(
@@ -341,6 +353,7 @@ private fun SettingsScreen(
                             )
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Next,
                         ),
                     )
@@ -420,7 +433,7 @@ private fun SettingsScreen(
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = state.defaultPaymentDay?.toString().orEmpty(),
+                value = state.defaultPaymentDay.orEmpty(),
                 onValueChange = onDefaultPaymentDayChanged,
                 label = {
                     Text(
@@ -459,7 +472,7 @@ private fun SettingsScreen(
             ) {
                 OutlinedTextField(
                     modifier = Modifier.weight(1f),
-                    value = state.paymentCycleLength?.toString().orEmpty(),
+                    value = state.paymentCycleLength.orEmpty(),
                     onValueChange = onPaymentCycleLengthChanged,
                     label = {
                         Text(
@@ -467,6 +480,7 @@ private fun SettingsScreen(
                         )
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Next,
                     ),
                 )
@@ -538,6 +552,8 @@ private fun SettingsScreen(
     }
 }
 
+//private fun formatNumberOrEmpty(number: Float?): String = numberFormat.format(number).orEmpty()
+
 @Preview
 @Composable
 fun SettingsScreenPreviewConstantBudget() {
@@ -546,6 +562,8 @@ fun SettingsScreenPreviewConstantBudget() {
             state = SettingsState(
                 isBudgetConstant = true
             ),
+            onNavigateBack = {},
+            onLoadSettings = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},
@@ -565,6 +583,8 @@ fun SettingsScreenPreviewBudgetRate() {
             state = SettingsState(
                 isBudgetConstant = false
             ),
+            onNavigateBack = {},
+            onLoadSettings = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},

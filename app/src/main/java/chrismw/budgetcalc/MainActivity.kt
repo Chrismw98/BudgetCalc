@@ -38,8 +38,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
@@ -50,11 +48,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -72,8 +68,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.widget.doOnTextChanged
+import androidx.navigation.compose.rememberNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import chrismw.budgetcalc.components.CircularProgressbar
@@ -81,6 +77,7 @@ import chrismw.budgetcalc.components.MetricItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.TextFieldWithUnit
 import chrismw.budgetcalc.databinding.ActivityMainBinding
+import chrismw.budgetcalc.navigation.BudgetCalcNavHost
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -95,8 +92,8 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 //Compose variables/constants
-val decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault())
-val decimalFormat = DecimalFormat("#,##0.00", decimalFormatSymbols)
+var decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault())
+var decimalFormat = DecimalFormat("#,##0.00", decimalFormatSymbols)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -146,7 +143,7 @@ class MainActivity : ComponentActivity() {
 //        setContentView(binding?.root)
         setContent {
             BudgetCalcTheme(darkTheme = false) {
-                MyApp()
+                BudgetCalcApp()
             }
         }
 
@@ -490,9 +487,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+private fun BudgetCalcApp() {
+    val navController = rememberNavController()
+    BudgetCalcNavHost(
+        navController = navController
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MyApp() {
+internal fun MainScreen(
+    onClickSettingsButton: () -> Unit,
+) {
     val context = LocalContext.current
     Scaffold(
         topBar = {
@@ -501,10 +508,10 @@ private fun MyApp() {
                     Text(text = "BudgetCalc")
                 },
                 actions = {
-                    IconButton(onClick = {
-                        val intent = Intent(context, ComposableSettingsActivity::class.java)
-                        context.startActivity(intent)
-                    }) {
+                    IconButton(onClick = onClickSettingsButton
+//                        {val intent = Intent(context, ComposableSettingsActivity::class.java)
+//                        context.startActivity(intent)}
+                    ) {
                         Icon(imageVector = Icons.Default.Settings,
                             contentDescription = null
                         )
@@ -543,7 +550,6 @@ private fun MyApp() {
                 val maxBudget by rememberSaveable(maxBudgetString) {
                     mutableStateOf(maxBudgetString.toFloatOrNull() ?: 0f)
                 }
-
 
 //            var remainingBudget by rememberSaveable {
 //                mutableStateOf(246.672f)
@@ -738,6 +744,8 @@ private fun validateNumberInputString(numberInputString: String, allowDecimalSep
 @Composable
 fun DefaultPreview() {
     BudgetCalcTheme {
-        MyApp()
+        MainScreen(
+            onClickSettingsButton = {}
+        )
     }
 }
