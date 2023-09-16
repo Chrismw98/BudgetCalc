@@ -9,26 +9,36 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import chrismw.budgetcalc.helpers.Constants
-import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.helpers.Metric
+import chrismw.budgetcalc.helpers.MetricType
+import chrismw.budgetcalc.helpers.MetricType.BUDGET_UNTIL_TARGET_DATE
+import chrismw.budgetcalc.helpers.MetricType.DAILY_BUDGET
+import chrismw.budgetcalc.helpers.MetricType.DAYS_REMAINING
+import chrismw.budgetcalc.helpers.MetricType.DAYS_SINCE_START
+import chrismw.budgetcalc.helpers.MetricType.REMAINING_BUDGET
+import chrismw.budgetcalc.helpers.MetricUnit
+import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY
+import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY_PER_DAY
+import chrismw.budgetcalc.helpers.MetricUnit.DAYS
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import java.text.NumberFormat
-import kotlin.math.abs
 
 @Composable
 fun MetricItem(
     modifier: Modifier = Modifier,
-    metric: Metric
+    metric: Metric,
+    currency: String,
 ) {
     Row(
         modifier = modifier,
@@ -36,23 +46,20 @@ fun MetricItem(
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         //TODO: Enable usage of Settings
-        val metricNameString = metric.name
+        val metricNameString = getNameForMetricType(metric.type)
         val metricValueString: String
-        val metricUnitString: String
+        val metricUnitString = getStringForMetricUnit(
+            unit = metric.unit,
+            count = metric.value.toInt(),
+            currency = currency
+        )
         val metricColor: Color
         when (metric.unit) {
-            MetricUnit.DAYS -> {
-//                metricValueString = String.format("%.0f", metric.value)
+            DAYS -> {
                 metricValueString = metric.value.toString()
-                metricUnitString = if (abs(metric.value.toDouble()) == 1.0) {
-                    stringResource(R.string.day)
-                } else {
-                    stringResource(R.string.days)
-                }
                 metricColor = if (metric.value.toDouble() < 0) {
                     Color.Red
                 } else {
-//                    colorResource(id = R.color.text_normal)
                     MaterialTheme.colorScheme.onPrimaryContainer
                 }
             }
@@ -62,20 +69,13 @@ fun MetricItem(
                 numberFormat.maximumFractionDigits = 2
                 numberFormat.minimumFractionDigits = 2
                 metricValueString = numberFormat.format(metric.value)
-                metricUnitString = when (metric.unit) {
-                    MetricUnit.CURRENCY_PER_DAY -> "${Constants.defaultCurrency}/${stringResource(id = R.string.day)}"
-                    MetricUnit.CURRENCY -> Constants.defaultCurrency
-                    else -> throw IllegalArgumentException("Invalid metric unit provided: ${metric.unit} for metric $metric")
-                }
-//                metricColor = colorResource(id = R.color.text_normal)
                 metricColor = MaterialTheme.colorScheme.onPrimaryContainer
             }
         }
 
         Text(
             text = metricNameString,
-            fontSize = 20.sp,
-//            color = colorResource(id = R.color.text_normal),
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.weight(3f)
         )
@@ -84,7 +84,7 @@ fun MetricItem(
 
         Text(
             text = metricValueString,
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = metricColor,
             modifier = Modifier.weight(1.5f),
             textAlign = TextAlign.End
@@ -94,7 +94,7 @@ fun MetricItem(
 
         Text(
             text = metricUnitString,
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = metricColor,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Start
@@ -102,16 +102,39 @@ fun MetricItem(
     }
 }
 
-@Preview(showBackground = false, widthDp = 600, heightDp = 800)
+@ReadOnlyComposable
+@Composable
+fun getNameForMetricType(type: MetricType): String {
+    return when (type) {
+        DAYS_SINCE_START -> stringResource(id = R.string.days_since_start)
+        DAYS_REMAINING -> stringResource(id = R.string.days_remaining)
+        DAILY_BUDGET -> stringResource(id = R.string.daily_budget)
+        BUDGET_UNTIL_TARGET_DATE -> stringResource(id = R.string.budget_until_target_date)
+        REMAINING_BUDGET -> stringResource(id = R.string.remaining_budget)
+    }
+}
+
+@ReadOnlyComposable
+@Composable
+fun getStringForMetricUnit(unit: MetricUnit, count: Int = 1, currency: String = "$"): String {
+    return when (unit) {
+        DAYS -> pluralStringResource(id = R.plurals.days, count = count)
+        CURRENCY_PER_DAY -> "${currency}/${stringResource(id = R.string.day)}"
+        CURRENCY -> currency
+    }
+}
+
+@Preview(showBackground = true, widthDp = 600, heightDp = 800)
 @Composable
 fun MetricItemPreview() {
-    val testMetric = Metric("Days since start", 19.0, MetricUnit.DAYS)
+    val testMetric = Metric(DAYS_SINCE_START, 19, DAYS)
     BudgetCalcTheme {
         MetricItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(3.dp),
-            metric = testMetric
+            metric = testMetric,
+            currency = "€"
         )
     }
 }

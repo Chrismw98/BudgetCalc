@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,7 +62,7 @@ class SettingsViewModel @Inject constructor(
             initialValue = SettingsState()
         )
 
-    fun setIsBudgetConstant(value: Boolean) {
+    private fun setIsBudgetConstant(value: Boolean) {
         viewModelScope.launch {
             updateViewState {
                 it.copy(
@@ -71,42 +72,36 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setBudgetToConstant(){
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    isBudgetConstant = true
-                )
-            }
-        }
+    fun setBudgetToConstant() {
+        setIsBudgetConstant(true)
     }
 
-    fun setBudgetToRate(){
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    isBudgetConstant = false
-                )
-            }
-        }
+    fun setBudgetToRate() {
+        setIsBudgetConstant(false)
     }
 
     fun setConstantBudgetAmount(value: String) {
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    constantBudgetAmount = value
-                )
+        val correctedValue = correctFloatString(value)
+        if (correctedValue != null) {
+            viewModelScope.launch {
+                updateViewState {
+                    it.copy(
+                        constantBudgetAmount = correctedValue
+                    )
+                }
             }
         }
     }
 
     fun setBudgetRateAmount(value: String) {
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    budgetRateAmount = value
-                )
+        val correctedValue = correctFloatString(value)
+        if (correctedValue != null) {
+            viewModelScope.launch {
+                updateViewState {
+                    it.copy(
+                        budgetRateAmount = value
+                    )
+                }
             }
         }
     }
@@ -169,6 +164,18 @@ class SettingsViewModel @Inject constructor(
     }
 }
 
+private fun correctFloatString(floatString: String): String? {
+    val separator = '.'
+    return if (floatString.count { it == separator } > 1) {
+        null
+    } else if (floatString == "$separator") {
+        "0$separator"
+    } else {
+        floatString
+    }
+}
+
+@Immutable
 data class SettingsState(
     val isBudgetConstant: Boolean = false,
     val constantBudgetAmount: String? = null,

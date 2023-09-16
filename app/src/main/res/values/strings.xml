@@ -32,4 +32,5 @@
     <string name="show_more">Show details</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="remaining">Remaining until</string>
 </resources>

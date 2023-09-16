@@ -29,4 +29,9 @@
     <string name="currency">Währung</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standardwerte zu vereinfachen. Standardwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
+    <string name="show_less">Details ausblenden</string>
+    <string name="show_more">Details anzeigen</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="remaining">Übrig bis</string>
 </resources>

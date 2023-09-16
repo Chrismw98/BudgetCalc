@@ -8,6 +8,8 @@ buildscript {
 
         androidx_navigation_version = '2.7.1'
         androidx_hilt_navigation_version = '1.0.0'
+
+        kotlinx_immutable_collections_version = '0.3.5'
     }
 
     dependencies {

@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import chrismw.budgetcalc.screens.MainScreen
+import chrismw.budgetcalc.screens.MainScreenViewModel
 import chrismw.budgetcalc.screens.SettingsScreen
 import chrismw.budgetcalc.screens.SettingsViewModel
 
@@ -27,8 +28,13 @@ fun BudgetCalcNavHost(
         modifier = modifier
     ) {
         composable(route = MAIN_SCREEN_ROUTE) {
+            val viewModel: MainScreenViewModel = hiltViewModel()
+            val state by viewModel.viewState.collectAsStateWithLifecycle()
             MainScreen(
-                onClickSettingsButton = { navController.navigateSingleTopTo(SETTINGS_SCREEN_ROUTE) }
+                state = state,
+                onClickSettingsButton = { navController.navigateSingleTopTo(SETTINGS_SCREEN_ROUTE) },
+                toggleShowDetails = viewModel::toggleDetailsExpanded,
+                onPickTargetDate = viewModel::onPickTargetDate
             )
         }
 

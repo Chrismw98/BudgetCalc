@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.helpers.MetricType
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -177,7 +178,7 @@ fun ReadOnlyTextFieldPreview() {
 @Preview(showBackground = false, widthDp = 600, heightDp = 800)
 @Composable
 fun StartToEndDatePreview() {
-    val testMetric = Metric("Days since start", 19.0, MetricUnit.DAYS)
+    val testMetric = Metric(MetricType.DAYS_SINCE_START, 19.0, MetricUnit.DAYS)
     BudgetCalcTheme {
         var pickedStartDate by rememberSaveable {
             mutableStateOf(LocalDate.now())
