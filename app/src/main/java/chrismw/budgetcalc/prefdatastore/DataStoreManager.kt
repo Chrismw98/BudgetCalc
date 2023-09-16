@@ -1,6 +1,7 @@
 package chrismw.budgetcalc.prefdatastore
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -10,8 +11,8 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import chrismw.budgetcalc.screens.SettingsState
 import chrismw.budgetcalc.decimalFormat
+import chrismw.budgetcalc.screens.SettingsState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -70,7 +71,7 @@ class DataStoreManager(val context: Context) {
             preferences[BUDGET_RATE_UNIT] = budgetData.budgetRateUnit.name
 
             updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY, budgetData.defaultPaymentDay)
-            preferences[CURRENCY] = budgetData.currency
+            updateOrRemoveNullableString(preferences,CURRENCY, budgetData.currency)
             updateOrRemoveNullableInt(preferences, PAYMENT_CYCLE_LENGTH, budgetData.paymentCycleLength)
             preferences[PAYMENT_CYCLE_LENGTH_UNIT] = budgetData.paymentCycleLengthUnit.name
         }
@@ -86,6 +87,14 @@ class DataStoreManager(val context: Context) {
 
     private fun updateOrRemoveNullableInt(preferences: MutablePreferences, key: Preferences.Key<Int>, value: Int?) {
         if (value != null) {
+            preferences[key] = value
+        } else {
+            preferences.remove(key)
+        }
+    }
+
+    private fun updateOrRemoveNullableString(preferences: MutablePreferences, key: Preferences.Key<String>, value: String?) {
+        if (value != null && value.isNotBlank()) {
             preferences[key] = value
         } else {
             preferences.remove(key)
@@ -136,10 +145,27 @@ data class BudgetData(
     val budgetRateUnit: CustomTemporalUnit = CustomTemporalUnit.DAYS,
 
     val defaultPaymentDay: Int? = null,
-    val currency: String = "", //TODO: Maybe make this nullable as well?
+    val currency: String? = null,
     val paymentCycleLength: Int? = null,
     val paymentCycleLengthUnit: CustomTemporalUnit = CustomTemporalUnit.DAYS,
 ) {
+
+    fun needsMoreData(): Boolean {
+        try {
+            if (isBudgetConstant) {
+                checkNotNull(constantBudgetAmount)
+            } else {
+                checkNotNull(budgetRateAmount)
+            }
+            checkNotNull(defaultPaymentDay)
+            checkNotNull(currency)
+            checkNotNull(paymentCycleLength)
+        } catch (e: Exception) {
+            Log.d("DataStoreManager", "Missing budget data: $this")
+            return true
+        }
+        return false
+    }
 
     fun toSettingsState(): SettingsState {
         return SettingsState(

@@ -50,6 +50,7 @@ fun CircularProgressbar(
     maxBudget: Float = 600f,
     animationDurationInMs: Int = 500,
     targetDateString: String = "",
+    currency: String,
     onClick: () -> Unit,
 ) {
     val remainingBudgetAnimator = remember {
@@ -183,6 +184,7 @@ fun CircularProgressBarPreviewSmall() {
             maxBudget = 100f,
             remainingBudget = 47f,
             targetDateString = "Thu., 16/09/2023",
+            currency = "€",
             onClick = {}
         )
     }
@@ -196,6 +198,7 @@ fun CircularProgressBarPreviewNormal() {
             maxBudget = 100f,
             remainingBudget = 47f,
             targetDateString = "Thu., 16/09/2023",
+            currency = "€",
             onClick = {}
         )
     }
@@ -209,6 +212,7 @@ fun CircularProgressBarPreviewLarge() {
             maxBudget = 100f,
             remainingBudget = 47f,
             targetDateString = "Thu., 16/09/2023",
+            currency = "€",
             onClick = {}
         )
     }
@@ -225,6 +229,7 @@ fun CircularProgressBarPreviewCustom() {
                 .fillMaxWidth()
                 .aspectRatio(1f),
             targetDateString = "Thu., 16/09/2023",
+            currency = "€",
             onClick = {}
         )
     }

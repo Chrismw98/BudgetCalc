@@ -2,7 +2,6 @@ package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import chrismw.budgetcalc.extensions.dateString
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
 import chrismw.budgetcalc.helpers.MetricUnit
@@ -16,11 +15,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -31,6 +30,9 @@ class MainScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val budgetDataFlow: Flow<BudgetData> = dataStoreManager.getFromDataStore()
+        .mapNotNull {
+            if (it.needsMoreData()) null else it
+        }
     private val isExpanded: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val targetDate: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
 
@@ -88,9 +90,10 @@ class MainScreenViewModel @Inject constructor(
 
             remainingBudget = remainingBudget,
 
-            currency = budgetData.currency,
+            currency = checkNotNull(budgetData.currency),
             isExpanded = isExpanded,
             metrics = metrics,
+            hasIncompleteData = false,
         )
     }
         .stateIn(
