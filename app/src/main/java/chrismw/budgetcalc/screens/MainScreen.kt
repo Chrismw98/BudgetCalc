@@ -108,7 +108,6 @@ private fun MainScreenContent(
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit
 ) {
-
     val datePickerDialogState = rememberMaterialDialogState()
 
     Surface(
@@ -124,7 +123,6 @@ private fun MainScreenContent(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            //TODO: Add top bar with settings navigation (2023-06-13)
 
             CircularProgressbar(
                 maxBudget = state.maxBudget,
@@ -233,7 +231,7 @@ private fun MainScreenContent(
                         modifier = Modifier
                             .size(size = 64.dp) //TODO: Check if this is the right way to set the size (2023-06-14)
                             .padding(top = 30.dp),
-//                            tint = colorResource(id = R.color.color_accent), //TODO: Use Material UI Colors (2023-06-14), //TODO: Use Material UI Colors (2023-06-14)
+//                            tint = colorResource(id = R.color.color_accent), //TODO: Use Material UI Colors (2023-06-14)
                         contentDescription = if (state.isExpanded) {
                             stringResource(R.string.show_less)
                         } else {
@@ -275,8 +273,8 @@ private fun MainScreenContent(
     MaterialDialog(
         dialogState = datePickerDialogState,
         buttons = {
-            positiveButton(stringResource(id = R.string.ok))
-            negativeButton(stringResource(id = R.string.cancel))
+            positiveButton(stringResource(id = R.string.label_ok))
+            negativeButton(stringResource(id = R.string.label_cancel))
         },
     ) {
         datepicker(

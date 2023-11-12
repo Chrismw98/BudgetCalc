@@ -166,10 +166,15 @@ class SettingsViewModel @Inject constructor(
 
 private fun correctFloatString(floatString: String): String? {
     val separator = '.'
+    val split = floatString.split(separator)
     return if (floatString.count { it == separator } > 1) {
         null
     } else if (floatString == "$separator") {
         "0$separator"
+    } else if (floatString.contains(separator) && floatString.split(separator)[1].length > 2) {
+        null
+    } else if (split.any { !it.isDigitsOnly() }) {
+        null
     } else {
         floatString
     }

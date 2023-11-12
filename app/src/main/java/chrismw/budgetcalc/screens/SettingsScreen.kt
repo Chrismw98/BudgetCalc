@@ -123,7 +123,7 @@ internal fun SettingsScreen(
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
                         value = state.budgetRateAmount.orEmpty(),
-                        onValueChange = onBudgetRateAmountChanged,
+                        onValueChange = onBudgetRateAmountChanged, //TODO: Change this component to handle input better (2023-11-12)
                         label = {
                             Text(
                                 text = stringResource(id = R.string.budget_in_monetary_units_per_day) //TODO: Change me

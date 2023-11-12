@@ -30,7 +30,9 @@
     <string name="settings_hint">All of the settings are used to simplify the calculation of the default values. Default values are the values which appear when NO data has been entered into the fields on the main screen. This is to give you the fastest budget calculation directly upon opening the application, without having to do anything.</string>
     <string name="show_less">Hide details</string>
     <string name="show_more">Show details</string>
-    <string name="ok">Ok</string>
-    <string name="cancel">Cancel</string>
-    <string name="remaining">Remaining until</string>
+    <string name="label_ok">Ok</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="remaining">Remaining, as of</string>
+    <string name="dialog_title_unsaved_changes">Unsaved changes</string>
+    <string name="dialog_text_unsaved_changes">You are leaving the settings without saving. Your changes will be lost if you do not save them.</string>
 </resources>

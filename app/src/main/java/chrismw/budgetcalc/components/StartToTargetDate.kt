@@ -113,8 +113,8 @@ fun ClickableDatePickerTextField(
     MaterialDialog(
         dialogState = dialogState,
         buttons = {
-            positiveButton(stringResource(id = R.string.ok))
-            negativeButton(stringResource(id = R.string.cancel))
+            positiveButton(stringResource(id = R.string.label_ok))
+            negativeButton(stringResource(id = R.string.label_cancel))
         },
     ) {
         datepicker(

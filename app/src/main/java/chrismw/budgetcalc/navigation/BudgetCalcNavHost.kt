@@ -1,8 +1,10 @@
 package chrismw.budgetcalc.navigation
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -13,6 +15,7 @@ import chrismw.budgetcalc.screens.MainScreen
 import chrismw.budgetcalc.screens.MainScreenViewModel
 import chrismw.budgetcalc.screens.SettingsScreen
 import chrismw.budgetcalc.screens.SettingsViewModel
+import chrismw.budgetcalc.ui.theme.motion
 
 private const val MAIN_SCREEN_ROUTE = "main_screen"
 private const val SETTINGS_SCREEN_ROUTE = "settings_screen"
@@ -22,8 +25,13 @@ fun BudgetCalcNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val density = LocalDensity.current
     NavHost(
         navController = navController,
+        enterTransition = { MaterialTheme.motion.sharedAxis(density).targetContentEnter },
+        exitTransition = { MaterialTheme.motion.sharedAxis(density).initialContentExit },
+        popEnterTransition = { MaterialTheme.motion.sharedAxis(density, reverse = true).targetContentEnter },
+        popExitTransition = { MaterialTheme.motion.sharedAxis(density, reverse = true).initialContentExit },
         startDestination = MAIN_SCREEN_ROUTE,
         modifier = modifier
     ) {
