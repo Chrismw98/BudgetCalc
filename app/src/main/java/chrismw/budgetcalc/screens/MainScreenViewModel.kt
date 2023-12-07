@@ -2,6 +2,7 @@ package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
 import chrismw.budgetcalc.helpers.MetricUnit
@@ -41,14 +42,32 @@ class MainScreenViewModel @Inject constructor(
         isExpanded,
         targetDate,
     ) { budgetData, isExpanded, targetDate ->
-        val startDate = budgetData.defaultPaymentDay?.let {
+        val startDate = budgetData.defaultPaymentDayOfMonth?.let { //TODO: Adjust for the other types as well
             getLatestPaymentDate(it)
         } ?: LocalDate.now().minusDays(1)
         val targetDatePlusOne = targetDate.plusDays(1)
 
         //TODO: Handle IllegalStateException
         val isConstantBudget = budgetData.isBudgetConstant
-        val paymentCycleLengthInDays = checkNotNull(budgetData.paymentCycleLength)
+
+        val budgetType = budgetData.budgetType
+        val paymentCycleLengthInDays: Int = when (budgetType) {
+            BudgetType.ONCE_ONLY -> {
+                TODO()
+            }
+
+            BudgetType.WEEKLY -> {
+                TODO()
+            }
+
+            BudgetType.MONTHLY -> {
+                val endDate = budgetData.defaultPaymentDayOfMonth?.let {
+                    getNextPaymentDate(it)
+                } ?: LocalDate.now().minusDays(1)
+                ChronoUnit.DAYS.between(startDate, endDate).toInt()
+            }
+        }
+
         val maxBudget = if (isConstantBudget) {
             checkNotNull(budgetData.constantBudgetAmount)
         } else {
@@ -145,9 +164,20 @@ class MainScreenViewModel @Inject constructor(
 }
 
 private fun getLatestPaymentDate(paymentDayOfMonth: Int): LocalDate {
-    val paymentDayOfCurrentMonth = LocalDate.now().withDayOfMonth(paymentDayOfMonth)
-    return if (paymentDayOfCurrentMonth.isAfter(LocalDate.now())) {
+    val today = LocalDate.now()
+    val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
+    return if (paymentDayOfCurrentMonth.isAfter(today)) {
         paymentDayOfCurrentMonth.minusMonths(1)
+    } else {
+        paymentDayOfCurrentMonth
+    }
+}
+
+private fun getNextPaymentDate(paymentDayOfMonth: Int): LocalDate {
+    val today = LocalDate.now()
+    val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
+    return if (paymentDayOfCurrentMonth.isBefore(today)) {
+        paymentDayOfCurrentMonth.plusMonths(1)
     } else {
         paymentDayOfCurrentMonth
     }

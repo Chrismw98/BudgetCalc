@@ -24,8 +24,9 @@
     <string name="day">Tag</string>
     <string name="days">Tage</string>
     <string name="per_day">/Tag</string>
-    <string name="default_payment_date">Zahlungsdatum (Tag des Monats)</string>
-    <string name="budget_in_monetary_units_per_day">Budget in Geldeinheit(en) pro Tag</string>
+    <string name="label_payment_day_of_week">Zahlungstag der Woche</string>
+    <string name="label_payment_day_of_month">Zahlungstag des Monats</string>
+    <string name="budget_in_monetary_units_per_day">Budget pro Tag</string>
     <string name="currency">Währung</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standardwerte zu vereinfachen. Standardwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
@@ -34,4 +35,11 @@
     <string name="label_ok">Ok</string>
     <string name="label_cancel">Abbrechen</string>
     <string name="remaining">Übrig, Stand</string>
+    <string name="label_is_budget_constant">Konstanten Budgetbetrag festlegen</string>
+    <string name="label_is_budget_rate">Budget als Tagesrate festlegen</string>
+    <string name="label_specify_cyclic_budget">Budget zyklisch festlegen</string>
+    <string name="label_specify_start_end_date">Anfangs- und Enddatum festlegen</string>
+    <string name="label_monthly">Monatlich</string>
+    <string name="label_weekly">Wöchentlich</string>
+    <string name="label_once_only">Einmalig</string>
 </resources>

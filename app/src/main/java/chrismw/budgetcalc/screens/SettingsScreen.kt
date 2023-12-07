@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.RadioItem
+import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +54,7 @@ internal fun SettingsScreen(
     onBudgetRateAmountChanged: (String) -> Unit,
     onDefaultPaymentDayChanged: (String) -> Unit,
     onCurrencyChanged: (String) -> Unit,
-    onPaymentCycleLengthChanged: (String) -> Unit,
+    onBudgetTypeChanged: (BudgetType) -> Unit,
 ) {
     LaunchedEffect(key1 = true) {
         onLoadSettings()
@@ -87,14 +88,14 @@ internal fun SettingsScreen(
         ) {
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Budget is constant amount",
+                text = stringResource(R.string.label_is_budget_constant),
                 isSelected = state.isBudgetConstant,
                 onClick = onClickConstantBudget
             )
 
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Budget is a rate",
+                text = stringResource(R.string.label_is_budget_rate),
                 isSelected = !state.isBudgetConstant,
                 onClick = onClickBudgetRate
             )
@@ -134,94 +135,8 @@ internal fun SettingsScreen(
                             imeAction = ImeAction.Next,
                         ),
                     )
-
-
-                    Spacer(
-                        modifier = Modifier.width(6.dp)
-                    )
-
-                    var isBudgetRateUnitExpanded by remember { //TODO: Check if this is needed
-                        mutableStateOf(false)
-                    }
-
-                    ExposedDropdownMenuBox(
-                        modifier = Modifier.weight(0.5f),
-                        expanded = isBudgetRateUnitExpanded,
-                        onExpandedChange = {
-//                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
-                            isBudgetRateUnitExpanded = !isBudgetRateUnitExpanded
-                        }
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .menuAnchor(),
-                            singleLine = true,
-                            value = stringResource(id = R.string.days),
-                            onValueChange = {}, //TODO: Implement this
-                            readOnly = true,
-                            label = {
-                                Text(
-                                    text = "Unit"
-                                )
-                            },
-                            enabled = true, //TODO: Adjust this
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = isBudgetRateUnitExpanded
-                                )
-                            }
-                        )
-//        Can't use ExposedDropdownMenu because of this bug:
-//        https://issuetracker.google.com/issues/205589613
-//        ExposedDropdownMenu(
-                        ExposedDropdownMenu(
-                            modifier = Modifier.exposedDropdownSize(
-                                matchTextFieldWidth = true
-                            ),
-                            expanded = isBudgetRateUnitExpanded,
-                            onDismissRequest = {
-//                            onExpandedMenuChanged(DropDown.NONE)
-                                //TODO: Implement this
-                            }
-                        ) {
-                            val units = listOf("Days", "Weeks", "Months")
-                            units.forEach {
-                                DropdownMenuItem(
-                                    onClick = {
-//                                    onLocationChanged(it)
-//                                    onExpandedMenuChanged(DropDown.NONE)
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    text = {
-                                        Text(text = it)
-                                    }
-                                )
-                            }
-                        }
-                    }
-
                 }
             }
-
-
-            Spacer(
-                modifier = Modifier.height(6.dp)
-            )
-
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.defaultPaymentDay.orEmpty(),
-                onValueChange = onDefaultPaymentDayChanged,
-                label = {
-                    Text(
-                        text = stringResource(id = R.string.default_payment_date)
-                    )
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Decimal,
-                    imeAction = ImeAction.Next,
-                ),
-            )
 
 
             Spacer(
@@ -242,88 +157,190 @@ internal fun SettingsScreen(
                 ),
             )
 
+            Spacer(
+                modifier = Modifier.height(6.dp)
+            )
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp, horizontal = 6.dp)
+            )
+
+//            RadioItem(
+//                modifier = Modifier.fillMaxWidth(),
+//                text = stringResource(R.string.label_specify_cyclic_budget),
+//                isSelected = state.isBudgetConstant,
+//                onClick = onClickConstantBudget
+//            )
+//
+//            RadioItem(
+//                modifier = Modifier.fillMaxWidth(),
+//                text = stringResource(R.string.label_specify_start_end_date),
+//                isSelected = !state.isBudgetConstant,
+//                onClick = onClickBudgetRate
+//            ) //TODO: Enable me
+
+            var isPaymentCycleUnitExpanded by remember {
+                mutableStateOf(false)
+            }
+
+            ExposedDropdownMenuBox(
+                modifier = Modifier.fillMaxWidth(),
+                expanded = isPaymentCycleUnitExpanded,
+                onExpandedChange = {
+//                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
+                    isPaymentCycleUnitExpanded = !isPaymentCycleUnitExpanded
+                }
             ) {
-                OutlinedTextField(
-                    modifier = Modifier.weight(1f),
-                    value = state.paymentCycleLength.orEmpty(),
-                    onValueChange = onPaymentCycleLengthChanged,
+                OutlinedTextField( //TODO: Latest TODO - 2023-11-13
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    singleLine = true,
+                    value = stringResource(id = state.budgetType.textRes),
+                    onValueChange = {}, //TODO: Implement this
+                    readOnly = true,
                     label = {
                         Text(
-                            text = stringResource(id = R.string.payment_cycle_length)
+                            text = "Budget Type" //TODO: Exctract string resource
                         )
                     },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Next,
-                    ),
-                )
-
-                var isPaymentCycleUnitExpanded by remember {
-                    mutableStateOf(false)
-                }
-
-                Spacer(modifier = Modifier.width(6.dp))
-
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.weight(0.5f),
-                    expanded = isPaymentCycleUnitExpanded,
-                    onExpandedChange = {
-//                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
-                        isPaymentCycleUnitExpanded = !isPaymentCycleUnitExpanded
+                    enabled = true, //TODO: Adjust this
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = isPaymentCycleUnitExpanded
+                        )
                     }
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .menuAnchor(),
-                        singleLine = true,
-                        value = stringResource(id = R.string.days),
-                        onValueChange = {}, //TODO: Implement this
-                        readOnly = true,
-                        label = {
-                            Text(
-                                text = "Unit"
-                            )
-                        },
-                        enabled = true, //TODO: Adjust this
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = isPaymentCycleUnitExpanded
-                            )
-                        }
-                    )
+                )
 //        Can't use ExposedDropdownMenu because of this bug:
 //        https://issuetracker.google.com/issues/205589613
 //        ExposedDropdownMenu(
-                    ExposedDropdownMenu(
-                        modifier = Modifier.exposedDropdownSize(
-                            matchTextFieldWidth = true
-                        ),
-                        expanded = isPaymentCycleUnitExpanded,
-                        onDismissRequest = {
+                ExposedDropdownMenu(
+                    modifier = Modifier.exposedDropdownSize(
+                        matchTextFieldWidth = true
+                    ),
+                    expanded = isPaymentCycleUnitExpanded,
+                    onDismissRequest = {
 //                            onExpandedMenuChanged(DropDown.NONE)
-                            //TODO: Implement this
-                        }
-                    ) {
-                        val units = listOf("Days", "Weeks", "Months")
-                        units.forEach {
-                            DropdownMenuItem(
-                                onClick = {
+                        //TODO: Implement this
+                    }
+                ) {
+//                    val units = listOf("Days", "Weeks", "Months")
+                    BudgetType.values().forEach {
+                        DropdownMenuItem(
+                            onClick = {
+
 //                                    onLocationChanged(it)
 //                                    onExpandedMenuChanged(DropDown.NONE)
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                text = {
-                                    Text(text = it)
-                                }
-                            )
-                        }
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            text = {
+                                Text(text = stringResource(id = it.textRes))
+                            }
+                        )
                     }
                 }
             }
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.defaultPaymentDayOfMonth.orEmpty(),
+                onValueChange = onDefaultPaymentDayChanged,
+                label = {
+                    Text(
+                        text = stringResource(id = R.string.label_payment_day_of_month)
+                    )
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Next,
+                ),
+            )
+
+            //TODO: Consider adding a save button + dialog 2023-12-07
+
+//            Row(
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                OutlinedTextField(
+//                    modifier = Modifier.weight(1f),
+//                    value = state.defaultPaymentDayOfMonth.orEmpty(),
+//                    onValueChange = onPaymentCycleLengthChanged,
+//                    label = {
+//                        Text(
+//                            text = stringResource(id = R.string.payment_cycle_length)
+//                        )
+//                    },
+//                    keyboardOptions = KeyboardOptions.Default.copy(
+//                        keyboardType = KeyboardType.Decimal,
+//                        imeAction = ImeAction.Next,
+//                    ),
+//                )
+//
+//                var isPaymentCycleUnitExpanded by remember {
+//                    mutableStateOf(false)
+//                }
+//
+//                Spacer(modifier = Modifier.width(6.dp))
+//
+//                ExposedDropdownMenuBox(
+//                    modifier = Modifier.weight(0.5f),
+//                    expanded = isPaymentCycleUnitExpanded,
+//                    onExpandedChange = {
+////                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
+//                        isPaymentCycleUnitExpanded = !isPaymentCycleUnitExpanded
+//                    }
+//                ) {
+//                    OutlinedTextField(
+//                        modifier = Modifier
+//                            .menuAnchor(),
+//                        singleLine = true,
+//                        value = stringResource(id = R.string.days),
+//                        onValueChange = {}, //TODO: Implement this
+//                        readOnly = true,
+//                        label = {
+//                            Text(
+//                                text = "Unit"
+//                            )
+//                        },
+//                        enabled = true, //TODO: Adjust this
+//                        trailingIcon = {
+//                            ExposedDropdownMenuDefaults.TrailingIcon(
+//                                expanded = isPaymentCycleUnitExpanded
+//                            )
+//                        }
+//                    )
+////        Can't use ExposedDropdownMenu because of this bug:
+////        https://issuetracker.google.com/issues/205589613
+////        ExposedDropdownMenu(
+//                    ExposedDropdownMenu(
+//                        modifier = Modifier.exposedDropdownSize(
+//                            matchTextFieldWidth = true
+//                        ),
+//                        expanded = isPaymentCycleUnitExpanded,
+//                        onDismissRequest = {
+////                            onExpandedMenuChanged(DropDown.NONE)
+//                            //TODO: Implement this
+//                        }
+//                    ) {
+//                        val units = listOf("Days", "Weeks", "Months")
+//                        units.forEach {
+//                            DropdownMenuItem(
+//                                onClick = {
+////                                    onLocationChanged(it)
+////                                    onExpandedMenuChanged(DropDown.NONE)
+//                                },
+//                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+//                                text = {
+//                                    Text(text = it)
+//                                }
+//                            )
+//                        }
+//                    }
+//                }
+//            }
         }
 
     }
@@ -347,7 +364,7 @@ fun SettingsScreenPreviewConstantBudget() {
             onConstantBudgetAmountChanged = {},
             onCurrencyChanged = {},
             onDefaultPaymentDayChanged = {},
-            onPaymentCycleLengthChanged = {},
+            onBudgetTypeChanged = {},
         )
     }
 }
@@ -368,7 +385,7 @@ fun SettingsScreenPreviewBudgetRate() {
             onConstantBudgetAmountChanged = {},
             onCurrencyChanged = {},
             onDefaultPaymentDayChanged = {},
-            onPaymentCycleLengthChanged = {},
+            onBudgetTypeChanged = {},
         )
     }
 }

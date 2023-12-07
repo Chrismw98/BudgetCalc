@@ -3,6 +3,7 @@ package chrismw.budgetcalc.screens
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.prefdatastore.BudgetData
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
@@ -106,11 +108,11 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setBudgetRateUnit(value: String) { //TODO: This needs to be looked over again 2023-07-20
+    fun setCurrency(value: String) {
         viewModelScope.launch {
             updateViewState {
                 it.copy(
-                    budgetRateUnit = value
+                    currency = value
                 )
             }
         }
@@ -123,7 +125,7 @@ class SettingsViewModel @Inject constructor(
                 viewModelScope.launch {
                     updateViewState {
                         it.copy(
-                            defaultPaymentDay = value
+                            defaultPaymentDayOfMonth = value
                         )
                     }
                 }
@@ -131,33 +133,11 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setCurrency(value: String) {
+    fun setBudgetType(value: BudgetType) {
         viewModelScope.launch {
             updateViewState {
                 it.copy(
-                    currency = value
-                )
-            }
-        }
-    }
-
-    fun setPaymentCycleLength(value: String) {
-        if (!value.startsWith("0") && value.isDigitsOnly()) {
-            viewModelScope.launch {
-                updateViewState {
-                    it.copy(
-                        paymentCycleLength = value
-                    )
-                }
-            }
-        }
-    }
-
-    fun setPaymentCycleUnit(value: String) { //TODO: This needs to be looked over again 2023-07-20
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    paymentCycleLengthUnit = value
+                    budgetType = value
                 )
             }
         }
@@ -185,9 +165,11 @@ data class SettingsState(
     val isBudgetConstant: Boolean = false,
     val constantBudgetAmount: String? = null,
     val budgetRateAmount: String? = null,
-    val budgetRateUnit: String? = null, //TODO: Make this not use CustomTemporalUnit 2023-07-20
-    val defaultPaymentDay: String? = null,
     val currency: String? = null,
-    val paymentCycleLength: String? = null,
-    val paymentCycleLengthUnit: String? = null //TODO: Make this not use CustomTemporalUnit 2023-07-20
+
+    val budgetType: BudgetType = BudgetType.MONTHLY,
+    val defaultPaymentDayOfMonth: String? = null,
+    val defaultPaymentDayOfWeek: String? = null,
+    val defaultStartDate: LocalDate? = null,
+    val defaultEndDate: LocalDate? = null,
 )

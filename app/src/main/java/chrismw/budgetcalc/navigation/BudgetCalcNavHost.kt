@@ -62,7 +62,7 @@ fun BudgetCalcNavHost(
                 onBudgetRateAmountChanged = viewModel::setBudgetRateAmount,
                 onDefaultPaymentDayChanged = viewModel::setDefaultPaymentDay,
                 onCurrencyChanged = viewModel::setCurrency,
-                onPaymentCycleLengthChanged = viewModel::setPaymentCycleLength,
+                onBudgetTypeChanged = viewModel::setBudgetType,
             )
         }
 

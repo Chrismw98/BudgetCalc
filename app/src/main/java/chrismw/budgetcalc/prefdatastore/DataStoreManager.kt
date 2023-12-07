@@ -12,9 +12,12 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import chrismw.budgetcalc.decimalFormat
+import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.screens.SettingsState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
 const val SETTINGS_DATASTORE = "settings_datastore"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATASTORE)
@@ -49,31 +52,29 @@ class DataStoreManager(val context: Context) {
     companion object {
 
         val IS_BUDGET_CONSTANT = booleanPreferencesKey("IS_BUDGET_CONSTANT)")
-
         val CONSTANT_BUDGET_AMOUNT = floatPreferencesKey("CONSTANT_BUDGET_AMOUNT")
-
         val BUDGET_RATE_AMOUNT = floatPreferencesKey("BUDGET_RATE_AMOUNT")
-        val BUDGET_RATE_UNIT = stringPreferencesKey("BUDGET_RATE_UNIT")
-
-        val DEFAULT_PAYMENT_DAY = intPreferencesKey("DEFAULT_PAYMENT_DAY")
         val CURRENCY = stringPreferencesKey("CURRENCY")
-        val PAYMENT_CYCLE_LENGTH = intPreferencesKey("PAYMENT_CYCLE_LENGTH")
-        val PAYMENT_CYCLE_LENGTH_UNIT = stringPreferencesKey("PAYMENT_CYCLE_LENGTH_UNIT")
+
+        val BUDGET_TYPE = stringPreferencesKey("BUDGET_TYPE")
+        val DEFAULT_PAYMENT_DAY_OF_MONTH = intPreferencesKey("DEFAULT_PAYMENT_DAY_OF_MONTH")
+        val DEFAULT_PAYMENT_DAY_OF_WEEK = intPreferencesKey("DEFAULT_PAYMENT_DAY_OF_WEEK")
+        val DEFAULT_START_DATE = stringPreferencesKey("DEFAULT_START_DATE")
+        val DEFAULT_END_DATE = stringPreferencesKey("DEFAULT_END_DATE")
     }
 
     suspend fun saveToDataStore(budgetData: BudgetData) {
         context.dataStore.edit { preferences ->
             preferences[IS_BUDGET_CONSTANT] = budgetData.isBudgetConstant
-
             updateOrRemoveNullableFloat(preferences, CONSTANT_BUDGET_AMOUNT, budgetData.constantBudgetAmount)
-
             updateOrRemoveNullableFloat(preferences, BUDGET_RATE_AMOUNT, budgetData.budgetRateAmount)
-            preferences[BUDGET_RATE_UNIT] = budgetData.budgetRateUnit.name
+            updateOrRemoveNullableString(preferences, CURRENCY, budgetData.currency)
 
-            updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY, budgetData.defaultPaymentDay)
-            updateOrRemoveNullableString(preferences,CURRENCY, budgetData.currency)
-            updateOrRemoveNullableInt(preferences, PAYMENT_CYCLE_LENGTH, budgetData.paymentCycleLength)
-            preferences[PAYMENT_CYCLE_LENGTH_UNIT] = budgetData.paymentCycleLengthUnit.name
+            preferences[BUDGET_TYPE] = budgetData.budgetType.name
+            updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY_OF_MONTH, budgetData.defaultPaymentDayOfMonth)
+            updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY_OF_WEEK, budgetData.defaultPaymentDayOfWeek)
+            updateOrRemoveNullableString(preferences, DEFAULT_START_DATE, budgetData.defaultStartDate)
+            updateOrRemoveNullableString(preferences, DEFAULT_END_DATE, budgetData.defaultEndDate)
         }
     }
 
@@ -101,21 +102,19 @@ class DataStoreManager(val context: Context) {
         }
     }
 
-    fun getFromDataStore() = context.dataStore.data.map { preferences ->
+    fun getFromDataStore(): Flow<BudgetData> = context.dataStore.data.map { preferences ->
         BudgetData(
             isBudgetConstant = preferences[IS_BUDGET_CONSTANT] ?: false,
-
             constantBudgetAmount = preferences[CONSTANT_BUDGET_AMOUNT],
-
             budgetRateAmount = preferences[BUDGET_RATE_AMOUNT],
-            budgetRateUnit = preferences[BUDGET_RATE_UNIT]
-                ?.let { CustomTemporalUnit.valueOf(it) } ?: CustomTemporalUnit.DAYS,
+            currency = preferences[CURRENCY] ?: "", //TODO: Can the ?: "" be removed? 2023-11-12
 
-            defaultPaymentDay = preferences[DEFAULT_PAYMENT_DAY],
-            currency = preferences[CURRENCY] ?: "",
-            paymentCycleLength = preferences[PAYMENT_CYCLE_LENGTH],
-            paymentCycleLengthUnit = preferences[PAYMENT_CYCLE_LENGTH_UNIT]
-                ?.let { CustomTemporalUnit.valueOf(it) } ?: CustomTemporalUnit.DAYS,
+            budgetType = preferences[BUDGET_TYPE]?.let { BudgetType.valueOf(it) }
+                ?: BudgetType.MONTHLY,
+            defaultPaymentDayOfMonth = preferences[DEFAULT_PAYMENT_DAY_OF_MONTH],
+            defaultPaymentDayOfWeek = preferences[DEFAULT_PAYMENT_DAY_OF_WEEK],
+            defaultStartDate = preferences[DEFAULT_START_DATE],
+            defaultEndDate = preferences[DEFAULT_END_DATE],
         )
     }
 
@@ -140,14 +139,14 @@ data class BudgetData(
     val isBudgetConstant: Boolean = false,
 
     val constantBudgetAmount: Float? = null,
-
     val budgetRateAmount: Float? = null,
-    val budgetRateUnit: CustomTemporalUnit = CustomTemporalUnit.DAYS,
-
-    val defaultPaymentDay: Int? = null,
     val currency: String? = null,
-    val paymentCycleLength: Int? = null,
-    val paymentCycleLengthUnit: CustomTemporalUnit = CustomTemporalUnit.DAYS,
+
+    val budgetType: BudgetType = BudgetType.MONTHLY,
+    val defaultPaymentDayOfMonth: Int? = null,
+    val defaultPaymentDayOfWeek: Int? = null,
+    val defaultStartDate: String? = null,
+    val defaultEndDate: String? = null,
 ) {
 
     fun needsMoreData(): Boolean {
@@ -157,9 +156,21 @@ data class BudgetData(
             } else {
                 checkNotNull(budgetRateAmount)
             }
-            checkNotNull(defaultPaymentDay)
-            checkNotNull(currency)
-            checkNotNull(paymentCycleLength)
+            checkNotNull(currency) //TODO: Ensure currency is also not blank
+            when (budgetType) {
+                BudgetType.ONCE_ONLY -> {
+                    checkNotNull(defaultStartDate)
+                    checkNotNull(defaultEndDate)
+                }
+
+                BudgetType.WEEKLY -> {
+                    checkNotNull(defaultPaymentDayOfWeek)
+                }
+
+                BudgetType.MONTHLY -> {
+                    checkNotNull(defaultPaymentDayOfMonth)
+                }
+            }
         } catch (e: Exception) {
             Log.d("DataStoreManager", "Missing budget data: $this")
             return true
@@ -170,13 +181,18 @@ data class BudgetData(
     fun toSettingsState(): SettingsState {
         return SettingsState(
             isBudgetConstant = isBudgetConstant,
-            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) } ?: "",
-            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) } ?: "",
-            budgetRateUnit = budgetRateUnit.name,
-            defaultPaymentDay = defaultPaymentDay?.toString() ?: "",
+            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) }, /*?: ""*/
+            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) }, /*?: ""*/
             currency = currency,
-            paymentCycleLength = paymentCycleLength?.toString() ?: "",
-            paymentCycleLengthUnit = paymentCycleLengthUnit.name,
+
+            budgetType = budgetType,
+            defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
+            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.toString(),
+            defaultStartDate = defaultStartDate?.let { LocalDate.parse(it) },
+            defaultEndDate = defaultEndDate?.let { LocalDate.parse(it) },
+//            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
+//            defaultPaymentDayOfMonth = defaultPaymentDay?.toString() ?: "",
+//            paymentCycleLength = paymentCycleLength?.toString() ?: "",
         )
     }
 
@@ -188,18 +204,18 @@ data class BudgetData(
                 isBudgetConstant = settingsState.isBudgetConstant,
                 constantBudgetAmount = settingsState.constantBudgetAmount?.toFloatOrNull(),
                 budgetRateAmount = settingsState.budgetRateAmount?.toFloatOrNull(),
-                budgetRateUnit = CustomTemporalUnit.valueOf(settingsState.budgetRateUnit ?: "DAYS"),
-                defaultPaymentDay = settingsState.defaultPaymentDay?.toIntOrNull(),
-                currency = settingsState.currency ?: "",
-                paymentCycleLength = settingsState.paymentCycleLength?.toIntOrNull(),
-                paymentCycleLengthUnit = CustomTemporalUnit.valueOf(settingsState.paymentCycleLengthUnit ?: "DAYS"),
+                currency = settingsState.currency, /*?: ""*/
+
+                budgetType = settingsState.budgetType,
+                defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
+                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.toIntOrNull(),
+                defaultStartDate = settingsState.defaultStartDate?.toString(),
+                defaultEndDate = settingsState.defaultEndDate?.toString(),
+////                budgetRateUnit = CustomTemporalUnit.valueOf(settingsState.budgetRateUnit ?: "DAYS"), //TODO: Delete this
+//                defaultPaymentDay = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
+////                paymentCycleLength = settingsState.paymentCycleLength?.toIntOrNull(),
+//                budgetType = settingsState.budgetType,
             )
         }
     }
-}
-
-enum class CustomTemporalUnit {
-    DAYS,
-    WEEKS,
-    MONTHS;
 }

@@ -21,8 +21,9 @@
     <string name="day">Mέρα</string>
     <string name="days">Mέρες</string>
     <string name="per_day">/Ημ.</string>
-    <string name="default_payment_date">Ημέρα πληρωμής (μέρα του μήνα)</string>
-    <string name="budget_in_monetary_units_per_day">Budget σε νομισματικές μονάδες ανά ημέρα</string>
+    <string name="label_payment_day_of_week">Ημέρα πληρωμής (ημέρα εβδομάδας)</string>
+    <string name="label_payment_day_of_month">Ημέρα πληρωμής (μέρα του μήνα)</string>
+    <string name="budget_in_monetary_units_per_day">Budget ανά ημέρα</string>
     <string name="currency">Νόμισμα</string>
     <string name="settings">Ρυθμίσεις</string>
     <string name="settings_hint">Όλες οι ρυθμίσεις χρησιμοποιούνται για να διευκολύνουν τον υπολογισμό των προεπιλεγμένων τιμών. Προεπιλεγμένες τιμές είναι αυτές, οι οποίες φαίνονται σε γκρί χρώμα στην αρχική σελίδα, όταν ΔΕΝ έχουν εισαχθεί στοιχεία. Με αυτόν τον τρόπο μπορούν να υπολογιστούν τα αποτελέσματα απευθείας όταν ανοίγετε την εφαρμογή, χωρίς να χρειάζεται κάποια εισαγωγή δεδομένων.</string>
@@ -31,4 +32,11 @@
     <string name="label_ok">ΟΚ</string>
     <string name="label_cancel">Ακύρωση</string>
     <string name="remaining">Υπόλοιπο, από</string>
+    <string name="label_is_budget_constant">Budget ως σταθερό ποσό</string>
+    <string name="label_is_budget_rate">Budget ως ημερήσιο ποσό</string>
+    <string name="label_specify_cyclic_budget">Το budget επαναλαμβάνεται</string>
+    <string name="label_specify_start_end_date">Επιλογή ημερομηνίας αρχή και τέλους</string>
+    <string name="label_monthly">Μηνιαίο</string>
+    <string name="label_weekly">Εβδομαδιαίο</string>
+    <string name="label_once_only">Ανεπανάληπτο</string>
 </resources>

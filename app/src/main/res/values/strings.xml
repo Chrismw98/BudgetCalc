@@ -23,8 +23,8 @@
     <string name="day">Day</string>
     <string name="days">Days</string>
     <string name="per_day">/Day</string>
-    <string name="default_payment_date">Default payment date (day of month)</string>
-    <string name="budget_in_monetary_units_per_day">Budget in monetary units per day</string>
+    <string name="label_payment_day_of_month">Payment day of month</string>
+    <string name="budget_in_monetary_units_per_day">Budget per day</string>
     <string name="currency">Currency</string>
     <string name="settings">Settings</string>
     <string name="settings_hint">All of the settings are used to simplify the calculation of the default values. Default values are the values which appear when NO data has been entered into the fields on the main screen. This is to give you the fastest budget calculation directly upon opening the application, without having to do anything.</string>
@@ -35,4 +35,12 @@
     <string name="remaining">Remaining, as of</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
     <string name="dialog_text_unsaved_changes">You are leaving the settings without saving. Your changes will be lost if you do not save them.</string>
+    <string name="label_is_budget_constant">Specify budget as constant amount</string>
+    <string name="label_is_budget_rate">Specify budget as daily rate</string>
+    <string name="label_specify_cyclic_budget">Specify cyclic budget</string>
+    <string name="label_specify_start_end_date">Specify start/end date</string>
+    <string name="label_payment_day_of_week">Payment day of week</string>
+    <string name="label_monthly">Monthly</string>
+    <string name="label_weekly">Weekly</string>
+    <string name="label_once_only">Once Only</string>
 </resources>
