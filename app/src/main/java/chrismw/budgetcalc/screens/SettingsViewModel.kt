@@ -136,6 +136,22 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
+
+    fun setStartDate(value: LocalDate) {
+        updateViewState {
+            it.copy(
+                startDate = value
+            )
+        }
+    }
+
+    fun setEndDate(value: LocalDate) {
+        updateViewState {
+            it.copy(
+                endDate = value
+            )
+        }
+    }
 }
 
 private fun correctFloatString(floatString: String): String? {
@@ -164,6 +180,6 @@ data class SettingsState(
     val budgetType: BudgetType = BudgetType.MONTHLY,
     val defaultPaymentDayOfMonth: String? = null,
     val defaultPaymentDayOfWeek: DayOfWeek? = null,
-    val defaultStartDate: LocalDate? = null,
-    val defaultEndDate: LocalDate? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
 )

@@ -27,10 +27,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
+import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -46,8 +46,8 @@ private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
 @Composable
 fun StartToTargetDate(
     modifier: Modifier = Modifier,
-    startDate: LocalDate,
-    endDate: LocalDate,
+    startDate: LocalDate?,
+    endDate: LocalDate?,
     onClickStartDate: (LocalDate) -> Unit,
     onClickTargetDate: (LocalDate) -> Unit,
 ) {
@@ -58,26 +58,32 @@ fun StartToTargetDate(
     ) {
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = startDate.format(formatter),
+            value = startDate?.format(formatter) ?: "Select date", //TODO: Extract string resource
             onClick = onClickStartDate,
-            label = stringResource(id = R.string.budget_start_date_excl),
+            label = stringResource(id = R.string.budget_start_date_excl), //TODO: Adjust string resources
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Today,
                     contentDescription = null)
             },
-            initialDate = startDate
+            initialDate = startDate ?: if (endDate != null) endDate.minusDays(1) else LocalDate.now(),
+            allowedDateValidator = {
+                if (endDate != null) !it.isAfter(endDate) else true
+            }
         )
 
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = endDate.format(formatter),
+            value = endDate?.format(formatter) ?: "Select date", //TODO: Extract string resource
             onClick = onClickTargetDate,
-            label = stringResource(id = R.string.target_date_incl),
+            label = stringResource(id = R.string.target_date_incl), //TODO: Adjust string resources
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Event,
                     contentDescription = null)
             },
-            initialDate = endDate
+            initialDate = endDate ?: if (startDate != null) startDate.plusDays(1) else LocalDate.now().plusDays(1),
+            allowedDateValidator = {
+                if (startDate != null) !it.isBefore(startDate) else true
+            }
         )
 //        Text(text = pickedDate.toString(),
 //            style = MaterialTheme.typography.bodyLarge)
@@ -98,7 +104,6 @@ fun StartToTargetDate(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClickableDatePickerTextField(
     modifier: Modifier = Modifier,
@@ -107,7 +112,8 @@ fun ClickableDatePickerTextField(
     onClick: (LocalDate) -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
-    initialDate: LocalDate = LocalDate.now(),
+    initialDate: LocalDate? = null,
+    allowedDateValidator: (LocalDate) -> Boolean = { true }
 ) {
     val dialogState = rememberMaterialDialogState()
     MaterialDialog(
@@ -118,11 +124,9 @@ fun ClickableDatePickerTextField(
         },
     ) {
         datepicker(
-            initialDate = initialDate,
-            title = "Pick a date",
-//            allowedDateValidator = {
-//                it.dayOfMonth % 2 == 1
-//            },
+            initialDate = initialDate ?: LocalDate.now(),
+            title = "Pick a date", //TODO: Replace with string resource
+            allowedDateValidator = allowedDateValidator,
         ) {
             onClick(it)
         }
@@ -141,7 +145,7 @@ fun ClickableDatePickerTextField(
             },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
-            readOnly = true,
+            readOnly = false,
         )
         Box(
             modifier = Modifier
@@ -177,7 +181,7 @@ fun ReadOnlyTextFieldPreview() {
 
 @Preview(showBackground = false, widthDp = 600, heightDp = 800)
 @Composable
-fun StartToEndDatePreview() {
+private fun StartToEndDatePreview() {
     val testMetric = Metric(MetricType.DAYS_SINCE_START, 19.0, MetricUnit.DAYS)
     BudgetCalcTheme {
         var pickedStartDate by rememberSaveable {

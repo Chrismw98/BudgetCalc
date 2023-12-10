@@ -48,7 +48,7 @@ class MainScreenViewModel @Inject constructor(
     ) { budgetData, isExpanded, targetDate ->
 
         val startDate = when (budgetData.budgetType) {
-            BudgetType.ONCE_ONLY -> TODO()
+            BudgetType.ONCE_ONLY -> budgetData.defaultStartDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
             BudgetType.WEEKLY -> {
                 getLatestWeeklyPaymentDate(DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1))
             }
@@ -66,7 +66,8 @@ class MainScreenViewModel @Inject constructor(
 
         val paymentCycleLengthInDays: Int = when (budgetData.budgetType) {
             BudgetType.ONCE_ONLY -> {
-                TODO()
+                val endDate = budgetData.defaultEndDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
+                ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
             }
 
             BudgetType.WEEKLY -> {

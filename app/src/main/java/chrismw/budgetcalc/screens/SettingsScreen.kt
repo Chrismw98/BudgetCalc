@@ -40,10 +40,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.RadioItem
+import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import java.time.DayOfWeek
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +61,8 @@ internal fun SettingsScreen(
     onCurrencyChanged: (String) -> Unit,
     onBudgetTypeChanged: (BudgetType) -> Unit,
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
+    onStartDateChanged: (LocalDate) -> Unit,
+    onEndDateChanged: (LocalDate) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         onLoadSettings()
@@ -145,7 +149,6 @@ internal fun SettingsScreen(
                     )
                 }
             }
-
 
             Spacer(
                 modifier = Modifier.height(6.dp)
@@ -253,85 +256,101 @@ internal fun SettingsScreen(
                 }
             }
 
-            if (state.budgetType == BudgetType.MONTHLY) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.defaultPaymentDayOfMonth.orEmpty(),
-                    onValueChange = onDefaultPaymentDayChanged,
-                    label = {
-                        Text(
-                            text = stringResource(id = R.string.label_payment_day_of_month)
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Decimal,
-                        imeAction = ImeAction.Next,
-                    ),
-                )
-            } else if (state.budgetType == BudgetType.WEEKLY) {
-                var isDefaultPaymentDayOfWeekExpanded by remember { //TODO: Move this to the ViewModel
-                    mutableStateOf(false)
-                }
+            Spacer(
+                modifier = Modifier.height(6.dp)
+            )
 
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = isDefaultPaymentDayOfWeekExpanded,
-                    onExpandedChange = {
-//                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
-                        isDefaultPaymentDayOfWeekExpanded = !isDefaultPaymentDayOfWeekExpanded
-                    }
-                ) {
+            when (state.budgetType) {
+                BudgetType.MONTHLY -> {
                     OutlinedTextField(
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth(),
-                        singleLine = true,
-                        value = state.defaultPaymentDayOfWeek?.let { getStringForDayOfWeek(dayOfWeek = it) }.orEmpty(),
-                        onValueChange = {}, //TODO: Implement this
-                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.defaultPaymentDayOfMonth.orEmpty(),
+                        onValueChange = onDefaultPaymentDayChanged,
                         label = {
                             Text(
-                                text = "Payment day of week" //TODO: Exctract string resource
+                                text = stringResource(id = R.string.label_payment_day_of_month)
                             )
                         },
-                        enabled = true, //TODO: Adjust this
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = isDefaultPaymentDayOfWeekExpanded
-                            )
-                        }
-                    )
-//        Can't use ExposedDropdownMenu because of this bug:
-//        https://issuetracker.google.com/issues/205589613
-//        ExposedDropdownMenu(
-                    ExposedDropdownMenu(
-                        modifier = Modifier.exposedDropdownSize(
-                            matchTextFieldWidth = true
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Next,
                         ),
+                    )
+                }
+                BudgetType.WEEKLY -> {
+                    var isDefaultPaymentDayOfWeekExpanded by remember { //TODO: Move this to the ViewModel
+                        mutableStateOf(false)
+                    }
+
+                    ExposedDropdownMenuBox(
+                        modifier = Modifier.fillMaxWidth(),
                         expanded = isDefaultPaymentDayOfWeekExpanded,
-                        onDismissRequest = {
-                            isDefaultPaymentDayOfWeekExpanded = false
-//                            onExpandedMenuChanged(DropDown.NONE)
-                            //TODO: Implement this
+                        onExpandedChange = {
+        //                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
+                            isDefaultPaymentDayOfWeekExpanded = !isDefaultPaymentDayOfWeekExpanded
                         }
                     ) {
-                        DayOfWeek.values().forEach {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onDayOfWeekChanged(it)
-                                    isDefaultPaymentDayOfWeekExpanded = false
-//                                    onLocationChanged(it)
-//                                    onExpandedMenuChanged(DropDown.NONE)
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                text = {
-                                    Text(text = getStringForDayOfWeek(it))
-                                }
-                            )
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            singleLine = true,
+                            value = state.defaultPaymentDayOfWeek?.let { getStringForDayOfWeek(dayOfWeek = it) }.orEmpty(),
+                            onValueChange = {}, //TODO: Implement this
+                            readOnly = true,
+                            label = {
+                                Text(
+                                    text = "Payment day of week" //TODO: Exctract string resource
+                                )
+                            },
+                            enabled = true, //TODO: Adjust this
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = isDefaultPaymentDayOfWeekExpanded
+                                )
+                            }
+                        )
+        //        Can't use ExposedDropdownMenu because of this bug:
+        //        https://issuetracker.google.com/issues/205589613
+        //        ExposedDropdownMenu(
+                        ExposedDropdownMenu(
+                            modifier = Modifier.exposedDropdownSize(
+                                matchTextFieldWidth = true
+                            ),
+                            expanded = isDefaultPaymentDayOfWeekExpanded,
+                            onDismissRequest = {
+                                isDefaultPaymentDayOfWeekExpanded = false
+        //                            onExpandedMenuChanged(DropDown.NONE)
+                                //TODO: Implement this
+                            }
+                        ) {
+                            DayOfWeek.values().forEach {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onDayOfWeekChanged(it)
+                                        isDefaultPaymentDayOfWeekExpanded = false
+        //                                    onLocationChanged(it)
+        //                                    onExpandedMenuChanged(DropDown.NONE)
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    text = {
+                                        Text(text = getStringForDayOfWeek(it))
+                                    }
+                                )
+                            }
                         }
                     }
                 }
-            } //TODO: Handle else if budget type is ONCE_ONLY 2023-12-10
+                BudgetType.ONCE_ONLY -> {
+                    StartToTargetDate(
+                        modifier = Modifier.fillMaxWidth(),
+                        startDate = state.startDate,
+                        endDate = state.endDate,
+                        onClickStartDate = onStartDateChanged,
+                        onClickTargetDate = onEndDateChanged
+                    )
+                }
+            }
 
             //TODO: Consider adding a save button + dialog 2023-12-07
         }
@@ -343,7 +362,7 @@ internal fun SettingsScreen(
 
 @Preview
 @Composable
-fun SettingsScreenPreviewConstantBudget() {
+fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
             state = SettingsState(
@@ -359,17 +378,20 @@ fun SettingsScreenPreviewConstantBudget() {
             onDefaultPaymentDayChanged = {},
             onBudgetTypeChanged = {},
             onDayOfWeekChanged = {},
+            onStartDateChanged = {},
+            onEndDateChanged = {},
         )
     }
 }
 
 @Preview
 @Composable
-fun SettingsScreenPreviewBudgetRate() {
+fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
             state = SettingsState(
-                isBudgetConstant = false
+                isBudgetConstant = false,
+                budgetType = BudgetType.WEEKLY
             ),
             onNavigateBack = {},
             onLoadSettings = {},
@@ -381,6 +403,33 @@ fun SettingsScreenPreviewBudgetRate() {
             onDefaultPaymentDayChanged = {},
             onBudgetTypeChanged = {},
             onDayOfWeekChanged = {},
+            onStartDateChanged = {},
+            onEndDateChanged = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
+    BudgetCalcTheme {
+        SettingsScreen(
+            state = SettingsState(
+                isBudgetConstant = false,
+                budgetType = BudgetType.ONCE_ONLY
+            ),
+            onNavigateBack = {},
+            onLoadSettings = {},
+            onClickConstantBudget = {},
+            onClickBudgetRate = {},
+            onBudgetRateAmountChanged = {},
+            onConstantBudgetAmountChanged = {},
+            onCurrencyChanged = {},
+            onDefaultPaymentDayChanged = {},
+            onBudgetTypeChanged = {},
+            onDayOfWeekChanged = {},
+            onStartDateChanged = {},
+            onEndDateChanged = {},
         )
     }
 }

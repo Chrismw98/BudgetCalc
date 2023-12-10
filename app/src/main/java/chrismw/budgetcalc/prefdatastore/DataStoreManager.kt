@@ -189,8 +189,8 @@ data class BudgetData(
             budgetType = budgetType,
             defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
             defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
-            defaultStartDate = defaultStartDate?.let { LocalDate.parse(it) },
-            defaultEndDate = defaultEndDate?.let { LocalDate.parse(it) },
+            startDate = defaultStartDate?.let { LocalDate.parse(it) },
+            endDate = defaultEndDate?.let { LocalDate.parse(it) },
 //            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
 //            defaultPaymentDayOfMonth = defaultPaymentDay?.toString() ?: "",
 //            paymentCycleLength = paymentCycleLength?.toString() ?: "",
@@ -210,8 +210,8 @@ data class BudgetData(
                 budgetType = settingsState.budgetType,
                 defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
                 defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.value,
-                defaultStartDate = settingsState.defaultStartDate?.toString(),
-                defaultEndDate = settingsState.defaultEndDate?.toString(),
+                defaultStartDate = settingsState.startDate?.toString(),
+                defaultEndDate = settingsState.endDate?.toString(),
 ////                budgetRateUnit = CustomTemporalUnit.valueOf(settingsState.budgetRateUnit ?: "DAYS"), //TODO: Delete this
 //                defaultPaymentDay = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
 ////                paymentCycleLength = settingsState.paymentCycleLength?.toIntOrNull(),
