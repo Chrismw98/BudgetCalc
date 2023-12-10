@@ -17,6 +17,7 @@ import chrismw.budgetcalc.screens.SettingsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 const val SETTINGS_DATASTORE = "settings_datastore"
@@ -187,7 +188,7 @@ data class BudgetData(
 
             budgetType = budgetType,
             defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
-            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.toString(),
+            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
             defaultStartDate = defaultStartDate?.let { LocalDate.parse(it) },
             defaultEndDate = defaultEndDate?.let { LocalDate.parse(it) },
 //            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
@@ -208,7 +209,7 @@ data class BudgetData(
 
                 budgetType = settingsState.budgetType,
                 defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
-                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.toIntOrNull(),
+                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.value,
                 defaultStartDate = settingsState.defaultStartDate?.toString(),
                 defaultEndDate = settingsState.defaultEndDate?.toString(),
 ////                budgetRateUnit = CustomTemporalUnit.valueOf(settingsState.budgetRateUnit ?: "DAYS"), //TODO: Delete this

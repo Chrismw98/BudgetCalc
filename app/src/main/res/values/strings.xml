@@ -30,7 +30,7 @@
     <string name="settings_hint">All of the settings are used to simplify the calculation of the default values. Default values are the values which appear when NO data has been entered into the fields on the main screen. This is to give you the fastest budget calculation directly upon opening the application, without having to do anything.</string>
     <string name="show_less">Hide details</string>
     <string name="show_more">Show details</string>
-    <string name="label_ok">Ok</string>
+    <string name="label_ok">OK</string>
     <string name="label_cancel">Cancel</string>
     <string name="remaining">Remaining, as of</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
@@ -43,4 +43,11 @@
     <string name="label_monthly">Monthly</string>
     <string name="label_weekly">Weekly</string>
     <string name="label_once_only">Once Only</string>
+    <string name="label_monday">Monday</string>
+    <string name="label_tuesday">Tuesday</string>
+    <string name="label_wednesday">Wednesday</string>
+    <string name="label_thursday">Thursday</string>
+    <string name="label_friday">Friday</string>
+    <string name="label_saturday">Saturday</string>
+    <string name="label_sunday">Sunday</string>
 </resources>

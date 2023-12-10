@@ -19,11 +19,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
+import kotlin.math.abs
+
+private const val WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS = 7
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
@@ -42,27 +46,36 @@ class MainScreenViewModel @Inject constructor(
         isExpanded,
         targetDate,
     ) { budgetData, isExpanded, targetDate ->
-        val startDate = budgetData.defaultPaymentDayOfMonth?.let { //TODO: Adjust for the other types as well
-            getLatestPaymentDate(it)
-        } ?: LocalDate.now().minusDays(1)
+
+        val startDate = when (budgetData.budgetType) {
+            BudgetType.ONCE_ONLY -> TODO()
+            BudgetType.WEEKLY -> {
+                getLatestWeeklyPaymentDate(DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1))
+            }
+
+            BudgetType.MONTHLY -> {
+                budgetData.defaultPaymentDayOfMonth?.let {
+                    getLatestMonthlyPaymentDate(it)
+                } ?: LocalDate.now().minusDays(1)
+            }
+        }
         val targetDatePlusOne = targetDate.plusDays(1)
 
         //TODO: Handle IllegalStateException
         val isConstantBudget = budgetData.isBudgetConstant
 
-        val budgetType = budgetData.budgetType
-        val paymentCycleLengthInDays: Int = when (budgetType) {
+        val paymentCycleLengthInDays: Int = when (budgetData.budgetType) {
             BudgetType.ONCE_ONLY -> {
                 TODO()
             }
 
             BudgetType.WEEKLY -> {
-                TODO()
+                WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS
             }
 
             BudgetType.MONTHLY -> {
                 val endDate = budgetData.defaultPaymentDayOfMonth?.let {
-                    getNextPaymentDate(it)
+                    getNextMonthlyPaymentDate(it)
                 } ?: LocalDate.now().minusDays(1)
                 ChronoUnit.DAYS.between(startDate, endDate).toInt()
             }
@@ -163,8 +176,8 @@ class MainScreenViewModel @Inject constructor(
     )
 }
 
-private fun getLatestPaymentDate(paymentDayOfMonth: Int): LocalDate {
-    val today = LocalDate.now()
+private fun getLatestMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
+    val today = LocalDate.now() //TODO: Maybe this should be a parameter?
     val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
     return if (paymentDayOfCurrentMonth.isAfter(today)) {
         paymentDayOfCurrentMonth.minusMonths(1)
@@ -173,12 +186,23 @@ private fun getLatestPaymentDate(paymentDayOfMonth: Int): LocalDate {
     }
 }
 
-private fun getNextPaymentDate(paymentDayOfMonth: Int): LocalDate {
+private fun getNextMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
     val today = LocalDate.now()
     val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
     return if (paymentDayOfCurrentMonth.isBefore(today)) {
         paymentDayOfCurrentMonth.plusMonths(1)
     } else {
         paymentDayOfCurrentMonth
+    }
+}
+
+private fun getLatestWeeklyPaymentDate(paymentDayOfWeek: DayOfWeek): LocalDate {
+    val today = LocalDate.now()
+    val todaysDayOfWeek = today.dayOfWeek
+    val differenceInDays = abs(todaysDayOfWeek.value - paymentDayOfWeek.value)
+    return if (paymentDayOfWeek <= todaysDayOfWeek) {
+        today.minusDays(differenceInDays.toLong())
+    } else {
+        today.plusDays(differenceInDays.toLong()).minusWeeks(1)
     }
 }

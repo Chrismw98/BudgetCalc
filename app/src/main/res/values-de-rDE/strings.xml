@@ -32,7 +32,7 @@
     <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standardwerte zu vereinfachen. Standardwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
     <string name="show_less">Details ausblenden</string>
     <string name="show_more">Details anzeigen</string>
-    <string name="label_ok">Ok</string>
+    <string name="label_ok">OK</string>
     <string name="label_cancel">Abbrechen</string>
     <string name="remaining">Übrig, Stand</string>
     <string name="label_is_budget_constant">Konstanten Budgetbetrag festlegen</string>
@@ -42,4 +42,11 @@
     <string name="label_monthly">Monatlich</string>
     <string name="label_weekly">Wöchentlich</string>
     <string name="label_once_only">Einmalig</string>
+    <string name="label_monday">Montag</string>
+    <string name="label_tuesday">Dienstag</string>
+    <string name="label_wednesday">Mittwoch</string>
+    <string name="label_thursday">Donnerstag</string>
+    <string name="label_friday">Freitag</string>
+    <string name="label_saturday">Samstag</string>
+    <string name="label_sunday">Sonntag</string>
 </resources>

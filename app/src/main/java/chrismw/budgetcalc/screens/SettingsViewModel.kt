@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -25,16 +27,12 @@ class SettingsViewModel @Inject constructor(
 
     fun loadSettings() {
         viewModelScope.launch {
-            _viewState.tryEmit(
-                dataStoreManager.getBudgetData().toSettingsState()
-            )
+            _viewState.value = dataStoreManager.getBudgetData().toSettingsState()
         }
     }
 
-    private suspend fun updateViewState(callback: (SettingsState) -> SettingsState) {
-        val oldValue = _viewState.value
-        val updatedValue = callback(oldValue)
-        _viewState.emit(updatedValue)
+    private fun updateViewState(callback: (SettingsState) -> SettingsState) {
+        _viewState.update { callback(it) }
     }
 
     fun saveSettings() {
@@ -65,12 +63,10 @@ class SettingsViewModel @Inject constructor(
         )
 
     private fun setIsBudgetConstant(value: Boolean) {
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    isBudgetConstant = value
-                )
-            }
+        updateViewState {
+            it.copy(
+                isBudgetConstant = value
+            )
         }
     }
 
@@ -85,12 +81,10 @@ class SettingsViewModel @Inject constructor(
     fun setConstantBudgetAmount(value: String) {
         val correctedValue = correctFloatString(value)
         if (correctedValue != null) {
-            viewModelScope.launch {
-                updateViewState {
-                    it.copy(
-                        constantBudgetAmount = correctedValue
-                    )
-                }
+            updateViewState {
+                it.copy(
+                    constantBudgetAmount = correctedValue
+                )
             }
         }
     }
@@ -98,48 +92,48 @@ class SettingsViewModel @Inject constructor(
     fun setBudgetRateAmount(value: String) {
         val correctedValue = correctFloatString(value)
         if (correctedValue != null) {
-            viewModelScope.launch {
+            updateViewState {
+                it.copy(
+                    budgetRateAmount = value
+                )
+            }
+        }
+    }
+
+    fun setCurrency(value: String) {
+        updateViewState {
+            it.copy(
+                currency = value
+            )
+        }
+    }
+
+    fun setDefaultPaymentDayOfMonth(value: String) {
+        if (!value.startsWith("0") && value.isDigitsOnly()) {
+            val defaultPaymentDay = value.toIntOrNull()
+            if (defaultPaymentDay == null || defaultPaymentDay in 1..31) {
                 updateViewState {
                     it.copy(
-                        budgetRateAmount = value
+                        defaultPaymentDayOfMonth = value
                     )
                 }
             }
         }
     }
 
-    fun setCurrency(value: String) {
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    currency = value
-                )
-            }
-        }
-    }
-
-    fun setDefaultPaymentDay(value: String) {
-        if (!value.startsWith("0") && value.isDigitsOnly()) {
-            val defaultPaymentDay = value.toIntOrNull()
-            if (defaultPaymentDay == null || defaultPaymentDay in 1..31) {
-                viewModelScope.launch {
-                    updateViewState {
-                        it.copy(
-                            defaultPaymentDayOfMonth = value
-                        )
-                    }
-                }
-            }
+    fun setDefaultPaymentDayOfWeek(value: DayOfWeek) {
+        updateViewState {
+            it.copy(
+                defaultPaymentDayOfWeek = value
+            )
         }
     }
 
     fun setBudgetType(value: BudgetType) {
-        viewModelScope.launch {
-            updateViewState {
-                it.copy(
-                    budgetType = value
-                )
-            }
+        updateViewState {
+            it.copy(
+                budgetType = value
+            )
         }
     }
 }
@@ -169,7 +163,7 @@ data class SettingsState(
 
     val budgetType: BudgetType = BudgetType.MONTHLY,
     val defaultPaymentDayOfMonth: String? = null,
-    val defaultPaymentDayOfWeek: String? = null,
+    val defaultPaymentDayOfWeek: DayOfWeek? = null,
     val defaultStartDate: LocalDate? = null,
     val defaultEndDate: LocalDate? = null,
 )
