@@ -190,10 +190,10 @@ private fun getLatestMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
 private fun getNextMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
     val today = LocalDate.now()
     val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
-    return if (paymentDayOfCurrentMonth.isBefore(today)) {
-        paymentDayOfCurrentMonth.plusMonths(1)
-    } else {
+    return if (paymentDayOfCurrentMonth.isAfter(today)) {
         paymentDayOfCurrentMonth
+    } else {
+        paymentDayOfCurrentMonth.plusMonths(1)
     }
 }
 
