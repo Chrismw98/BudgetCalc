@@ -66,6 +66,7 @@ fun BudgetCalcNavHost(
                 onDayOfWeekChanged = viewModel::setDefaultPaymentDayOfWeek,
                 onStartDateChanged = viewModel::setStartDate,
                 onEndDateChanged = viewModel::setEndDate,
+                onUpdateExpandedDropDown = viewModel::updateExpandedDropDown,
             )
         }
 

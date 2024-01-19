@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -34,7 +35,8 @@ internal fun <T> GenericDropDownMenu(
             it?.toString().orEmpty()
         }
     },
-    onUpdateExpandedState: (Boolean) -> Unit,
+    onExpandedMenuChanged: (DropDown) -> Unit,
+    dropDownType: DropDown,
     isExpanded: Boolean,
     enabled: Boolean = true,
     isError: Boolean = false,
@@ -48,7 +50,7 @@ internal fun <T> GenericDropDownMenu(
             modifier = modifier,
             expanded = isExpanded,
             onExpandedChange = {
-                onUpdateExpandedState(it)
+                onExpandedMenuChanged(if (it) dropDownType else DropDown.NONE)
             },
         ) {
             DropDownMenuTextField(
@@ -68,14 +70,14 @@ internal fun <T> GenericDropDownMenu(
                 ),
                 expanded = isExpanded,
                 onDismissRequest = {
-                    onUpdateExpandedState(false)
+                    onExpandedMenuChanged(DropDown.NONE)
                 }
             ) {
                 options.forEach { option ->
                     DropdownMenuItem(
                         onClick = {
                             onSelectionChanged(option)
-                            onUpdateExpandedState(false)
+                            onExpandedMenuChanged(DropDown.NONE)
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                         text = {
@@ -142,7 +144,8 @@ private fun PreviewGenericDropDownMenu() {
         GenericDropDownMenu(
             onSelectionChanged = {},
             options = persistentListOf(),
-            onUpdateExpandedState = {},
+            onExpandedMenuChanged = {},
+            dropDownType = DropDown.NONE,
             selectedOption = "Test Option",
             isExpanded = false,
             labelText = "Test Label",
@@ -157,10 +160,11 @@ private fun PreviewEnabledEmptyGenericDropDownMenu() {
         GenericDropDownMenu(
             onSelectionChanged = {},
             options = persistentListOf(),
-            onUpdateExpandedState = {},
+            onExpandedMenuChanged = {},
+            dropDownType = DropDown.NONE,
             selectedOption = null,
             isExpanded = false,
-            labelText = "Test Label",
+            labelText = "Test Label"
         )
     }
 }
@@ -172,7 +176,8 @@ private fun PreviewDisabledEmptyGenericDropDownMenu() {
         GenericDropDownMenu(
             onSelectionChanged = {},
             options = persistentListOf(),
-            onUpdateExpandedState = {},
+            onExpandedMenuChanged = {},
+            dropDownType = DropDown.NONE,
             selectedOption = null,
             isExpanded = false,
             enabled = false,

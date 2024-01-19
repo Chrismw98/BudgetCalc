@@ -1,12 +1,15 @@
 package chrismw.budgetcalc.screens
 
+import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.helpers.BudgetType
+import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.prefdatastore.BudgetData
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
-import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +27,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
+
         val DAY_OF_WEEK_LIST = DayOfWeek.values().toList().toImmutableList()
         val BUDGET_TYPES_LIST = BudgetType.values().toList().toImmutableList()
     }
@@ -158,6 +161,14 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
+
+    fun updateExpandedDropDown(value: DropDown) {
+        updateViewState {
+            it.copy(
+                currentlyExpandedDropDown = value
+            )
+        }
+    }
 }
 
 private fun correctFloatString(floatString: String): String? {
@@ -188,4 +199,9 @@ data class SettingsState(
     val defaultPaymentDayOfWeek: DayOfWeek? = null,
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
+
+    val budgetTypeOptions: ImmutableList<BudgetType> = SettingsViewModel.BUDGET_TYPES_LIST,
+    val dayOfWeekOptions: ImmutableList<DayOfWeek> = SettingsViewModel.DAY_OF_WEEK_LIST,
+
+    val currentlyExpandedDropDown: DropDown = DropDown.NONE,
 )

@@ -24,10 +24,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,6 +37,7 @@ import chrismw.budgetcalc.components.RadioItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
 import chrismw.budgetcalc.helpers.BudgetType
+import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -61,6 +58,7 @@ internal fun SettingsScreen(
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
     onStartDateChanged: (LocalDate) -> Unit,
     onEndDateChanged: (LocalDate) -> Unit,
+    onUpdateExpandedDropDown: (DropDown) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         onLoadSettings()
@@ -190,18 +188,15 @@ internal fun SettingsScreen(
 //                onClick = onClickBudgetRate
 //            ) //TODO: Enable me
 
-            var isPaymentCycleUnitExpanded by remember { //TODO: Move this to the ViewModel
-                mutableStateOf(false)
-            }
-
             GenericDropDownMenu<BudgetType>(
                 modifier = Modifier.fillMaxWidth(),
                 onSelectionChanged = { newSelection -> onBudgetTypeChanged(newSelection) },
-                options = SettingsViewModel.BUDGET_TYPES_LIST, //TODO: Move this to the ViewState
+                options = state.budgetTypeOptions,
                 selectedOption = state.budgetType,
                 onParseOptionToString = { budgetType -> budgetType?.let { stringResource(id = it.textRes) }.orEmpty() },
-                onUpdateExpandedState = { newExpandedState -> isPaymentCycleUnitExpanded = newExpandedState },
-                isExpanded = isPaymentCycleUnitExpanded,
+                onExpandedMenuChanged = onUpdateExpandedDropDown,
+                isExpanded = state.currentlyExpandedDropDown == DropDown.BUDGET_TYPE,
+                dropDownType = DropDown.BUDGET_TYPE,
                 labelText = stringResource(R.string.label_budget_type)
             )
 
@@ -228,18 +223,15 @@ internal fun SettingsScreen(
                 }
 
                 BudgetType.WEEKLY -> {
-                    var isDefaultPaymentDayOfWeekExpanded by remember { //TODO: Move this to the ViewModel
-                        mutableStateOf(false)
-                    }
-
                     GenericDropDownMenu<DayOfWeek>(
                         modifier = Modifier.fillMaxWidth(),
                         onSelectionChanged = { newSelection -> onDayOfWeekChanged(newSelection) },
-                        options = SettingsViewModel.DAY_OF_WEEK_LIST, //TODO: Move this to the ViewState
+                        options = state.dayOfWeekOptions,
                         selectedOption = state.defaultPaymentDayOfWeek,
                         onParseOptionToString = { dayOfWeek -> dayOfWeek?.let { getStringForDayOfWeek(it) }.orEmpty() },
-                        onUpdateExpandedState = { newExpandedState -> isDefaultPaymentDayOfWeekExpanded = newExpandedState },
-                        isExpanded = isDefaultPaymentDayOfWeekExpanded,
+                        onExpandedMenuChanged = onUpdateExpandedDropDown,
+                        isExpanded = state.currentlyExpandedDropDown == DropDown.PAYMENT_DAY_OF_WEEK,
+                        dropDownType = DropDown.PAYMENT_DAY_OF_WEEK,
                         labelText = stringResource(id = R.string.label_payment_day_of_week)
                     )
                 }
@@ -283,6 +275,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
             onDayOfWeekChanged = {},
             onStartDateChanged = {},
             onEndDateChanged = {},
+            onUpdateExpandedDropDown = {},
         )
     }
 }
@@ -308,6 +301,7 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
             onDayOfWeekChanged = {},
             onStartDateChanged = {},
             onEndDateChanged = {},
+            onUpdateExpandedDropDown = {},
         )
     }
 }
@@ -333,6 +327,7 @@ fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
             onDayOfWeekChanged = {},
             onStartDateChanged = {},
             onEndDateChanged = {},
+            onUpdateExpandedDropDown = {},
         )
     }
 }
