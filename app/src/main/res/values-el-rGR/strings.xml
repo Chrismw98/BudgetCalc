@@ -46,4 +46,5 @@
     <string name="label_friday">Παρασκευή</string>
     <string name="label_saturday">Σάββατο</string>
     <string name="label_sunday">Κυριακή</string>
+    <string name="label_budget_type">Είδος budget</string>
 </resources>

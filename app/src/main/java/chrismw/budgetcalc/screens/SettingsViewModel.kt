@@ -7,6 +7,7 @@ import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.prefdatastore.BudgetData
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,11 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
+
+    companion object {
+        val DAY_OF_WEEK_LIST = DayOfWeek.values().toList().toImmutableList()
+        val BUDGET_TYPES_LIST = BudgetType.values().toList().toImmutableList()
+    }
 
     private val _viewState: MutableStateFlow<SettingsState> = MutableStateFlow(SettingsState())
 

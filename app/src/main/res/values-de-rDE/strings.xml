@@ -49,4 +49,5 @@
     <string name="label_friday">Freitag</string>
     <string name="label_saturday">Samstag</string>
     <string name="label_sunday">Sonntag</string>
+    <string name="label_budget_type">Budgettyp</string>
 </resources>

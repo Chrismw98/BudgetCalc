@@ -50,4 +50,5 @@
     <string name="label_friday">Friday</string>
     <string name="label_saturday">Saturday</string>
     <string name="label_sunday">Sunday</string>
+    <string name="label_budget_type">Budget type</string>
 </resources>

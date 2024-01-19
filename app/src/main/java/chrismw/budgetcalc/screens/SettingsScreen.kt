@@ -13,10 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.components.GenericDropDownMenu
 import chrismw.budgetcalc.components.RadioItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
@@ -196,65 +194,16 @@ internal fun SettingsScreen(
                 mutableStateOf(false)
             }
 
-            ExposedDropdownMenuBox(
+            GenericDropDownMenu<BudgetType>(
                 modifier = Modifier.fillMaxWidth(),
-                expanded = isPaymentCycleUnitExpanded,
-                onExpandedChange = {
-//                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
-                    isPaymentCycleUnitExpanded = !isPaymentCycleUnitExpanded
-                }
-            ) {
-                OutlinedTextField( //TODO: Latest TODO - 2023-11-13
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    singleLine = true,
-                    value = stringResource(id = state.budgetType.textRes),
-                    onValueChange = {}, //TODO: Implement this
-                    readOnly = true,
-                    label = {
-                        Text(
-                            text = "Budget Type" //TODO: Exctract string resource
-                        )
-                    },
-                    enabled = true, //TODO: Adjust this
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(
-                            expanded = isPaymentCycleUnitExpanded
-                        )
-                    }
-                )
-//        Can't use ExposedDropdownMenu because of this bug:
-//        https://issuetracker.google.com/issues/205589613
-//        ExposedDropdownMenu(
-                ExposedDropdownMenu(
-                    modifier = Modifier.exposedDropdownSize(
-                        matchTextFieldWidth = true
-                    ),
-                    expanded = isPaymentCycleUnitExpanded,
-                    onDismissRequest = {
-                        isPaymentCycleUnitExpanded = false
-//                            onExpandedMenuChanged(DropDown.NONE)
-                        //TODO: Implement this
-                    }
-                ) {
-//                    val units = listOf("Days", "Weeks", "Months")
-                    BudgetType.values().forEach {
-                        DropdownMenuItem(
-                            onClick = {
-                                onBudgetTypeChanged(it)
-                                isPaymentCycleUnitExpanded = false
-//                                    onLocationChanged(it)
-//                                    onExpandedMenuChanged(DropDown.NONE)
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            text = {
-                                Text(text = stringResource(id = it.textRes))
-                            }
-                        )
-                    }
-                }
-            }
+                onSelectionChanged = { newSelection -> onBudgetTypeChanged(newSelection) },
+                options = SettingsViewModel.BUDGET_TYPES_LIST, //TODO: Move this to the ViewState
+                selectedOption = state.budgetType,
+                onParseOptionToString = { budgetType -> budgetType?.let { stringResource(id = it.textRes) }.orEmpty() },
+                onUpdateExpandedState = { newExpandedState -> isPaymentCycleUnitExpanded = newExpandedState },
+                isExpanded = isPaymentCycleUnitExpanded,
+                labelText = stringResource(R.string.label_budget_type)
+            )
 
             Spacer(
                 modifier = Modifier.height(6.dp)
@@ -277,70 +226,24 @@ internal fun SettingsScreen(
                         ),
                     )
                 }
+
                 BudgetType.WEEKLY -> {
                     var isDefaultPaymentDayOfWeekExpanded by remember { //TODO: Move this to the ViewModel
                         mutableStateOf(false)
                     }
 
-                    ExposedDropdownMenuBox(
+                    GenericDropDownMenu<DayOfWeek>(
                         modifier = Modifier.fillMaxWidth(),
-                        expanded = isDefaultPaymentDayOfWeekExpanded,
-                        onExpandedChange = {
-        //                        onExpandedMenuChanged(if (it) type else DropDown.NONE)
-                            isDefaultPaymentDayOfWeekExpanded = !isDefaultPaymentDayOfWeekExpanded
-                        }
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            singleLine = true,
-                            value = state.defaultPaymentDayOfWeek?.let { getStringForDayOfWeek(dayOfWeek = it) }.orEmpty(),
-                            onValueChange = {}, //TODO: Implement this
-                            readOnly = true,
-                            label = {
-                                Text(
-                                    text = "Payment day of week" //TODO: Exctract string resource
-                                )
-                            },
-                            enabled = true, //TODO: Adjust this
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = isDefaultPaymentDayOfWeekExpanded
-                                )
-                            }
-                        )
-        //        Can't use ExposedDropdownMenu because of this bug:
-        //        https://issuetracker.google.com/issues/205589613
-        //        ExposedDropdownMenu(
-                        ExposedDropdownMenu(
-                            modifier = Modifier.exposedDropdownSize(
-                                matchTextFieldWidth = true
-                            ),
-                            expanded = isDefaultPaymentDayOfWeekExpanded,
-                            onDismissRequest = {
-                                isDefaultPaymentDayOfWeekExpanded = false
-        //                            onExpandedMenuChanged(DropDown.NONE)
-                                //TODO: Implement this
-                            }
-                        ) {
-                            DayOfWeek.values().forEach {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        onDayOfWeekChanged(it)
-                                        isDefaultPaymentDayOfWeekExpanded = false
-        //                                    onLocationChanged(it)
-        //                                    onExpandedMenuChanged(DropDown.NONE)
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    text = {
-                                        Text(text = getStringForDayOfWeek(it))
-                                    }
-                                )
-                            }
-                        }
-                    }
+                        onSelectionChanged = { newSelection -> onDayOfWeekChanged(newSelection) },
+                        options = SettingsViewModel.DAY_OF_WEEK_LIST, //TODO: Move this to the ViewState
+                        selectedOption = state.defaultPaymentDayOfWeek,
+                        onParseOptionToString = { dayOfWeek -> dayOfWeek?.let { getStringForDayOfWeek(it) }.orEmpty() },
+                        onUpdateExpandedState = { newExpandedState -> isDefaultPaymentDayOfWeekExpanded = newExpandedState },
+                        isExpanded = isDefaultPaymentDayOfWeekExpanded,
+                        labelText = stringResource(id = R.string.label_payment_day_of_week)
+                    )
                 }
+
                 BudgetType.ONCE_ONLY -> {
                     StartToTargetDate(
                         modifier = Modifier.fillMaxWidth(),
