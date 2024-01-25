@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,10 +33,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.components.ExitDialog
 import chrismw.budgetcalc.components.GenericDropDownMenu
 import chrismw.budgetcalc.components.RadioItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
+import chrismw.budgetcalc.components.rememberExitDialogState
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
@@ -48,6 +51,7 @@ internal fun SettingsScreen(
     state: SettingsState,
     onNavigateBack: () -> Unit,
     onLoadSettings: () -> Unit,
+    onSaveChanges: () -> Unit,
     onClickConstantBudget: () -> Unit,
     onClickBudgetRate: () -> Unit,
     onConstantBudgetAmountChanged: (String) -> Unit,
@@ -60,12 +64,21 @@ internal fun SettingsScreen(
     onEndDateChanged: (LocalDate) -> Unit,
     onUpdateExpandedDropDown: (DropDown) -> Unit,
 ) {
+    val confirmExitDialogState = rememberExitDialogState()
+    val onBackPressed: () -> Unit = {
+        if (state.showConfirmExitDialog) {
+            confirmExitDialogState.show()
+        } else {
+            onNavigateBack()
+        }
+    }
+
     LaunchedEffect(Unit) {
         onLoadSettings()
     }
 
     BackHandler {
-        onNavigateBack()
+        onBackPressed()
     }
 
     Scaffold(
@@ -75,7 +88,7 @@ internal fun SettingsScreen(
                     Text(text = stringResource(id = R.string.settings))
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onBackPressed) {
                         Icon(imageVector = Icons.Default.ArrowBack,
                             contentDescription = null
                         )
@@ -248,9 +261,27 @@ internal fun SettingsScreen(
             }
 
             //TODO: Consider adding a save button + dialog 2023-12-07
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp),
+                onClick = {
+                    onSaveChanges()
+                    onNavigateBack()
+                }
+            ) {
+                Text(text = stringResource(R.string.label_save_changes))
+            }
         }
 
     }
+
+    ExitDialog(
+        state = confirmExitDialogState,
+        onConfirm = onNavigateBack,
+        onDismiss = { confirmExitDialogState.hide() }
+    )
 }
 
 //private fun formatNumberOrEmpty(number: Float?): String = numberFormat.format(number).orEmpty()
@@ -265,6 +296,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
             ),
             onNavigateBack = {},
             onLoadSettings = {},
+            onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},
@@ -291,6 +323,7 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
             ),
             onNavigateBack = {},
             onLoadSettings = {},
+            onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},
@@ -317,6 +350,7 @@ fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
             ),
             onNavigateBack = {},
             onLoadSettings = {},
+            onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},

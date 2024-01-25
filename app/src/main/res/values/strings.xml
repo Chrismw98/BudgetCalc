@@ -32,9 +32,9 @@
     <string name="show_more">Show details</string>
     <string name="label_ok">OK</string>
     <string name="label_cancel">Cancel</string>
-    <string name="remaining">Remaining, as of</string>
+    <string name="label_remaining_as_of">Remaining, as of</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
-    <string name="dialog_text_unsaved_changes">You are leaving the settings without saving. Your changes will be lost if you do not save them.</string>
+    <string name="dialog_text_unsaved_changes">You are leaving the settings with unsaved changes. Your changes will be lost if you do not save them.</string>
     <string name="label_is_budget_constant">Specify budget as constant amount</string>
     <string name="label_is_budget_rate">Specify budget as daily rate</string>
     <string name="label_specify_cyclic_budget">Specify cyclic budget</string>
@@ -51,4 +51,14 @@
     <string name="label_saturday">Saturday</string>
     <string name="label_sunday">Sunday</string>
     <string name="label_budget_type">Budget type</string>
+    <string name="label_select_date">Select date</string>
+    <string name="label_start_date">Start date</string>
+    <string name="label_end_date">End date</string>
+    <string name="dialog_title_pick_target_date">Pick a target date</string>
+    <string name="title_welcome">Welcome to BudgetCalc!</string>
+    <string name="text_enter_your_data">To get started, please provide us with the budget data.</string>
+    <string name="label_enter_data">Enter data</string>
+    <string name="label_leave_without_saving">Leave without saving</string>
+    <string name="label_save_changes">Save changes</string>
+    <string name="title_home">Home</string>
 </resources>

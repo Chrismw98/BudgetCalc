@@ -4,13 +4,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -85,6 +85,7 @@ fun CircularProgressbar(
 
     BoxWithConstraints(
         modifier = modifier
+            .defaultMinSize(250.dp)
             .clip(shape = CircleShape)
             .clickable(
                 enabled = true,
@@ -109,7 +110,8 @@ fun CircularProgressbar(
         ) {
             DisplayNumberText(
                 amount = remainingBudgetAnimator.value,
-                targetDateString = targetDateString
+                targetDateString = targetDateString,
+                currency = currency,
             )
         }
 
@@ -146,7 +148,8 @@ private fun DisplayNumberText(
     amount: Float,
     dataTextStyle: TextStyle = MaterialTheme.typography.headlineLarge,
     remainingTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    targetDateString: String
+    targetDateString: String,
+    currency: String,
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -157,14 +160,14 @@ private fun DisplayNumberText(
         numberFormat.minimumFractionDigits = 2
         val amountString = numberFormat.format(amount)
         Text(
-            text = "$amountString €",
+            text = "$amountString $currency",
             style = dataTextStyle
         )
 
         Spacer(modifier = Modifier.height(2.dp))
 
         Text(
-            text = stringResource(id = R.string.remaining),
+            text = stringResource(id = R.string.label_remaining_as_of),
             style = remainingTextStyle
         )
 

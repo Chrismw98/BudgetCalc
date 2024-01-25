@@ -31,14 +31,14 @@
     <string name="show_more">Περισσότερες λεπτομέρειες</string>
     <string name="label_ok">ΟΚ</string>
     <string name="label_cancel">Ακύρωση</string>
-    <string name="remaining">Υπόλοιπο, από</string>
+    <string name="label_remaining_as_of">Υπόλοιπο, από</string>
     <string name="label_is_budget_constant">Budget ως σταθερό ποσό</string>
     <string name="label_is_budget_rate">Budget ως ημερήσιο ποσό</string>
     <string name="label_specify_cyclic_budget">Το budget επαναλαμβάνεται</string>
     <string name="label_specify_start_end_date">Επιλογή ημερομηνίας αρχή και τέλους</string>
     <string name="label_monthly">Μηνιαίο</string>
     <string name="label_weekly">Εβδομαδιαίο</string>
-    <string name="label_once_only">Ανεπανάληπτο</string>
+    <string name="label_once_only">Μίας φοράς</string>
     <string name="label_monday">Δευτέρα</string>
     <string name="label_tuesday">Τρίτη</string>
     <string name="label_wednesday">Τετάρτη</string>
@@ -47,4 +47,16 @@
     <string name="label_saturday">Σάββατο</string>
     <string name="label_sunday">Κυριακή</string>
     <string name="label_budget_type">Είδος budget</string>
+    <string name="label_select_date">Επιλέξτε ημ/νία</string>
+    <string name="label_start_date">Ημέρα πληρωμής</string>
+    <string name="label_end_date">Τελευταία μέρα</string>
+    <string name="dialog_title_pick_target_date">Επιλογή ημερομηνίας</string>
+    <string name="title_welcome">Καλωσορίσατε στο BudgetCalc!</string>
+    <string name="text_enter_your_data">Για να ξεκινήσετε, παρακαλώ προχωρήστε στην εισαγωγή δεδομένων του budget.</string>
+    <string name="label_enter_data">Εισαγωγή δεδομένων</string>
+    <string name="dialog_title_unsaved_changes">Αναποθήκευτες αλλαγές</string>
+    <string name="dialog_text_unsaved_changes">Φεύγετε από τις ρυθμίσεις με αναποθήκευτες αλλαγές. Οι αλλαγές σας θα χαθούν αν δεν τις αποθηκεύσετε.</string>
+    <string name="label_leave_without_saving">Συνέχεια χωρίς αποθήκευση</string>
+    <string name="label_save_changes">Αποθήκευση αλλαγών</string>
+    <string name="title_home">Σύνοψη</string>
 </resources>

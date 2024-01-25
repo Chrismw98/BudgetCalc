@@ -71,7 +71,7 @@ internal fun MainScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Home")
+                    Text(text = stringResource(R.string.title_home))
                 },
                 actions = {
                     IconButton(onClick = onClickSettingsButton
@@ -279,7 +279,7 @@ private fun MainScreenContent(
     ) {
         datepicker(
             initialDate = state.targetDate,
-            title = "Pick a target date", //TODO: Make string resource
+            title = stringResource(R.string.dialog_title_pick_target_date),
             allowedDateValidator = {
                 !it.isBefore(state.startDate)
             },
@@ -321,7 +321,7 @@ private fun MissingDataContent(
     ) {
 
         Text(
-            text = "Welcome to BudgetCalc!",
+            text = stringResource(R.string.title_welcome),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge
         )
@@ -329,7 +329,7 @@ private fun MissingDataContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "To get started, please provide us with the budget data.",
+            text = stringResource(R.string.text_enter_your_data),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge
         )
@@ -337,7 +337,7 @@ private fun MissingDataContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(onClick = onNavigateToSettings) {
-            Text(text = "Enter data")
+            Text(text = stringResource(R.string.label_enter_data))
         }
     }
 }

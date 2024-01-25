@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import chrismw.budgetcalc.decimalFormat
+import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.screens.SettingsState
 import kotlinx.coroutines.flow.Flow
@@ -179,11 +180,30 @@ data class BudgetData(
         return false
     }
 
-    fun toSettingsState(): SettingsState {
-        return SettingsState(
+//    fun toSettingsState(): SettingsState {
+//        return SettingsState(
+//            isBudgetConstant = isBudgetConstant,
+//            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) }, /*?: ""*/
+//            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) }, /*?: ""*/
+//            currency = currency,
+//
+//            budgetType = budgetType,
+//            defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
+//            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
+//            startDate = defaultStartDate?.let { LocalDate.parse(it) },
+//            endDate = defaultEndDate?.let { LocalDate.parse(it) },
+////            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
+////            defaultPaymentDayOfMonth = defaultPaymentDay?.toString() ?: "",
+////            paymentCycleLength = paymentCycleLength?.toString() ?: "",
+//        )
+//    }
+
+    fun toBudgetDataDTO(): BudgetDataDTO {
+        return BudgetDataDTO(
             isBudgetConstant = isBudgetConstant,
-            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) }, /*?: ""*/
-            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) }, /*?: ""*/
+
+            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) },
+            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) },
             currency = currency,
 
             budgetType = budgetType,
@@ -191,32 +211,26 @@ data class BudgetData(
             defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
             startDate = defaultStartDate?.let { LocalDate.parse(it) },
             endDate = defaultEndDate?.let { LocalDate.parse(it) },
-//            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
-//            defaultPaymentDayOfMonth = defaultPaymentDay?.toString() ?: "",
-//            paymentCycleLength = paymentCycleLength?.toString() ?: "",
         )
     }
 
-    companion object {
-
-        fun fromSettingsState(settingsState: SettingsState): BudgetData {
-
-            return BudgetData(
-                isBudgetConstant = settingsState.isBudgetConstant,
-                constantBudgetAmount = settingsState.constantBudgetAmount?.toFloatOrNull(),
-                budgetRateAmount = settingsState.budgetRateAmount?.toFloatOrNull(),
-                currency = settingsState.currency, /*?: ""*/
-
-                budgetType = settingsState.budgetType,
-                defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
-                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.value,
-                defaultStartDate = settingsState.startDate?.toString(),
-                defaultEndDate = settingsState.endDate?.toString(),
-////                budgetRateUnit = CustomTemporalUnit.valueOf(settingsState.budgetRateUnit ?: "DAYS"), //TODO: Delete this
-//                defaultPaymentDay = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
-////                paymentCycleLength = settingsState.paymentCycleLength?.toIntOrNull(),
+//    companion object {
+//
+//        fun fromSettingsState(settingsState: SettingsState): BudgetData {
+//
+//            return BudgetData(
+//                isBudgetConstant = settingsState.isBudgetConstant,
+//                constantBudgetAmount = settingsState.constantBudgetAmount?.toFloatOrNull(),
+//                budgetRateAmount = settingsState.budgetRateAmount?.toFloatOrNull(),
+//                currency = settingsState.currency, /*?: ""*/
+//
 //                budgetType = settingsState.budgetType,
-            )
-        }
-    }
+//                defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
+//                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.value,
+//                defaultStartDate = settingsState.startDate?.toString(),
+//                defaultEndDate = settingsState.endDate?.toString(),
+//            )
+//        }
+//
+//    }
 }

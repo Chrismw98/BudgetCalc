@@ -34,7 +34,7 @@
     <string name="show_more">Details anzeigen</string>
     <string name="label_ok">OK</string>
     <string name="label_cancel">Abbrechen</string>
-    <string name="remaining">Übrig, Stand</string>
+    <string name="label_remaining_as_of">Übrig, Stand</string>
     <string name="label_is_budget_constant">Konstanten Budgetbetrag festlegen</string>
     <string name="label_is_budget_rate">Budget als Tagesrate festlegen</string>
     <string name="label_specify_cyclic_budget">Budget zyklisch festlegen</string>
@@ -50,4 +50,16 @@
     <string name="label_saturday">Samstag</string>
     <string name="label_sunday">Sonntag</string>
     <string name="label_budget_type">Budgettyp</string>
+    <string name="label_select_date">Datum wählen</string>
+    <string name="label_start_date">Startdatum</string>
+    <string name="label_end_date">Enddatum</string>
+    <string name="dialog_title_pick_target_date">Datumsauswahl</string>
+    <string name="title_welcome">Willkommen zu BudgetCalc!</string>
+    <string name="text_enter_your_data">Um zu beginnen, fahren Sie bitte zur Budgetdateneingabe fort.</string>
+    <string name="label_enter_data">Daten eingeben</string>
+    <string name="dialog_title_unsaved_changes">Ungespeicherte Änderungen</string>
+    <string name="dialog_text_unsaved_changes">Sie verlassen die Einstellungen ohne gespeichert zu haben. Alle Änderungen werden verworfen wenn Sie sie nicht speichern.</string>
+    <string name="label_leave_without_saving">Ohne Speichern fortfahren</string>
+    <string name="label_save_changes">Änderungen speichern</string>
+    <string name="title_home">Übersicht</string>
 </resources>

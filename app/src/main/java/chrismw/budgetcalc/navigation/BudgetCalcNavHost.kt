@@ -11,6 +11,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import chrismw.budgetcalc.extensions.popBackStackIfResumed
 import chrismw.budgetcalc.screens.MainScreen
 import chrismw.budgetcalc.screens.MainScreenViewModel
 import chrismw.budgetcalc.screens.SettingsScreen
@@ -51,13 +52,11 @@ fun BudgetCalcNavHost(
             val state by viewModel.viewState.collectAsStateWithLifecycle()
             SettingsScreen(
                 state = state,
-                onNavigateBack = {
-                    viewModel.saveSettings()
-                    navController.popBackStack()
-                },
+                onNavigateBack = { navController.popBackStackIfResumed() },
+                onSaveChanges = viewModel::saveSettings,
                 onLoadSettings = viewModel::loadSettings,
-                onClickConstantBudget = viewModel::setBudgetToConstant,
-                onClickBudgetRate = viewModel::setBudgetToRate,
+                onClickConstantBudget = { viewModel.setIsBudgetConstant(true) },
+                onClickBudgetRate = { viewModel.setIsBudgetConstant(false) },
                 onConstantBudgetAmountChanged = viewModel::setConstantBudgetAmount,
                 onBudgetRateAmountChanged = viewModel::setBudgetRateAmount,
                 onDefaultPaymentDayChanged = viewModel::setDefaultPaymentDayOfMonth,

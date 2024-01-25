@@ -12,10 +12,9 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,9 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
-import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricType
-import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -42,7 +38,6 @@ import java.time.format.FormatStyle
 //private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
 private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartToTargetDate(
     modifier: Modifier = Modifier,
@@ -58,9 +53,9 @@ fun StartToTargetDate(
     ) {
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = startDate?.format(formatter) ?: "Select date", //TODO: Extract string resource
+            value = startDate?.format(formatter) ?: stringResource(R.string.label_select_date),
             onClick = onClickStartDate,
-            label = stringResource(id = R.string.budget_start_date_excl), //TODO: Adjust string resources
+            label = stringResource(id = R.string.label_start_date),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Today,
                     contentDescription = null)
@@ -73,9 +68,9 @@ fun StartToTargetDate(
 
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = endDate?.format(formatter) ?: "Select date", //TODO: Extract string resource
+            value = endDate?.format(formatter) ?: stringResource(R.string.label_select_date),
             onClick = onClickTargetDate,
-            label = stringResource(id = R.string.target_date_incl), //TODO: Adjust string resources
+            label = stringResource(id = R.string.label_end_date),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Event,
                     contentDescription = null)
@@ -125,7 +120,7 @@ fun ClickableDatePickerTextField(
     ) {
         datepicker(
             initialDate = initialDate ?: LocalDate.now(),
-            title = "Pick a date", //TODO: Replace with string resource
+            title = stringResource(id = R.string.dialog_title_pick_target_date),
             allowedDateValidator = allowedDateValidator,
         ) {
             onClick(it)
@@ -135,7 +130,7 @@ fun ClickableDatePickerTextField(
     Box(
         modifier = modifier
     ) {
-        TextField(
+        OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             value = value,
@@ -162,7 +157,7 @@ fun ClickableDatePickerTextField(
     }
 }
 
-@Preview(showBackground = false, widthDp = 300, heightDp = 140)
+@Preview(showBackground = true, widthDp = 300, heightDp = 140)
 @Composable
 fun ReadOnlyTextFieldPreview() {
     var date by rememberSaveable {
@@ -179,16 +174,15 @@ fun ReadOnlyTextFieldPreview() {
     }
 }
 
-@Preview(showBackground = false, widthDp = 600, heightDp = 800)
+@Preview(showBackground = true, widthDp = 600, heightDp = 800)
 @Composable
 private fun StartToEndDatePreview() {
-    val testMetric = Metric(MetricType.DAYS_SINCE_START, 19.0, MetricUnit.DAYS)
     BudgetCalcTheme {
         var pickedStartDate by rememberSaveable {
             mutableStateOf(LocalDate.now())
         }
 
-        var pickedEndDate = LocalDate.now()
+        var pickedEndDate: LocalDate? = null
 
         StartToTargetDate(
             modifier = Modifier

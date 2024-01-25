@@ -4,16 +4,19 @@ import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
-import chrismw.budgetcalc.prefdatastore.BudgetData
 import chrismw.budgetcalc.prefdatastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,65 +35,84 @@ class SettingsViewModel @Inject constructor(
         val BUDGET_TYPES_LIST = BudgetType.values().toList().toImmutableList()
     }
 
-    private val _viewState: MutableStateFlow<SettingsState> = MutableStateFlow(SettingsState())
+    private val budgetDataDTOStateFlow: MutableStateFlow<BudgetDataDTO> = MutableStateFlow(BudgetDataDTO())
+    private val initialBudgetDataDTOStateFlow: MutableStateFlow<BudgetDataDTO> = MutableStateFlow(BudgetDataDTO())
+    private val currentlyExpandedDropDownStateFlow: MutableStateFlow<DropDown> = MutableStateFlow(DropDown.NONE)
 
-    fun loadSettings() {
-        viewModelScope.launch {
-            _viewState.value = dataStoreManager.getBudgetData().toSettingsState()
-        }
+    private val hasBudgetDataDTOChangedFlow: Flow<Boolean> = combine(
+        budgetDataDTOStateFlow,
+        initialBudgetDataDTOStateFlow
+    ) { currentBudgetDataDTO, initialBudgetDataDTO ->
+        currentBudgetDataDTO != initialBudgetDataDTO
     }
 
-    private fun updateViewState(callback: (SettingsState) -> SettingsState) {
-        _viewState.update { callback(it) }
-    }
+    val viewState: StateFlow<SettingsState> = combine(
+        budgetDataDTOStateFlow,
+        hasBudgetDataDTOChangedFlow,
+        currentlyExpandedDropDownStateFlow
+    ) { budgetDataDTO,
+        hasDataChanged,
+        currentlyExpandedDropDown ->
 
-    fun saveSettings() {
-        viewModelScope.launch {
-            dataStoreManager.saveToDataStore(
-                BudgetData.fromSettingsState(
-                    viewState.value
-                )
-            )
-        }
-    }
+        SettingsState(
+            isBudgetConstant = budgetDataDTO.isBudgetConstant,
 
-    //    val viewState: StateFlow<SettingsState> = dataStoreManager
-//        .getFromDataStore()
-//        .map { budgetData ->
-//            budgetData.toSettingsState()
-//        }
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = SettingsState()
-//        )
-    val viewState: StateFlow<SettingsState> = _viewState
+            constantBudgetAmount = budgetDataDTO.constantBudgetAmount,
+            budgetRateAmount = budgetDataDTO.budgetRateAmount,
+            currency = budgetDataDTO.currency,
+
+            budgetType = budgetDataDTO.budgetType,
+            defaultPaymentDayOfMonth = budgetDataDTO.defaultPaymentDayOfMonth,
+            defaultPaymentDayOfWeek = budgetDataDTO.defaultPaymentDayOfWeek,
+            startDate = budgetDataDTO.startDate,
+            endDate = budgetDataDTO.endDate,
+
+            budgetTypeOptions = BUDGET_TYPES_LIST,
+            dayOfWeekOptions = DAY_OF_WEEK_LIST,
+            currentlyExpandedDropDown = currentlyExpandedDropDown,
+            showConfirmExitDialog = hasDataChanged
+        )
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsState()
         )
 
-    private fun setIsBudgetConstant(value: Boolean) {
-        updateViewState {
+    fun loadSettings() {
+        viewModelScope.launch {
+            val loadedBudgetDataDTO = dataStoreManager.getBudgetData().toBudgetDataDTO()
+            budgetDataDTOStateFlow.value = loadedBudgetDataDTO
+            initialBudgetDataDTOStateFlow.value = loadedBudgetDataDTO
+        }
+    }
+
+    private fun updateBudgetDataDTO(callback: (BudgetDataDTO) -> BudgetDataDTO) {
+        budgetDataDTOStateFlow.update { callback(it) }
+    }
+
+    fun saveSettings() {
+        viewModelScope.launch {
+            val currentBudgetDataDTO = budgetDataDTOStateFlow.value
+            initialBudgetDataDTOStateFlow.value = currentBudgetDataDTO
+            dataStoreManager.saveToDataStore(
+                currentBudgetDataDTO.toBudgetData()
+            )
+        }
+    }
+
+    fun setIsBudgetConstant(value: Boolean) {
+        updateBudgetDataDTO {
             it.copy(
                 isBudgetConstant = value
             )
         }
     }
 
-    fun setBudgetToConstant() {
-        setIsBudgetConstant(true)
-    }
-
-    fun setBudgetToRate() {
-        setIsBudgetConstant(false)
-    }
-
     fun setConstantBudgetAmount(value: String) {
         val correctedValue = correctFloatString(value)
         if (correctedValue != null) {
-            updateViewState {
+            updateBudgetDataDTO {
                 it.copy(
                     constantBudgetAmount = correctedValue
                 )
@@ -101,7 +123,7 @@ class SettingsViewModel @Inject constructor(
     fun setBudgetRateAmount(value: String) {
         val correctedValue = correctFloatString(value)
         if (correctedValue != null) {
-            updateViewState {
+            updateBudgetDataDTO {
                 it.copy(
                     budgetRateAmount = value
                 )
@@ -110,7 +132,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setCurrency(value: String) {
-        updateViewState {
+        updateBudgetDataDTO {
             it.copy(
                 currency = value
             )
@@ -121,7 +143,7 @@ class SettingsViewModel @Inject constructor(
         if (!value.startsWith("0") && value.isDigitsOnly()) {
             val defaultPaymentDay = value.toIntOrNull()
             if (defaultPaymentDay == null || defaultPaymentDay in 1..31) {
-                updateViewState {
+                updateBudgetDataDTO {
                     it.copy(
                         defaultPaymentDayOfMonth = value
                     )
@@ -131,7 +153,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setDefaultPaymentDayOfWeek(value: DayOfWeek) {
-        updateViewState {
+        updateBudgetDataDTO {
             it.copy(
                 defaultPaymentDayOfWeek = value
             )
@@ -139,7 +161,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setBudgetType(value: BudgetType) {
-        updateViewState {
+        updateBudgetDataDTO {
             it.copy(
                 budgetType = value
             )
@@ -147,7 +169,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setStartDate(value: LocalDate) {
-        updateViewState {
+        updateBudgetDataDTO {
             it.copy(
                 startDate = value
             )
@@ -155,7 +177,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setEndDate(value: LocalDate) {
-        updateViewState {
+        updateBudgetDataDTO {
             it.copy(
                 endDate = value
             )
@@ -163,11 +185,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateExpandedDropDown(value: DropDown) {
-        updateViewState {
-            it.copy(
-                currentlyExpandedDropDown = value
-            )
-        }
+        currentlyExpandedDropDownStateFlow.value = value
     }
 }
 
@@ -190,6 +208,7 @@ private fun correctFloatString(floatString: String): String? {
 @Immutable
 data class SettingsState(
     val isBudgetConstant: Boolean = false,
+
     val constantBudgetAmount: String? = null,
     val budgetRateAmount: String? = null,
     val currency: String? = null,
@@ -200,8 +219,9 @@ data class SettingsState(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
 
-    val budgetTypeOptions: ImmutableList<BudgetType> = SettingsViewModel.BUDGET_TYPES_LIST,
-    val dayOfWeekOptions: ImmutableList<DayOfWeek> = SettingsViewModel.DAY_OF_WEEK_LIST,
-
+    val budgetTypeOptions: ImmutableList<BudgetType> = persistentListOf(),
+    val dayOfWeekOptions: ImmutableList<DayOfWeek> = persistentListOf(),
     val currentlyExpandedDropDown: DropDown = DropDown.NONE,
+
+    val showConfirmExitDialog: Boolean = false,
 )
