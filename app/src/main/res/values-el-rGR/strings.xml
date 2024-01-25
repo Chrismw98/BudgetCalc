@@ -13,11 +13,11 @@
     <string name="hint_message">* Το budget θα αρχίσει να μετράει από την επόμενη μέρα.\n
         ** \"Αυτόματη προσαρμογή\" θα θέσει την πρώτη ημέρα του budget στην ρυθμισμένη ημερομηνία πληρωμής του προηγούμενου μήνα.\n
         *** Η πρώτη μέρα πρέπει να βρίσκεται πριν την ημερομηνία ελέγχου.</string>
-    <string name="days_since_start">Περασμένες μέρες</string>
-    <string name="days_remaining">Υπόλοιπες μέρες</string>
-    <string name="daily_budget">Ημερήσιο budget</string>
-    <string name="budget_until_target_date">Budget μέχρι ημερομηνία ελέγχου</string>
-    <string name="remaining_budget">Υπόλοιπο budget</string>
+    <string name="metric_text_days_since_start">Περασμένες μέρες</string>
+    <string name="metric_text_days_remaining">Υπόλοιπες μέρες</string>
+    <string name="metric_text_daily_budget">Ημερήσιο budget</string>
+    <string name="metric_text_budget_until_target_date">Budget μέχρι ημερομηνία ελέγχου</string>
+    <string name="metric_text_remaining_budget">Υπόλοιπο budget</string>
     <string name="day">Mέρα</string>
     <string name="days">Mέρες</string>
     <string name="per_day">/Ημ.</string>
@@ -59,4 +59,5 @@
     <string name="label_leave_without_saving">Συνέχεια χωρίς αποθήκευση</string>
     <string name="label_save_changes">Αποθήκευση αλλαγών</string>
     <string name="title_home">Σύνοψη</string>
+    <string name="metric_text_total_budget">Συνολικό budget</string>
 </resources>

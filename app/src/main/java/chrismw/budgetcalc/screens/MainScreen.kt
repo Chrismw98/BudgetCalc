@@ -360,6 +360,7 @@ fun DefaultPreview() {
                     Metric(MetricType.DAILY_BUDGET, 10f, MetricUnit.CURRENCY_PER_DAY),
                     Metric(MetricType.BUDGET_UNTIL_TARGET_DATE, 270f, MetricUnit.CURRENCY),
                     Metric(MetricType.REMAINING_BUDGET, 270f, MetricUnit.CURRENCY),
+                    Metric(MetricType.TOTAL_BUDGET, 540f, MetricUnit.CURRENCY),
                 ),
                 isExpanded = true,
                 hasIncompleteData = false

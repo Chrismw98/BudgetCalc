@@ -13,11 +13,12 @@
         ** \"Easy Adjust\" will snap the budget start date to the configured default payment date of the last month.\n
         *** The start date has to be before the target date.</string>
 
-    <string name="days_since_start">Days since start</string>
-    <string name="days_remaining">Days remaining</string>
-    <string name="daily_budget">Daily budget</string>
-    <string name="budget_until_target_date">Budget until target date</string>
-    <string name="remaining_budget">Remaining budget</string>
+    <string name="metric_text_days_since_start">Days since start</string>
+    <string name="metric_text_days_remaining">Days remaining</string>
+    <string name="metric_text_daily_budget">Daily budget</string>
+    <string name="metric_text_budget_until_target_date">Budget until target date</string>
+    <string name="metric_text_remaining_budget">Remaining budget</string>
+    <string name="metric_text_total_budget">Total budget</string>
 
     <string name="EUR" translatable="false">€</string>
     <string name="day">Day</string>

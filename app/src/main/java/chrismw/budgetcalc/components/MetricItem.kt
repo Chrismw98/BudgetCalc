@@ -18,15 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricType
-import chrismw.budgetcalc.helpers.MetricType.BUDGET_UNTIL_TARGET_DATE
-import chrismw.budgetcalc.helpers.MetricType.DAILY_BUDGET
-import chrismw.budgetcalc.helpers.MetricType.DAYS_REMAINING
 import chrismw.budgetcalc.helpers.MetricType.DAYS_SINCE_START
-import chrismw.budgetcalc.helpers.MetricType.REMAINING_BUDGET
 import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY
 import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY_PER_DAY
@@ -45,8 +39,7 @@ fun MetricItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        //TODO: Enable usage of Settings
-        val metricNameString = getNameForMetricType(metric.type)
+        val metricNameString = stringResource(id = metric.type.textRes)
         val metricValueString: String
         val metricUnitString = getStringForMetricUnit(
             unit = metric.unit,
@@ -99,18 +92,6 @@ fun MetricItem(
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Start
         )
-    }
-}
-
-@ReadOnlyComposable
-@Composable
-fun getNameForMetricType(type: MetricType): String {
-    return when (type) {
-        DAYS_SINCE_START -> stringResource(id = R.string.days_since_start)
-        DAYS_REMAINING -> stringResource(id = R.string.days_remaining)
-        DAILY_BUDGET -> stringResource(id = R.string.daily_budget)
-        BUDGET_UNTIL_TARGET_DATE -> stringResource(id = R.string.budget_until_target_date)
-        REMAINING_BUDGET -> stringResource(id = R.string.remaining_budget)
     }
 }
 

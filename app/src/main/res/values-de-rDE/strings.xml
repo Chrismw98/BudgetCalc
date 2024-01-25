@@ -15,11 +15,11 @@
         setzen.\n
                 *** Das Startdatum muss vor dem Stichtag liegen.</string>
 
-    <string name="days_since_start">Tage seit Start</string>
-    <string name="days_remaining">Übrige Tage</string>
-    <string name="daily_budget">Tägliches Budget</string>
-    <string name="budget_until_target_date">Budget bis Stichtag</string>
-    <string name="remaining_budget">Übriges Budget</string>
+    <string name="metric_text_days_since_start">Tage seit Start</string>
+    <string name="metric_text_days_remaining">Übrige Tage</string>
+    <string name="metric_text_daily_budget">Tägliches Budget</string>
+    <string name="metric_text_budget_until_target_date">Budget bis Stichtag</string>
+    <string name="metric_text_remaining_budget">Übriges Budget</string>
 
     <string name="day">Tag</string>
     <string name="days">Tage</string>
@@ -62,4 +62,5 @@
     <string name="label_leave_without_saving">Ohne Speichern fortfahren</string>
     <string name="label_save_changes">Änderungen speichern</string>
     <string name="title_home">Übersicht</string>
+    <string name="metric_text_total_budget">Gesamtbudget</string>
 </resources>

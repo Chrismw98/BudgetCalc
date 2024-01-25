@@ -113,6 +113,7 @@ class MainScreenViewModel @Inject constructor(
             Metric(MetricType.DAILY_BUDGET, dailyBudget, MetricUnit.CURRENCY_PER_DAY),
             Metric(MetricType.BUDGET_UNTIL_TARGET_DATE, currentBudget, MetricUnit.CURRENCY),
             Metric(MetricType.REMAINING_BUDGET, remainingBudget, MetricUnit.CURRENCY),
+            Metric(MetricType.TOTAL_BUDGET, maxBudget, MetricUnit.CURRENCY),
         )
 
         UIState(
