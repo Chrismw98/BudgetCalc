@@ -42,12 +42,11 @@ import java.text.NumberFormat
 @Composable
 fun CircularProgressbar(
     modifier: Modifier = Modifier,
-//    foregroundIndicatorColor: Color = Color(0xFF35898f),
-    foregroundIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    shadowColor: Color = Color.LightGray,
+    foregroundIndicatorColor: Color = MaterialTheme.colorScheme.tertiary,
+    shadowColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     indicatorThickness: Dp = 24.dp,
-    remainingBudget: Float = 380f, //TODO: Handle case 0f
-    maxBudget: Float = 600f,
+    remainingBudget: Float,
+    maxBudget: Float,
     animationDurationInMs: Int = 500,
     targetDateString: String = "",
     currency: String,
