@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -41,7 +42,7 @@ fun BudgetCalcNavHost(
             val state by viewModel.viewState.collectAsStateWithLifecycle()
             MainScreen(
                 state = state,
-                onClickSettingsButton = { navController.navigateSingleTopTo(SETTINGS_SCREEN_ROUTE) },
+                onClickSettingsButton = navController::navigateToSettingsScreen,
                 toggleShowDetails = viewModel::toggleDetailsExpanded,
                 onPickTargetDate = viewModel::onPickTargetDate
             )
@@ -84,3 +85,7 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         launchSingleTop = true
         restoreState = true
     }
+
+fun NavController.navigateToSettingsScreen() {
+    navigate(route = SETTINGS_SCREEN_ROUTE)
+}

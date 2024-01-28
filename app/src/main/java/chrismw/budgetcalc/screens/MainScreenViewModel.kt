@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -34,17 +34,18 @@ class MainScreenViewModel @Inject constructor(
     dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
+    private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+
     private val budgetDataFlow: Flow<BudgetData> = dataStoreManager.getFromDataStore()
         .mapNotNull {
             if (it.needsMoreData()) null else it
         }
-    private val isExpanded: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val targetDate: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
 
     val viewState: StateFlow<UIState> = combine(
         budgetDataFlow,
-        isExpanded,
-        targetDate,
+        isExpandedStateFlow,
+        targetDateStateFlow,
     ) { budgetData, isExpanded, targetDate ->
 
         val startDate = when (budgetData.budgetType) {
@@ -59,6 +60,11 @@ class MainScreenViewModel @Inject constructor(
                 } ?: LocalDate.now().minusDays(1)
             }
         }
+
+        if (startDate.isAfter(targetDate)) {
+            targetDateStateFlow.value = LocalDate.now()
+        }
+
         val targetDatePlusOne = targetDate.plusDays(1)
 
         //TODO: Handle IllegalStateException
@@ -137,15 +143,13 @@ class MainScreenViewModel @Inject constructor(
         )
 
     fun toggleDetailsExpanded() {
-        viewModelScope.launch {
-            isExpanded.emit(!isExpanded.value)
+        isExpandedStateFlow.update { isExpanded ->
+            !isExpanded
         }
     }
 
     fun onPickTargetDate(newDate: LocalDate) {
-        viewModelScope.launch {
-            targetDate.emit(newDate)
-        }
+        targetDateStateFlow.value = newDate
     }
 
     @Immutable
@@ -155,11 +159,6 @@ class MainScreenViewModel @Inject constructor(
         val targetDateInEpochMillis: Long = 0,
         val maxBudget: Float = -1f,
 
-//        val lengthOfPaymentCycleInDays: Int? = null,
-//        val dailyBudget: Float? = null,
-//        val daysSinceStart: Int? = null,
-//        val daysRemaining: Int? = null,
-//        val currentBudget: Float? = null,
         val remainingBudget: Float? = null,
 
         val currency: String = "",
@@ -167,14 +166,6 @@ class MainScreenViewModel @Inject constructor(
         val isExpanded: Boolean = true,
 
         val hasIncompleteData: Boolean = true,
-//        val lengthOfPaymentCycleInDays = startDate.lengthOfMonth()
-//        val dailyBudget = maxBudget / lengthOfPaymentCycleInDays
-//
-//        val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDate)
-//        val daysRemaining = lengthOfPaymentCycleInDays - daysSinceStart
-//
-//        val currentBudget = if (daysSinceStart <= lengthOfPaymentCycleInDays) daysSinceStart * dailyBudget else maxBudget
-//        val remainingBudget = if (daysSinceStart <= lengthOfPaymentCycleInDays) maxBudget - currentBudget else 0f
     )
 }
 

@@ -51,7 +51,7 @@ fun MetricItem(
             DAYS -> {
                 metricValueString = metric.value.toString()
                 metricColor = if (metric.value.toDouble() < 0) {
-                    Color.Red
+                    MaterialTheme.colorScheme.error
                 } else {
                     MaterialTheme.colorScheme.onPrimaryContainer
                 }
