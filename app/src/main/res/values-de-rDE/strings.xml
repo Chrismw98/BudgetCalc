@@ -63,4 +63,5 @@
     <string name="label_save_changes">Änderungen speichern</string>
     <string name="title_home">Übersicht</string>
     <string name="metric_text_total_budget">Gesamtbudget</string>
+    <string name="text_loading">Lädt …</string>
 </resources>

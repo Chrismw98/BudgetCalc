@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.ExitDialog
 import chrismw.budgetcalc.components.GenericDropDownMenu
+import chrismw.budgetcalc.components.LoadingOverlay
 import chrismw.budgetcalc.components.RadioItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
@@ -48,7 +49,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
-    state: SettingsState,
+    state: SettingsViewModel.ViewState,
     onNavigateBack: () -> Unit,
     onLoadSettings: () -> Unit,
     onSaveChanges: () -> Unit,
@@ -260,8 +261,6 @@ internal fun SettingsScreen(
                 }
             }
 
-            //TODO: Consider adding a save button + dialog 2023-12-07
-
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -282,6 +281,8 @@ internal fun SettingsScreen(
         onConfirm = onNavigateBack,
         onDismiss = { confirmExitDialogState.hide() }
     )
+
+    LoadingOverlay(visible = state.isLoading)
 }
 
 //private fun formatNumberOrEmpty(number: Float?): String = numberFormat.format(number).orEmpty()
@@ -291,7 +292,7 @@ internal fun SettingsScreen(
 fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsState(
+            state = SettingsViewModel.ViewState(
                 isBudgetConstant = true
             ),
             onNavigateBack = {},
@@ -317,7 +318,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
 fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsState(
+            state = SettingsViewModel.ViewState(
                 isBudgetConstant = false,
                 budgetType = BudgetType.WEEKLY
             ),
@@ -344,7 +345,7 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
 fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsState(
+            state = SettingsViewModel.ViewState(
                 isBudgetConstant = false,
                 budgetType = BudgetType.ONCE_ONLY
             ),

@@ -46,7 +46,7 @@ class SettingsViewModel @Inject constructor(
         currentBudgetDataDTO != initialBudgetDataDTO
     }
 
-    val viewState: StateFlow<SettingsState> = combine(
+    val viewState: StateFlow<ViewState> = combine(
         budgetDataDTOStateFlow,
         hasBudgetDataDTOChangedFlow,
         currentlyExpandedDropDownStateFlow
@@ -54,7 +54,9 @@ class SettingsViewModel @Inject constructor(
         hasDataChanged,
         currentlyExpandedDropDown ->
 
-        SettingsState(
+        ViewState(
+            isLoading = false,
+
             isBudgetConstant = budgetDataDTO.isBudgetConstant,
 
             constantBudgetAmount = budgetDataDTO.constantBudgetAmount,
@@ -76,7 +78,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = SettingsState()
+            initialValue = ViewState()
         )
 
     fun loadSettings() {
@@ -187,6 +189,29 @@ class SettingsViewModel @Inject constructor(
     fun updateExpandedDropDown(value: DropDown) {
         currentlyExpandedDropDownStateFlow.value = value
     }
+
+    @Immutable
+    data class ViewState(
+        val isLoading: Boolean = true,
+
+        val isBudgetConstant: Boolean = false,
+
+        val constantBudgetAmount: String? = null,
+        val budgetRateAmount: String? = null,
+        val currency: String? = null,
+
+        val budgetType: BudgetType = BudgetType.MONTHLY,
+        val defaultPaymentDayOfMonth: String? = null,
+        val defaultPaymentDayOfWeek: DayOfWeek? = null,
+        val startDate: LocalDate? = null,
+        val endDate: LocalDate? = null,
+
+        val budgetTypeOptions: ImmutableList<BudgetType> = persistentListOf(),
+        val dayOfWeekOptions: ImmutableList<DayOfWeek> = persistentListOf(),
+        val currentlyExpandedDropDown: DropDown = DropDown.NONE,
+
+        val showConfirmExitDialog: Boolean = false,
+    )
 }
 
 private fun correctFloatString(floatString: String): String? {
@@ -204,24 +229,3 @@ private fun correctFloatString(floatString: String): String? {
         floatString
     }
 }
-
-@Immutable
-data class SettingsState(
-    val isBudgetConstant: Boolean = false,
-
-    val constantBudgetAmount: String? = null,
-    val budgetRateAmount: String? = null,
-    val currency: String? = null,
-
-    val budgetType: BudgetType = BudgetType.MONTHLY,
-    val defaultPaymentDayOfMonth: String? = null,
-    val defaultPaymentDayOfWeek: DayOfWeek? = null,
-    val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
-
-    val budgetTypeOptions: ImmutableList<BudgetType> = persistentListOf(),
-    val dayOfWeekOptions: ImmutableList<DayOfWeek> = persistentListOf(),
-    val currentlyExpandedDropDown: DropDown = DropDown.NONE,
-
-    val showConfirmExitDialog: Boolean = false,
-)

@@ -60,4 +60,5 @@
     <string name="label_save_changes">Αποθήκευση αλλαγών</string>
     <string name="title_home">Σύνοψη</string>
     <string name="metric_text_total_budget">Συνολικό budget</string>
+    <string name="text_loading">Φόρτωση …</string>
 </resources>

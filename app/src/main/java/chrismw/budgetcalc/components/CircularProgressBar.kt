@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,59 +28,65 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import java.text.NumberFormat
+
+private val INDICATOR_THICKNESS_DP = 24.dp
 
 @Composable
 fun CircularProgressbar(
     modifier: Modifier = Modifier,
-    foregroundIndicatorColor: Color = MaterialTheme.colorScheme.tertiary,
-    shadowColor: Color = MaterialTheme.colorScheme.surfaceVariant,
-    indicatorThickness: Dp = 24.dp,
+    remainingBudgetPercentage: Float,
     remainingBudget: Float,
-    maxBudget: Float,
-    animationDurationInMs: Int = 500,
-    targetDateString: String = "",
     currency: String,
+    targetDateString: String = "",
     onClick: () -> Unit,
 ) {
-    val remainingBudgetAnimator = remember {
-        Animatable(-1f)
+    val remainingBudgetAnimated = remember {
+        Animatable(0F)
     }
 
-    // This is to animate the foreground indicator
-//    val remainingBudgetAnimate = animateFloatAsState(
-////        targetValue = remainingBudgetAnimationFloat,
-////        targetValue = remainingBudget,
-//        targetValue = remainingBudgetRemember.value,
-//        animationSpec = tween(
-//            durationMillis = animationDurationInMs,
-//            easing = FastOutSlowInEasing
-//        )
-//    )
+    val remainingBudgetPercentageAnimated = remember {
+        Animatable(0F)
+    }
 
-    // This is to start the animation when the activity is opened
-//    LaunchedEffect(Unit) {
-//        remainingBudgetAnimationFloat = remainingBudget
-//    }
-    LaunchedEffect(remainingBudget) {
-        remainingBudgetAnimator.snapTo(0f)
-        remainingBudgetAnimator.animateTo(
-            targetValue = remainingBudget,
-            animationSpec = tween(
-                durationMillis = animationDurationInMs,
-                easing = FastOutSlowInEasing
-            )
+    LaunchedEffect(remainingBudget, remainingBudgetPercentage) {
+
+        awaitAll(
+            async { remainingBudgetAnimated.snapTo(0F) },
+            async { remainingBudgetPercentageAnimated.snapTo(0F) }
         )
+
+        awaitAll(
+            async {
+                remainingBudgetAnimated.animateTo(
+                    targetValue = remainingBudget,
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+            },
+            async {
+                remainingBudgetPercentageAnimated.animateTo(
+                    targetValue = remainingBudgetPercentage.coerceIn(0.0F, 1.0F),
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+            }
+        )
+
     }
 
     BoxWithConstraints(
@@ -96,7 +103,7 @@ fun CircularProgressbar(
 
         Surface(
             shape = CircleShape,
-            color = shadowColor,
+            color = MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier.size(boxWidth),
             shadowElevation = 1.dp,
             content = {}
@@ -104,37 +111,39 @@ fun CircularProgressbar(
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.size(boxWidth - indicatorThickness * 2),
+            modifier = Modifier.size(boxWidth - INDICATOR_THICKNESS_DP * 2),
             shadowElevation = 3.dp
         ) {
             DisplayNumberText(
-                amount = remainingBudgetAnimator.value,
+                amount = remainingBudgetAnimated.value,
                 targetDateString = targetDateString,
                 currency = currency,
             )
         }
 
-
+        val indicatorColor = MaterialTheme.colorScheme.tertiary
         Canvas(
-            modifier = Modifier.matchParentSize()
+            modifier = Modifier
+                .progressSemantics(remainingBudgetPercentage)
+                .matchParentSize()
         ) {
             // Convert the dataUsage to angle
-            val sweepAngle = (remainingBudgetAnimator.value) * 360 / maxBudget
+            val sweepAngle = (remainingBudgetPercentageAnimated.value) * 360
 
             // Foreground indicator
             drawArc(
-                color = foregroundIndicatorColor,
+                color = indicatorColor,
                 startAngle = -90f,
                 sweepAngle = sweepAngle,
                 useCenter = false,
-                style = Stroke(width = indicatorThickness.toPx(), cap = StrokeCap.Round),
+                style = Stroke(width = INDICATOR_THICKNESS_DP.toPx(), cap = StrokeCap.Round),
                 size = Size(
-                    width = (this.size.toDpSize().width - indicatorThickness).toPx(),
-                    height = (this.size.toDpSize().height - indicatorThickness).toPx()
+                    width = (this.size.toDpSize().width - INDICATOR_THICKNESS_DP).toPx(),
+                    height = (this.size.toDpSize().height - INDICATOR_THICKNESS_DP).toPx()
                 ),
                 topLeft = Offset(
-                    x = (indicatorThickness / 2).toPx(),
-                    y = (indicatorThickness / 2).toPx()
+                    x = (INDICATOR_THICKNESS_DP / 2).toPx(),
+                    y = (INDICATOR_THICKNESS_DP / 2).toPx()
                 )
             )
         }
@@ -183,8 +192,8 @@ private fun DisplayNumberText(
 fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
         CircularProgressbar(
-            maxBudget = 100f,
             remainingBudget = 47f,
+            remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
             onClick = {}
@@ -197,8 +206,8 @@ fun CircularProgressBarPreviewSmall() {
 fun CircularProgressBarPreviewNormal() {
     BudgetCalcTheme {
         CircularProgressbar(
-            maxBudget = 100f,
             remainingBudget = 47f,
+            remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
             onClick = {}
@@ -211,8 +220,8 @@ fun CircularProgressBarPreviewNormal() {
 fun CircularProgressBarPreviewLarge() {
     BudgetCalcTheme {
         CircularProgressbar(
-            maxBudget = 100f,
             remainingBudget = 47f,
+            remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
             onClick = {}
@@ -225,8 +234,8 @@ fun CircularProgressBarPreviewLarge() {
 fun CircularProgressBarPreviewCustom() {
     BudgetCalcTheme {
         CircularProgressbar(
-            maxBudget = 100f,
             remainingBudget = 47f,
+            remainingBudgetPercentage = 0.47f,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f),

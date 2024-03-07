@@ -62,4 +62,5 @@
     <string name="label_leave_without_saving">Leave without saving</string>
     <string name="label_save_changes">Save changes</string>
     <string name="title_home">Home</string>
+    <string name="text_loading">Loading …</string>
 </resources>

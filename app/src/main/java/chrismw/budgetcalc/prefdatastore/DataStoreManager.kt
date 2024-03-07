@@ -14,7 +14,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import chrismw.budgetcalc.decimalFormat
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
-import chrismw.budgetcalc.screens.SettingsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -158,7 +157,8 @@ data class BudgetData(
             } else {
                 checkNotNull(budgetRateAmount)
             }
-            checkNotNull(currency) //TODO: Ensure currency is also not blank
+            checkNotNull(currency) //TODO: There might be a better way to handle this 2024-03-07
+            currency.ifBlank { throw IllegalStateException("Currency cannot be blank") }
             when (budgetType) {
                 BudgetType.ONCE_ONLY -> {
                     checkNotNull(defaultStartDate)
@@ -180,24 +180,6 @@ data class BudgetData(
         return false
     }
 
-//    fun toSettingsState(): SettingsState {
-//        return SettingsState(
-//            isBudgetConstant = isBudgetConstant,
-//            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) }, /*?: ""*/
-//            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) }, /*?: ""*/
-//            currency = currency,
-//
-//            budgetType = budgetType,
-//            defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
-//            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
-//            startDate = defaultStartDate?.let { LocalDate.parse(it) },
-//            endDate = defaultEndDate?.let { LocalDate.parse(it) },
-////            budgetRateUnit = budgetRateUnit.name, //TODO: Delete this
-////            defaultPaymentDayOfMonth = defaultPaymentDay?.toString() ?: "",
-////            paymentCycleLength = paymentCycleLength?.toString() ?: "",
-//        )
-//    }
-
     fun toBudgetDataDTO(): BudgetDataDTO {
         return BudgetDataDTO(
             isBudgetConstant = isBudgetConstant,
@@ -213,24 +195,4 @@ data class BudgetData(
             endDate = defaultEndDate?.let { LocalDate.parse(it) },
         )
     }
-
-//    companion object {
-//
-//        fun fromSettingsState(settingsState: SettingsState): BudgetData {
-//
-//            return BudgetData(
-//                isBudgetConstant = settingsState.isBudgetConstant,
-//                constantBudgetAmount = settingsState.constantBudgetAmount?.toFloatOrNull(),
-//                budgetRateAmount = settingsState.budgetRateAmount?.toFloatOrNull(),
-//                currency = settingsState.currency, /*?: ""*/
-//
-//                budgetType = settingsState.budgetType,
-//                defaultPaymentDayOfMonth = settingsState.defaultPaymentDayOfMonth?.toIntOrNull(),
-//                defaultPaymentDayOfWeek = settingsState.defaultPaymentDayOfWeek?.value,
-//                defaultStartDate = settingsState.startDate?.toString(),
-//                defaultEndDate = settingsState.endDate?.toString(),
-//            )
-//        }
-//
-//    }
 }

@@ -62,7 +62,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
-    state: MainScreenViewModel.UIState,
+    state: MainScreenViewModel.ViewState,
     onClickSettingsButton: () -> Unit,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit,
@@ -85,18 +85,25 @@ internal fun MainScreen(
             )
         }
     ) { contentPadding ->
-        if (state.hasIncompleteData) {
-            MissingDataContent(
-                contentPadding,
-                onClickSettingsButton
-            )
-        } else {
-            MainScreenContent(
-                contentPadding,
-                state,
-                toggleShowDetails,
-                onPickTargetDate,
-            )
+//        AnimatedVisibility(
+//            visible = !state.isLoading,
+//            enter = fadeIn(),
+//            exit = fadeOut(),
+//        ) {
+        if (!state.isLoading) {
+            if (state.hasIncompleteData) {
+                MissingDataContent(
+                    contentPadding,
+                    onClickSettingsButton
+                )
+            } else {
+                MainScreenContent(
+                    contentPadding,
+                    state,
+                    toggleShowDetails,
+                    onPickTargetDate,
+                )
+            }
         }
     }
 }
@@ -104,7 +111,7 @@ internal fun MainScreen(
 @Composable
 private fun MainScreenContent(
     contentPadding: PaddingValues,
-    state: MainScreenViewModel.UIState,
+    state: MainScreenViewModel.ViewState,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit
 ) {
@@ -125,8 +132,8 @@ private fun MainScreenContent(
         ) {
 
             CircularProgressbar(
-                maxBudget = state.maxBudget,
                 remainingBudget = state.remainingBudget ?: 0f,
+                remainingBudgetPercentage = state.remainingBudgetPercentage,
                 modifier = Modifier
                     .padding(24.dp)
                     .fillMaxWidth()
@@ -136,74 +143,8 @@ private fun MainScreenContent(
                 onClick = { datePickerDialogState.show() }
             )
 
-//                Spacer(modifier = Modifier.height(30.dp))
-
-//            Spacer(modifier = Modifier.height(20.dp))
-
-//                StartToTargetDate(
-//                    startDate = startDate,
-//                    endDate = targetDate,
-//                    onClickStartDate = {
-//                        startDate = it
-//                        if (!startDate.isBefore(targetDate)) {
-//                            targetDate = startDate.plusDays(1)
-//                        }
-//                    },
-//                    onClickTargetDate = {
-//                        targetDate = it
-//                        if (!startDate.isBefore(targetDate)) {
-//                            startDate = targetDate.minusDays(1)
-//                        }
-//                    }
-//                )
-//
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//                decimalFormat
-//                TextFieldWithUnit(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    value = maxBudgetString,
-//                    onValueChange = { newValueString ->
-//                        if (validateNumberInputString(
-//                                numberInputString = newValueString,
-//                                allowDecimalSeparator = true)
-//                        ) {
-//                            maxBudgetString = newValueString
-//                        }
-//                    },
-//                    labelText = stringResource(id = R.string.budget_amount),
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        keyboardType = KeyboardType.Decimal,
-//                        imeAction = ImeAction.Next,
-//                    ),
-//                    unit = "EUR"
-//                )
-//
-//                Spacer(modifier = Modifier.height(6.dp))
-//
-//                TextFieldWithUnit(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    value = "30",
-//                    onValueChange = {},
-//                    labelText = stringResource(id = R.string.payment_cycle_length),
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        keyboardType = KeyboardType.Number,
-//                        imeAction = ImeAction.Done
-//                    ),
-//                    unit = "Days"
-//                )
-
             Column(
-                modifier = Modifier
-                    .padding(vertical = 24.dp),
-//                    .animateContentSize(
-//                        animationSpec = tween(
-//                            durationMillis = 300,
-//                            easing = FastOutSlowInEasing
-////                            dampingRatio = Spring.DampingRatioMediumBouncy,
-////                            stiffness = Spring.StiffnessLow
-//                        )
-//                    ),
+                modifier = Modifier.padding(vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
@@ -347,7 +288,7 @@ private fun MissingDataContent(
 fun DefaultPreview() {
     BudgetCalcTheme {
         MainScreen(
-            state = MainScreenViewModel.UIState(
+            state = MainScreenViewModel.ViewState(
                 targetDate = LocalDate.of(2023, 9, 16),
                 targetDateInEpochMillis = 1694857746876,
 
@@ -377,7 +318,7 @@ fun DefaultPreview() {
 fun MissingDataPreview() {
     BudgetCalcTheme {
         MainScreen(
-            state = MainScreenViewModel.UIState(
+            state = MainScreenViewModel.ViewState(
                 hasIncompleteData = true
             ),
             onClickSettingsButton = {},
