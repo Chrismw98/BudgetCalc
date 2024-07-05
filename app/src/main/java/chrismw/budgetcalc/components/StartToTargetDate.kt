@@ -27,16 +27,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.extensions.dateString
+import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-
-//private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
-private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
 
 @Composable
 fun StartToTargetDate(
@@ -53,7 +50,8 @@ fun StartToTargetDate(
     ) {
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = startDate?.format(formatter) ?: stringResource(R.string.label_select_date),
+            value = startDate?.toEpochMillis()?.let { dateString(it) } ?: stringResource(
+                R.string.label_select_date), //TODO: This logic could be inside the ViewModel, or its own state
             onClick = onClickStartDate,
             label = stringResource(id = R.string.label_start_date),
             leadingIcon = {
@@ -68,7 +66,7 @@ fun StartToTargetDate(
 
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
-            value = endDate?.format(formatter) ?: stringResource(R.string.label_select_date),
+            value = endDate?.toEpochMillis()?.let { dateString(it) } ?: stringResource(R.string.label_select_date),
             onClick = onClickTargetDate,
             label = stringResource(id = R.string.label_end_date),
             leadingIcon = {

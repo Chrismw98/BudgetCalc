@@ -6,6 +6,8 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
+import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -63,4 +65,11 @@ public fun NavController.popBackStackIfResumed() {
     if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
         popBackStack()
     }
+}
+
+/**
+ * Convert the LocalDate to epoch millis using the system default timezone. The time is the start of the day.
+ */
+fun LocalDate.toEpochMillis(): Long {
+    return atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }

@@ -85,11 +85,6 @@ internal fun MainScreen(
             )
         }
     ) { contentPadding ->
-//        AnimatedVisibility(
-//            visible = !state.isLoading,
-//            enter = fadeIn(),
-//            exit = fadeOut(),
-//        ) {
         if (!state.isLoading) {
             if (state.hasIncompleteData) {
                 MissingDataContent(
@@ -289,6 +284,8 @@ fun DefaultPreview() {
     BudgetCalcTheme {
         MainScreen(
             state = MainScreenViewModel.ViewState(
+                isLoading = false,
+
                 targetDate = LocalDate.of(2023, 9, 16),
                 targetDateInEpochMillis = 1694857746876,
 
@@ -319,6 +316,7 @@ fun MissingDataPreview() {
     BudgetCalcTheme {
         MainScreen(
             state = MainScreenViewModel.ViewState(
+                isLoading = false,
                 hasIncompleteData = true
             ),
             onClickSettingsButton = {},

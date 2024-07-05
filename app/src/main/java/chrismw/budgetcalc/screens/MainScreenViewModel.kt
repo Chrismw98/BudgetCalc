@@ -2,6 +2,7 @@ package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
@@ -137,7 +138,7 @@ class MainScreenViewModel @Inject constructor(
 
                 startDate = startDate,
                 targetDate = targetDate,
-                targetDateInEpochMillis = targetDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                targetDateInEpochMillis = targetDate.toEpochMillis(),
                 maxBudget = maxBudget,
 
                 remainingBudget = remainingBudget,

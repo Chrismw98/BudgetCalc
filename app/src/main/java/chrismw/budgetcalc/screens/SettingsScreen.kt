@@ -293,6 +293,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
             state = SettingsViewModel.ViewState(
+                isLoading = false,
                 isBudgetConstant = true
             ),
             onNavigateBack = {},
@@ -319,6 +320,7 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
             state = SettingsViewModel.ViewState(
+                isLoading = false,
                 isBudgetConstant = false,
                 budgetType = BudgetType.WEEKLY
             ),
@@ -346,6 +348,7 @@ fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
             state = SettingsViewModel.ViewState(
+                isLoading = false,
                 isBudgetConstant = false,
                 budgetType = BudgetType.ONCE_ONLY
             ),
