@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
-import chrismw.budgetcalc.prefdatastore.DataStoreManager
+import chrismw.budgetcalc.data.BudgetDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val budgetDataRepository: BudgetDataRepository
 ) : ViewModel() {
 
     companion object {
@@ -83,7 +83,7 @@ class SettingsViewModel @Inject constructor(
 
     fun loadSettings() {
         viewModelScope.launch {
-            val loadedBudgetDataDTO = dataStoreManager.getBudgetData().toBudgetDataDTO()
+            val loadedBudgetDataDTO = budgetDataRepository.getBudgetData().toBudgetDataDTO()
             budgetDataDTOStateFlow.value = loadedBudgetDataDTO
             initialBudgetDataDTOStateFlow.value = loadedBudgetDataDTO
         }
@@ -97,7 +97,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentBudgetDataDTO = budgetDataDTOStateFlow.value
             initialBudgetDataDTOStateFlow.value = currentBudgetDataDTO
-            dataStoreManager.saveToDataStore(
+            budgetDataRepository.saveBudgetData(
                 currentBudgetDataDTO.toBudgetData()
             )
         }

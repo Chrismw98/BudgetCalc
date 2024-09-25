@@ -1,7 +1,7 @@
 package chrismw.budgetcalc.di
 
 import android.content.Context
-import chrismw.budgetcalc.prefdatastore.DataStoreManager
+import chrismw.budgetcalc.data.DataStoreManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

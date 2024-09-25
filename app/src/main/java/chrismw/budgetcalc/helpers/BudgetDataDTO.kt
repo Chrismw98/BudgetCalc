@@ -1,6 +1,6 @@
 package chrismw.budgetcalc.helpers
 
-import chrismw.budgetcalc.prefdatastore.BudgetData
+import chrismw.budgetcalc.data.BudgetData
 import java.time.DayOfWeek
 import java.time.LocalDate
 

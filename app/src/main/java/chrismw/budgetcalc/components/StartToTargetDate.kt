@@ -11,10 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Today
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -146,7 +146,7 @@ fun ClickableDatePickerTextField(
                 .alpha(1f)
                 .clickable(
                     onClick = { dialogState.show() },
-                    indication = rememberRipple(
+                    indication = ripple(
                         bounded = true
                     ),
                     interactionSource = MutableInteractionSource(),

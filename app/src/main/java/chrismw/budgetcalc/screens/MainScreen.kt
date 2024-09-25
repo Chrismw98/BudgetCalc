@@ -62,7 +62,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
-    state: MainScreenViewModel.ViewState,
+    viewState: MainScreenViewModel.ViewState,
     onClickSettingsButton: () -> Unit,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit,
@@ -85,8 +85,8 @@ internal fun MainScreen(
             )
         }
     ) { contentPadding ->
-        if (!state.isLoading) {
-            if (state.hasIncompleteData) {
+        if (!viewState.isLoading) {
+            if (viewState.hasIncompleteData) {
                 MissingDataContent(
                     contentPadding,
                     onClickSettingsButton
@@ -94,7 +94,7 @@ internal fun MainScreen(
             } else {
                 MainScreenContent(
                     contentPadding,
-                    state,
+                    viewState,
                     toggleShowDetails,
                     onPickTargetDate,
                 )
@@ -106,7 +106,7 @@ internal fun MainScreen(
 @Composable
 private fun MainScreenContent(
     contentPadding: PaddingValues,
-    state: MainScreenViewModel.ViewState,
+    viewState: MainScreenViewModel.ViewState,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit
 ) {
@@ -127,14 +127,14 @@ private fun MainScreenContent(
         ) {
 
             CircularProgressbar(
-                remainingBudget = state.remainingBudget ?: 0f,
-                remainingBudgetPercentage = state.remainingBudgetPercentage,
+                remainingBudget = viewState.remainingBudget ?: 0f,
+                remainingBudgetPercentage = viewState.remainingBudgetPercentage,
                 modifier = Modifier
                     .padding(24.dp)
                     .fillMaxWidth()
                     .aspectRatio(1f),
-                targetDateString = dateString(state.targetDateInEpochMillis),
-                currency = state.currency,
+                targetDateString = dateString(viewState.targetDateInEpochMillis),
+                currency = viewState.currency,
                 onClick = { datePickerDialogState.show() }
             )
 
@@ -150,7 +150,7 @@ private fun MainScreenContent(
                 ) {
                     Text(
                         modifier = Modifier.padding(bottom = 24.dp),
-                        text = if (state.isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
+                        text = if (viewState.isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Start
@@ -163,12 +163,12 @@ private fun MainScreenContent(
 //                        onClick = { expanded = !expanded }
 //                    ) {
                     Icon(
-                        imageVector = if (state.isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        imageVector = if (viewState.isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                         modifier = Modifier
                             .size(size = 64.dp) //TODO: Check if this is the right way to set the size (2023-06-14)
                             .padding(top = 30.dp),
 //                            tint = colorResource(id = R.color.color_accent), //TODO: Use Material UI Colors (2023-06-14)
-                        contentDescription = if (state.isExpanded) {
+                        contentDescription = if (viewState.isExpanded) {
                             stringResource(R.string.show_less)
                         } else {
                             stringResource(R.string.show_more)
@@ -177,13 +177,13 @@ private fun MainScreenContent(
 //                    }
                 }
                 AnimatedVisibility(
-                    visible = state.isExpanded,
+                    visible = viewState.isExpanded,
                     enter = expandVertically(),
                     exit = shrinkVertically()
                 ) {
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(3.dp),
                         modifier = Modifier.heightIn(max = 250.dp)) {
-                        items(items = state.metrics) { metric ->
+                        items(items = viewState.metrics) { metric ->
                             Card(
                                 shape = MaterialTheme.shapes.small,
                                 colors = CardDefaults.cardColors(
@@ -193,7 +193,7 @@ private fun MainScreenContent(
                                 MetricItem(
                                     metric = metric,
                                     modifier = Modifier.padding(6.dp),
-                                    currency = state.currency
+                                    currency = viewState.currency
                                 )
                             }
 
@@ -214,10 +214,10 @@ private fun MainScreenContent(
         },
     ) {
         datepicker(
-            initialDate = state.targetDate,
+            initialDate = viewState.targetDate,
             title = stringResource(R.string.dialog_title_pick_target_date),
             allowedDateValidator = {
-                !it.isBefore(state.startDate)
+                !it.isBefore(viewState.startDate)
             },
         ) {
             onPickTargetDate(it)
@@ -283,7 +283,7 @@ private fun MissingDataContent(
 fun DefaultPreview() {
     BudgetCalcTheme {
         MainScreen(
-            state = MainScreenViewModel.ViewState(
+            viewState = MainScreenViewModel.ViewState(
                 isLoading = false,
 
                 targetDate = LocalDate.of(2023, 9, 16),
@@ -315,7 +315,7 @@ fun DefaultPreview() {
 fun MissingDataPreview() {
     BudgetCalcTheme {
         MainScreen(
-            state = MainScreenViewModel.ViewState(
+            viewState = MainScreenViewModel.ViewState(
                 isLoading = false,
                 hasIncompleteData = true
             ),

@@ -41,7 +41,7 @@ fun BudgetCalcNavHost(
             val viewModel: MainScreenViewModel = hiltViewModel()
             val state by viewModel.viewState.collectAsStateWithLifecycle()
             MainScreen(
-                state = state,
+                viewState = state,
                 onClickSettingsButton = navController::navigateToSettingsScreen,
                 toggleShowDetails = viewModel::toggleDetailsExpanded,
                 onPickTargetDate = viewModel::onPickTargetDate
