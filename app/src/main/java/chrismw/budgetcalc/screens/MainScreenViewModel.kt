@@ -2,21 +2,26 @@ package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.data.BudgetData
+import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
 import chrismw.budgetcalc.helpers.MetricUnit
-import chrismw.budgetcalc.data.BudgetData
-import chrismw.budgetcalc.data.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.time.DayOfWeek
@@ -24,112 +29,150 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
+import javax.inject.Provider
 import kotlin.math.abs
 
 private const val WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS = 7
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    dataStoreManager: DataStoreManager
+    budgetDataRepository: BudgetDataRepository,
+    @DateNow private val nowDateProvider: Provider<LocalDate>,
 ) : ViewModel() {
 
     private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+    private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
 
-    private val budgetDataFlow: Flow<BudgetData> = dataStoreManager.getFromDataStore()
+    private val budgetDataSharedFlow: SharedFlow<BudgetData> = budgetDataRepository.observeBudgetData()
+        .shareIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            replay = 0
+        )
+
+    private val startDateSharedFlow: SharedFlow<LocalDate> = budgetDataSharedFlow.map { budgetData ->
+        val today = nowDateProvider.get()
+
+        when (budgetData.budgetType) {
+            is BudgetType.OnceOnly -> budgetData.defaultStartDate?.let { LocalDate.parse(it) } ?: nowDateProvider.get()
+            is BudgetType.Weekly -> {
+                getLatestWeeklyPaymentDate(
+                    today = today,
+                    paymentDayOfWeek = DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1)
+                )
+            }
+
+            is BudgetType.Monthly -> {
+                budgetData.defaultPaymentDayOfMonth?.let {
+                    getLatestMonthlyPaymentDate(
+                        today = today,
+                        paymentDayOfMonth = it
+                    )
+                } ?: nowDateProvider.get().minusDays(1)
+            }
+        }
+    }.shareIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        0
+    )
+
+    private val targetDateSharedFlow: Flow<LocalDate> = combine(
+        startDateSharedFlow,
+        targetDateStateFlow
+    ) { startDate, chosenTargetDate ->
+        if (startDate.isAfter(chosenTargetDate)) {
+            nowDateProvider.get()
+        } else {
+            chosenTargetDate
+        }
+    }.shareIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        0
+    )
+
+    private val metricsFlow: Flow<ImmutableList<Metric>?> = combine(
+        budgetDataSharedFlow,
+        startDateSharedFlow,
+        targetDateSharedFlow
+    ) { budgetData, startDate, targetDate ->
+        val targetDatePlusOne = targetDate.plusDays(1)
+        //TODO: Handle IllegalStateException (?)
+        val isConstantBudget = budgetData.isBudgetConstant
+        val today = nowDateProvider.get()
+
+        val paymentCycleLengthInDays: Int = when (budgetData.budgetType) {
+            is BudgetType.OnceOnly -> {
+                val endDate = budgetData.defaultEndDate?.let { LocalDate.parse(it) } ?: today
+                ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
+            }
+
+            is BudgetType.Weekly -> {
+                WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS
+            }
+
+            is BudgetType.Monthly -> {
+                val endDate = budgetData.defaultPaymentDayOfMonth?.let {
+                    getNextMonthlyPaymentDate(today, it)
+                } ?: today.minusDays(1)
+                ChronoUnit.DAYS.between(startDate, endDate).toInt()
+            }
+        }
+        val maxBudget = if (isConstantBudget) {
+            checkNotNull(budgetData.constantBudgetAmount)
+        } else {
+            checkNotNull(budgetData.budgetRateAmount) * paymentCycleLengthInDays
+        }
+        val dailyBudget = if (isConstantBudget) {
+            maxBudget / paymentCycleLengthInDays
+        } else {
+            checkNotNull(budgetData.budgetRateAmount)
+        }
+        val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDatePlusOne).toInt()
+        val daysRemaining = paymentCycleLengthInDays - daysSinceStart
+        val currentBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
+            daysSinceStart * dailyBudget
+        } else {
+            maxBudget
+        }
+        val remainingBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
+            maxBudget - currentBudget
+        } else {
+            0F
+        }
+        val metrics = persistentListOf(
+            Metric(MetricType.DaysSinceStart, daysSinceStart, MetricUnit.DAYS),
+            Metric(MetricType.DaysRemaining, daysRemaining, MetricUnit.DAYS),
+            Metric(MetricType.DailyBudget, dailyBudget, MetricUnit.CURRENCY_PER_DAY),
+            Metric(MetricType.BudgetUntilTargetDate, currentBudget, MetricUnit.CURRENCY),
+            Metric(MetricType.RemainingBudget, remainingBudget, MetricUnit.CURRENCY),
+            Metric(MetricType.TotalBudget, maxBudget, MetricUnit.CURRENCY),
+        )
+        metrics.toImmutableList()
+    }
 
     val viewState: StateFlow<ViewState> = combine(
-        budgetDataFlow,
+        budgetDataSharedFlow,
+        startDateSharedFlow,
         isExpandedStateFlow,
-        targetDateStateFlow,
-    ) { budgetData, isExpanded, targetDate ->
-
-        if (budgetData.needsMoreData()) {
+        targetDateSharedFlow,
+        metricsFlow,
+    ) { budgetData, startDate, isExpanded, targetDate, metrics ->
+        if (budgetData.needsMoreData() || metrics.isNullOrEmpty()) {
             ViewState(
                 isLoading = false,
                 hasIncompleteData = true
             )
         } else {
 
-            val startDate = when (budgetData.budgetType) {
-                BudgetType.ONCE_ONLY -> budgetData.defaultStartDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
-                BudgetType.WEEKLY -> {
-                    getLatestWeeklyPaymentDate(DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1))
-                }
-
-                BudgetType.MONTHLY -> {
-                    budgetData.defaultPaymentDayOfMonth?.let {
-                        getLatestMonthlyPaymentDate(it)
-                    } ?: LocalDate.now().minusDays(1)
-                }
-            }
-
-            if (startDate.isAfter(targetDate)) {
-                targetDateStateFlow.value = LocalDate.now()
-            }
-
-            val targetDatePlusOne = targetDate.plusDays(1)
-
-            //TODO: Handle IllegalStateException
-            val isConstantBudget = budgetData.isBudgetConstant
-
-            val paymentCycleLengthInDays: Int = when (budgetData.budgetType) {
-                BudgetType.ONCE_ONLY -> {
-                    val endDate = budgetData.defaultEndDate?.let { LocalDate.parse(it) } ?: LocalDate.now()
-                    ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
-                }
-
-                BudgetType.WEEKLY -> {
-                    WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS
-                }
-
-                BudgetType.MONTHLY -> {
-                    val endDate = budgetData.defaultPaymentDayOfMonth?.let {
-                        getNextMonthlyPaymentDate(it)
-                    } ?: LocalDate.now().minusDays(1)
-                    ChronoUnit.DAYS.between(startDate, endDate).toInt()
-                }
-            }
-
-            val maxBudget = if (isConstantBudget) {
-                checkNotNull(budgetData.constantBudgetAmount)
-            } else {
-                checkNotNull(budgetData.budgetRateAmount) * paymentCycleLengthInDays
-            }
-            val dailyBudget = if (isConstantBudget) {
-                maxBudget / paymentCycleLengthInDays
-            } else {
-                checkNotNull(budgetData.budgetRateAmount)
-            }
-
-            val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDatePlusOne).toInt()
-            val daysRemaining = paymentCycleLengthInDays - daysSinceStart
-
-            val currentBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
-                daysSinceStart * dailyBudget
-            } else {
-                maxBudget
-            }
-            val remainingBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
-                maxBudget - currentBudget
-            } else {
-                0F
-            }
-
+            val remainingBudget = checkNotNull(metrics.find { it.type is MetricType.RemainingBudget }?.value).toFloat()
+            val maxBudget = checkNotNull(metrics.find { it.type is MetricType.TotalBudget }?.value).toFloat()
             val remainingBudgetPercentage = if (maxBudget == 0F) {
                 1F
             } else {
                 remainingBudget / maxBudget
             }
-
-            val metrics = persistentListOf(
-                Metric(MetricType.DAYS_SINCE_START, daysSinceStart, MetricUnit.DAYS),
-                Metric(MetricType.DAYS_REMAINING, daysRemaining, MetricUnit.DAYS),
-                Metric(MetricType.DAILY_BUDGET, dailyBudget, MetricUnit.CURRENCY_PER_DAY),
-                Metric(MetricType.BUDGET_UNTIL_TARGET_DATE, currentBudget, MetricUnit.CURRENCY),
-                Metric(MetricType.REMAINING_BUDGET, remainingBudget, MetricUnit.CURRENCY),
-                Metric(MetricType.TOTAL_BUDGET, maxBudget, MetricUnit.CURRENCY),
-            )
 
             ViewState(
                 isLoading = false,
@@ -138,7 +181,6 @@ class MainScreenViewModel @Inject constructor(
                 startDate = startDate,
                 targetDate = targetDate,
                 targetDateInEpochMillis = targetDate.toEpochMillis(),
-                maxBudget = maxBudget,
 
                 remainingBudget = remainingBudget,
                 remainingBudgetPercentage = remainingBudgetPercentage,
@@ -173,7 +215,6 @@ class MainScreenViewModel @Inject constructor(
         val startDate: LocalDate = LocalDate.now().minusDays(1),
         val targetDate: LocalDate = LocalDate.now(),
         val targetDateInEpochMillis: Long = 0,
-        val maxBudget: Float = 0F,
 
         val remainingBudget: Float? = null,
         val remainingBudgetPercentage: Float = 0F,
@@ -185,8 +226,7 @@ class MainScreenViewModel @Inject constructor(
         )
 }
 
-private fun getLatestMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
-    val today = LocalDate.now() //TODO: Maybe this should be a parameter?
+private fun getLatestMonthlyPaymentDate(today: LocalDate, paymentDayOfMonth: Int): LocalDate {
     val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
     return if (paymentDayOfCurrentMonth.isAfter(today)) {
         paymentDayOfCurrentMonth.minusMonths(1)
@@ -195,8 +235,7 @@ private fun getLatestMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
     }
 }
 
-private fun getNextMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
-    val today = LocalDate.now()
+private fun getNextMonthlyPaymentDate(today: LocalDate, paymentDayOfMonth: Int): LocalDate {
     val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
     return if (paymentDayOfCurrentMonth.isAfter(today)) {
         paymentDayOfCurrentMonth
@@ -205,8 +244,7 @@ private fun getNextMonthlyPaymentDate(paymentDayOfMonth: Int): LocalDate {
     }
 }
 
-private fun getLatestWeeklyPaymentDate(paymentDayOfWeek: DayOfWeek): LocalDate {
-    val today = LocalDate.now()
+private fun getLatestWeeklyPaymentDate(today: LocalDate, paymentDayOfWeek: DayOfWeek): LocalDate {
     val todaysDayOfWeek = today.dayOfWeek
     val differenceInDays = abs(todaysDayOfWeek.value - paymentDayOfWeek.value)
     return if (paymentDayOfWeek <= todaysDayOfWeek) {
@@ -215,3 +253,4 @@ private fun getLatestWeeklyPaymentDate(paymentDayOfWeek: DayOfWeek): LocalDate {
         today.plusDays(differenceInDays.toLong()).minusWeeks(1)
     }
 }
+

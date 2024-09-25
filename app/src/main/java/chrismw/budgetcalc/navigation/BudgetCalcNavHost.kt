@@ -52,7 +52,7 @@ fun BudgetCalcNavHost(
             val viewModel: SettingsViewModel = hiltViewModel()
             val state by viewModel.viewState.collectAsStateWithLifecycle()
             SettingsScreen(
-                state = state,
+                viewState = state,
                 onNavigateBack = { navController.popBackStackIfResumed() },
                 onSaveChanges = viewModel::saveSettings,
                 onLoadSettings = viewModel::loadSettings,

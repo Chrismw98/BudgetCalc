@@ -40,6 +40,7 @@ fun StartToTargetDate(
     modifier: Modifier = Modifier,
     startDate: LocalDate?,
     endDate: LocalDate?,
+    today: LocalDate,
     onClickStartDate: (LocalDate) -> Unit,
     onClickTargetDate: (LocalDate) -> Unit,
 ) {
@@ -52,13 +53,14 @@ fun StartToTargetDate(
             modifier = Modifier.weight(1f),
             value = startDate?.toEpochMillis()?.let { dateString(it) } ?: stringResource(
                 R.string.label_select_date), //TODO: This logic could be inside the ViewModel, or its own state
+            today = today,
             onClick = onClickStartDate,
             label = stringResource(id = R.string.label_start_date),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Today,
                     contentDescription = null)
             },
-            initialDate = startDate ?: if (endDate != null) endDate.minusDays(1) else LocalDate.now(),
+            initialDate = startDate ?: if (endDate != null) endDate.minusDays(1) else today,
             allowedDateValidator = {
                 if (endDate != null) !it.isAfter(endDate) else true
             }
@@ -67,13 +69,14 @@ fun StartToTargetDate(
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
             value = endDate?.toEpochMillis()?.let { dateString(it) } ?: stringResource(R.string.label_select_date),
+            today = today,
             onClick = onClickTargetDate,
             label = stringResource(id = R.string.label_end_date),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Event,
                     contentDescription = null)
             },
-            initialDate = endDate ?: if (startDate != null) startDate.plusDays(1) else LocalDate.now().plusDays(1),
+            initialDate = endDate ?: if (startDate != null) startDate.plusDays(1) else today.plusDays(1),
             allowedDateValidator = {
                 if (startDate != null) !it.isBefore(startDate) else true
             }
@@ -102,6 +105,7 @@ fun ClickableDatePickerTextField(
     modifier: Modifier = Modifier,
     label: String,
     value: String,
+    today: LocalDate,
     onClick: (LocalDate) -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -117,7 +121,7 @@ fun ClickableDatePickerTextField(
         },
     ) {
         datepicker(
-            initialDate = initialDate ?: LocalDate.now(),
+            initialDate = initialDate ?: today,
             title = stringResource(id = R.string.dialog_title_pick_target_date),
             allowedDateValidator = allowedDateValidator,
         ) {
@@ -167,6 +171,7 @@ fun ReadOnlyTextFieldPreview() {
             value = date.toString(),
             onClick = { date = it },
             label = "Start date",
+            today = LocalDate.now(),
             leadingIcon = { Icon(imageVector = Icons.Default.CalendarMonth, contentDescription = "Calendar Icon") }
         )
     }
@@ -176,6 +181,8 @@ fun ReadOnlyTextFieldPreview() {
 @Composable
 private fun StartToEndDatePreview() {
     BudgetCalcTheme {
+        val today = LocalDate.now()
+
         var pickedStartDate by rememberSaveable {
             mutableStateOf(LocalDate.now())
         }
@@ -188,6 +195,7 @@ private fun StartToEndDatePreview() {
                 .padding(6.dp),
             startDate = pickedStartDate,
             endDate = pickedEndDate,
+            today = today,
             onClickStartDate = { pickedStartDate = it },
             onClickTargetDate = { pickedEndDate = it }
         )

@@ -49,7 +49,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingsScreen(
-    state: SettingsViewModel.ViewState,
+    viewState: SettingsViewModel.ViewState,
     onNavigateBack: () -> Unit,
     onLoadSettings: () -> Unit,
     onSaveChanges: () -> Unit,
@@ -67,7 +67,7 @@ internal fun SettingsScreen(
 ) {
     val confirmExitDialogState = rememberExitDialogState()
     val onBackPressed: () -> Unit = {
-        if (state.showConfirmExitDialog) {
+        if (viewState.showConfirmExitDialog) {
             confirmExitDialogState.show()
         } else {
             onNavigateBack()
@@ -111,22 +111,22 @@ internal fun SettingsScreen(
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.label_is_budget_constant),
-                isSelected = state.isBudgetConstant,
+                isSelected = viewState.isBudgetConstant,
                 onClick = onClickConstantBudget
             )
 
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.label_is_budget_rate),
-                isSelected = !state.isBudgetConstant,
+                isSelected = !viewState.isBudgetConstant,
                 onClick = onClickBudgetRate
             )
 
-            if (state.isBudgetConstant) {
+            if (viewState.isBudgetConstant) {
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = state.constantBudgetAmount.orEmpty(),
+                    value = viewState.constantBudgetAmount.orEmpty(),
                     onValueChange = onConstantBudgetAmountChanged,
                     label = {
                         Text(
@@ -145,7 +145,7 @@ internal fun SettingsScreen(
                 ) {
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
-                        value = state.budgetRateAmount.orEmpty(),
+                        value = viewState.budgetRateAmount.orEmpty(),
                         onValueChange = onBudgetRateAmountChanged, //TODO: Change this component to handle input better (2023-11-12)
                         label = {
                             Text(
@@ -166,7 +166,7 @@ internal fun SettingsScreen(
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = state.currency.orEmpty(),
+                value = viewState.currency.orEmpty(),
                 onValueChange = onCurrencyChanged,
                 label = {
                     Text(
@@ -205,11 +205,11 @@ internal fun SettingsScreen(
             GenericDropDownMenu<BudgetType>(
                 modifier = Modifier.fillMaxWidth(),
                 onSelectionChanged = { newSelection -> onBudgetTypeChanged(newSelection) },
-                options = state.budgetTypeOptions,
-                selectedOption = state.budgetType,
-                onParseOptionToString = { budgetType -> budgetType?.let { stringResource(id = it.textRes) }.orEmpty() },
+                options = viewState.budgetTypeOptions,
+                selectedOption = viewState.budgetType,
+                onParseOptionToString = { budgetType -> budgetType?.let { stringResource(id = it.textResId) }.orEmpty() },
                 onExpandedMenuChanged = onUpdateExpandedDropDown,
-                isExpanded = state.currentlyExpandedDropDown == DropDown.BUDGET_TYPE,
+                isExpanded = viewState.currentlyExpandedDropDown == DropDown.BUDGET_TYPE,
                 dropDownType = DropDown.BUDGET_TYPE,
                 labelText = stringResource(R.string.label_budget_type)
             )
@@ -218,11 +218,11 @@ internal fun SettingsScreen(
                 modifier = Modifier.height(6.dp)
             )
 
-            when (state.budgetType) {
-                BudgetType.MONTHLY -> {
+            when (viewState.budgetType) {
+                BudgetType.Monthly -> {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = state.defaultPaymentDayOfMonth.orEmpty(),
+                        value = viewState.defaultPaymentDayOfMonth.orEmpty(),
                         onValueChange = onDefaultPaymentDayChanged,
                         label = {
                             Text(
@@ -236,25 +236,26 @@ internal fun SettingsScreen(
                     )
                 }
 
-                BudgetType.WEEKLY -> {
+                BudgetType.Weekly -> {
                     GenericDropDownMenu<DayOfWeek>(
                         modifier = Modifier.fillMaxWidth(),
                         onSelectionChanged = { newSelection -> onDayOfWeekChanged(newSelection) },
-                        options = state.dayOfWeekOptions,
-                        selectedOption = state.defaultPaymentDayOfWeek,
+                        options = viewState.dayOfWeekOptions,
+                        selectedOption = viewState.defaultPaymentDayOfWeek,
                         onParseOptionToString = { dayOfWeek -> dayOfWeek?.let { getStringForDayOfWeek(it) }.orEmpty() },
                         onExpandedMenuChanged = onUpdateExpandedDropDown,
-                        isExpanded = state.currentlyExpandedDropDown == DropDown.PAYMENT_DAY_OF_WEEK,
+                        isExpanded = viewState.currentlyExpandedDropDown == DropDown.PAYMENT_DAY_OF_WEEK,
                         dropDownType = DropDown.PAYMENT_DAY_OF_WEEK,
                         labelText = stringResource(id = R.string.label_payment_day_of_week)
                     )
                 }
 
-                BudgetType.ONCE_ONLY -> {
+                BudgetType.OnceOnly -> {
                     StartToTargetDate(
                         modifier = Modifier.fillMaxWidth(),
-                        startDate = state.startDate,
-                        endDate = state.endDate,
+                        startDate = viewState.startDate,
+                        endDate = viewState.endDate,
+                        today = viewState.today,
                         onClickStartDate = onStartDateChanged,
                         onClickTargetDate = onEndDateChanged
                     )
@@ -282,7 +283,7 @@ internal fun SettingsScreen(
         onDismiss = { confirmExitDialogState.hide() }
     )
 
-    LoadingOverlay(visible = state.isLoading)
+    LoadingOverlay(visible = viewState.isLoading)
 }
 
 //private fun formatNumberOrEmpty(number: Float?): String = numberFormat.format(number).orEmpty()
@@ -292,7 +293,7 @@ internal fun SettingsScreen(
 fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsViewModel.ViewState(
+            viewState = SettingsViewModel.ViewState(
                 isLoading = false,
                 isBudgetConstant = true
             ),
@@ -319,10 +320,10 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
 fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsViewModel.ViewState(
+            viewState = SettingsViewModel.ViewState(
                 isLoading = false,
                 isBudgetConstant = false,
-                budgetType = BudgetType.WEEKLY
+                budgetType = BudgetType.Weekly
             ),
             onNavigateBack = {},
             onLoadSettings = {},
@@ -347,10 +348,10 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
 fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
     BudgetCalcTheme {
         SettingsScreen(
-            state = SettingsViewModel.ViewState(
+            viewState = SettingsViewModel.ViewState(
                 isLoading = false,
                 isBudgetConstant = false,
-                budgetType = BudgetType.ONCE_ONLY
+                budgetType = BudgetType.OnceOnly
             ),
             onNavigateBack = {},
             onLoadSettings = {},

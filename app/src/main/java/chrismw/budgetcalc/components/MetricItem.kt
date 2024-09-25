@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricType.DAYS_SINCE_START
+import chrismw.budgetcalc.helpers.MetricType.DaysSinceStart
 import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY
 import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY_PER_DAY
@@ -108,7 +108,7 @@ fun getStringForMetricUnit(unit: MetricUnit, count: Int = 1, currency: String = 
 @Preview(showBackground = true, widthDp = 600, heightDp = 800)
 @Composable
 fun MetricItemPreview() {
-    val testMetric = Metric(DAYS_SINCE_START, 19, DAYS)
+    val testMetric = Metric(DaysSinceStart, 19, DAYS)
     BudgetCalcTheme {
         MetricItem(
             modifier = Modifier

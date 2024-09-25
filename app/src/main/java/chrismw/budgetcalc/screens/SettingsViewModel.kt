@@ -8,6 +8,7 @@ import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.di.DateNow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -23,16 +24,18 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val budgetDataRepository: BudgetDataRepository
+    private val budgetDataRepository: BudgetDataRepository,
+    @DateNow private val nowDateProvider: Provider<LocalDate>
 ) : ViewModel() {
 
     companion object {
 
         val DAY_OF_WEEK_LIST = DayOfWeek.values().toList().toImmutableList()
-        val BUDGET_TYPES_LIST = BudgetType.values().toList().toImmutableList()
+        val BUDGET_TYPES_LIST = persistentListOf(BudgetType.OnceOnly, BudgetType.Weekly, BudgetType.Monthly)
     }
 
     private val budgetDataDTOStateFlow: MutableStateFlow<BudgetDataDTO> = MutableStateFlow(BudgetDataDTO())
@@ -56,6 +59,7 @@ class SettingsViewModel @Inject constructor(
 
         ViewState(
             isLoading = false,
+            today = nowDateProvider.get(),
 
             isBudgetConstant = budgetDataDTO.isBudgetConstant,
 
@@ -193,6 +197,7 @@ class SettingsViewModel @Inject constructor(
     @Immutable
     data class ViewState(
         val isLoading: Boolean = true,
+        val today: LocalDate = LocalDate.now(),
 
         val isBudgetConstant: Boolean = false,
 
@@ -200,7 +205,7 @@ class SettingsViewModel @Inject constructor(
         val budgetRateAmount: String? = null,
         val currency: String? = null,
 
-        val budgetType: BudgetType = BudgetType.MONTHLY,
+        val budgetType: BudgetType = BudgetType.Monthly,
         val defaultPaymentDayOfMonth: String? = null,
         val defaultPaymentDayOfWeek: DayOfWeek? = null,
         val startDate: LocalDate? = null,

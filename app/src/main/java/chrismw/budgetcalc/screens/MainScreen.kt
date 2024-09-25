@@ -289,16 +289,15 @@ fun DefaultPreview() {
                 targetDate = LocalDate.of(2023, 9, 16),
                 targetDateInEpochMillis = 1694857746876,
 
-                maxBudget = 300f,
                 remainingBudget = 270f,
                 currency = "€",
                 metrics = persistentListOf(
-                    Metric(MetricType.DAYS_SINCE_START, 3, MetricUnit.DAYS),
-                    Metric(MetricType.DAYS_REMAINING, 27, MetricUnit.DAYS),
-                    Metric(MetricType.DAILY_BUDGET, 10f, MetricUnit.CURRENCY_PER_DAY),
-                    Metric(MetricType.BUDGET_UNTIL_TARGET_DATE, 270f, MetricUnit.CURRENCY),
-                    Metric(MetricType.REMAINING_BUDGET, 270f, MetricUnit.CURRENCY),
-                    Metric(MetricType.TOTAL_BUDGET, 540f, MetricUnit.CURRENCY),
+                    Metric(MetricType.DaysSinceStart, 3, MetricUnit.DAYS),
+                    Metric(MetricType.DaysRemaining, 27, MetricUnit.DAYS),
+                    Metric(MetricType.DailyBudget, 10f, MetricUnit.CURRENCY_PER_DAY),
+                    Metric(MetricType.BudgetUntilTargetDate, 270f, MetricUnit.CURRENCY),
+                    Metric(MetricType.RemainingBudget, 270f, MetricUnit.CURRENCY),
+                    Metric(MetricType.TotalBudget, 540f, MetricUnit.CURRENCY),
                 ),
                 isExpanded = true,
                 hasIncompleteData = false

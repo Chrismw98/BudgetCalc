@@ -11,7 +11,7 @@ data class BudgetDataDTO(
     val budgetRateAmount: String? = null,
     val currency: String? = null,
 
-    val budgetType: BudgetType = BudgetType.MONTHLY,
+    val budgetType: BudgetType = BudgetType.Monthly,
     val defaultPaymentDayOfMonth: String? = null,
     val defaultPaymentDayOfWeek: DayOfWeek? = null,
     val startDate: LocalDate? = null,

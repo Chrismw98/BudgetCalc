@@ -4,6 +4,7 @@ import chrismw.budgetcalc.data.BudgetData
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
@@ -21,7 +22,7 @@ class BudgetDataRepositoryTest {
             isBudgetConstant = true,
             constantBudgetAmount = 500F,
             currency = "EUR",
-            budgetType = BudgetType.MONTHLY,
+            budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
         )
     }
@@ -40,6 +41,12 @@ class BudgetDataRepositoryTest {
     @Test
     fun `Saved BudgetData equals retrieved BudgetData`() = runBlocking {
         val budgetData = budgetDataRepository.getBudgetData()
+        assertThat(budgetData).isEqualTo(CONSTANT_MONTHLY_BUDGET)
+    }
+
+    @Test
+    fun `Saved BudgetData equals observed BudgetData`() = runBlocking {
+        val budgetData = budgetDataRepository.observeBudgetData().first()
         assertThat(budgetData).isEqualTo(CONSTANT_MONTHLY_BUDGET)
     }
 }

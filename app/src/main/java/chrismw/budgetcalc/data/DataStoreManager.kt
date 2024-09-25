@@ -14,6 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import chrismw.budgetcalc.decimalFormat
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
+import chrismw.budgetcalc.helpers.getBudgetTypeFromName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -110,8 +111,8 @@ class DataStoreManager(val context: Context) {
             budgetRateAmount = preferences[BUDGET_RATE_AMOUNT],
             currency = preferences[CURRENCY] ?: "", //TODO: Can the ?: "" be removed? 2023-11-12
 
-            budgetType = preferences[BUDGET_TYPE]?.let { BudgetType.valueOf(it) }
-                ?: BudgetType.MONTHLY,
+            budgetType = preferences[BUDGET_TYPE]?.let { getBudgetTypeFromName(it) }
+                ?: BudgetType.Monthly,
             defaultPaymentDayOfMonth = preferences[DEFAULT_PAYMENT_DAY_OF_MONTH],
             defaultPaymentDayOfWeek = preferences[DEFAULT_PAYMENT_DAY_OF_WEEK],
             defaultStartDate = preferences[DEFAULT_START_DATE],
@@ -143,7 +144,7 @@ data class BudgetData(
     val budgetRateAmount: Float? = null,
     val currency: String? = null,
 
-    val budgetType: BudgetType = BudgetType.MONTHLY,
+    val budgetType: BudgetType = BudgetType.Monthly,
     val defaultPaymentDayOfMonth: Int? = null,
     val defaultPaymentDayOfWeek: Int? = null,
     val defaultStartDate: String? = null,
@@ -160,16 +161,16 @@ data class BudgetData(
             checkNotNull(currency) //TODO: There might be a better way to handle this 2024-03-07
             currency.ifBlank { throw IllegalStateException("Currency cannot be blank") }
             when (budgetType) {
-                BudgetType.ONCE_ONLY -> {
+                BudgetType.OnceOnly -> {
                     checkNotNull(defaultStartDate)
                     checkNotNull(defaultEndDate)
                 }
 
-                BudgetType.WEEKLY -> {
+                BudgetType.Weekly -> {
                     checkNotNull(defaultPaymentDayOfWeek)
                 }
 
-                BudgetType.MONTHLY -> {
+                BudgetType.Monthly -> {
                     checkNotNull(defaultPaymentDayOfMonth)
                 }
             }
