@@ -10,6 +10,9 @@ import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricType
 import chrismw.budgetcalc.helpers.MetricUnit
+import chrismw.budgetcalc.helpers.findLatestOccurrenceOfDayOfMonth
+import chrismw.budgetcalc.helpers.findLatestOccurrenceOfDayOfWeek
+import chrismw.budgetcalc.helpers.findNextOccurrenceOfDayOfMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -30,7 +33,6 @@ import java.time.temporal.ChronoUnit
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Provider
-import kotlin.math.abs
 
 private const val WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS = 7
 
@@ -43,11 +45,11 @@ class MainScreenViewModel @Inject constructor(
     private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
 
-    private val budgetDataSharedFlow: SharedFlow<BudgetData> = budgetDataRepository.observeBudgetData()
+    private val budgetDataSharedFlow: SharedFlow<BudgetData> = budgetDataRepository.observeBudgetData() //TODO: Refactor - budget should be sealed class respecting each Budget Type -> Nullability can be eradicated that way
         .shareIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            replay = 0
+            1
         )
 
     private val startDateSharedFlow: SharedFlow<LocalDate> = budgetDataSharedFlow.map { budgetData ->
@@ -56,17 +58,17 @@ class MainScreenViewModel @Inject constructor(
         when (budgetData.budgetType) {
             is BudgetType.OnceOnly -> budgetData.defaultStartDate?.let { LocalDate.parse(it) } ?: nowDateProvider.get()
             is BudgetType.Weekly -> {
-                getLatestWeeklyPaymentDate(
+                findLatestOccurrenceOfDayOfWeek(
                     today = today,
-                    paymentDayOfWeek = DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1)
+                    targetDayOfWeek = DayOfWeek.of(budgetData.defaultPaymentDayOfWeek ?: 1)
                 )
             }
 
             is BudgetType.Monthly -> {
                 budgetData.defaultPaymentDayOfMonth?.let {
-                    getLatestMonthlyPaymentDate(
+                    findLatestOccurrenceOfDayOfMonth(
                         today = today,
-                        paymentDayOfMonth = it
+                        targetDayOfMonth = it
                     )
                 } ?: nowDateProvider.get().minusDays(1)
             }
@@ -74,7 +76,7 @@ class MainScreenViewModel @Inject constructor(
     }.shareIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        0
+        1
     )
 
     private val targetDateSharedFlow: Flow<LocalDate> = combine(
@@ -89,7 +91,7 @@ class MainScreenViewModel @Inject constructor(
     }.shareIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        0
+        1
     )
 
     private val metricsFlow: Flow<ImmutableList<Metric>?> = combine(
@@ -114,7 +116,10 @@ class MainScreenViewModel @Inject constructor(
 
             is BudgetType.Monthly -> {
                 val endDate = budgetData.defaultPaymentDayOfMonth?.let {
-                    getNextMonthlyPaymentDate(today, it)
+                    findNextOccurrenceOfDayOfMonth(
+                        today = today,
+                        targetDayOfMonth = it
+                    )
                 } ?: today.minusDays(1)
                 ChronoUnit.DAYS.between(startDate, endDate).toInt()
             }
@@ -222,35 +227,5 @@ class MainScreenViewModel @Inject constructor(
         val currency: String = "",
         val metrics: ImmutableList<Metric> = persistentListOf(),
         val isExpanded: Boolean = true,
-
-        )
+    )
 }
-
-private fun getLatestMonthlyPaymentDate(today: LocalDate, paymentDayOfMonth: Int): LocalDate {
-    val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
-    return if (paymentDayOfCurrentMonth.isAfter(today)) {
-        paymentDayOfCurrentMonth.minusMonths(1)
-    } else {
-        paymentDayOfCurrentMonth
-    }
-}
-
-private fun getNextMonthlyPaymentDate(today: LocalDate, paymentDayOfMonth: Int): LocalDate {
-    val paymentDayOfCurrentMonth = today.withDayOfMonth(paymentDayOfMonth)
-    return if (paymentDayOfCurrentMonth.isAfter(today)) {
-        paymentDayOfCurrentMonth
-    } else {
-        paymentDayOfCurrentMonth.plusMonths(1)
-    }
-}
-
-private fun getLatestWeeklyPaymentDate(today: LocalDate, paymentDayOfWeek: DayOfWeek): LocalDate {
-    val todaysDayOfWeek = today.dayOfWeek
-    val differenceInDays = abs(todaysDayOfWeek.value - paymentDayOfWeek.value)
-    return if (paymentDayOfWeek <= todaysDayOfWeek) {
-        today.minusDays(differenceInDays.toLong())
-    } else {
-        today.plusDays(differenceInDays.toLong()).minusWeeks(1)
-    }
-}
-

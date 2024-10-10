@@ -3,21 +3,21 @@ package chrismw.budgetcalc.data.repository
 import chrismw.budgetcalc.data.BudgetData
 import chrismw.budgetcalc.data.BudgetDataRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeBudgetDataRepository : BudgetDataRepository {
 
-    private var _budgetData: BudgetData = BudgetData()
+    private val _budgetData = MutableStateFlow(BudgetData())
 
     override fun observeBudgetData(): Flow<BudgetData> {
-        return flowOf(_budgetData)
-    }
-
-    override suspend fun getBudgetData(): BudgetData {
         return _budgetData
     }
 
+    override suspend fun getBudgetData(): BudgetData {
+        return _budgetData.value
+    }
+
     override suspend fun saveBudgetData(budgetData: BudgetData) {
-        _budgetData = budgetData
+        _budgetData.value = budgetData
     }
 }

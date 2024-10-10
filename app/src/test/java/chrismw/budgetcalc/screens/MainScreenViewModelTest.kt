@@ -1,0 +1,116 @@
+package chrismw.budgetcalc.screens
+
+import app.cash.turbine.test
+import chrismw.budgetcalc.TestCoroutineRule
+import chrismw.budgetcalc.data.BudgetData
+import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.data.repository.FakeBudgetDataRepository
+import chrismw.budgetcalc.extensions.toEpochMillis
+import chrismw.budgetcalc.helpers.BudgetType
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import java.time.LocalDate
+
+/**
+ * Test class for [MainScreenViewModel]
+ */
+class MainScreenViewModelTest {
+
+    private lateinit var budgetDataRepository: BudgetDataRepository
+    private lateinit var viewModel: MainScreenViewModel
+
+    @get:Rule
+    val coroutineRule = TestCoroutineRule()
+
+    companion object {
+
+        val TEST_DATE: LocalDate = LocalDate.of(2024, 4, 1)
+        val CONSTANT_MONTHLY_BUDGET = BudgetData(
+            isBudgetConstant = true,
+            constantBudgetAmount = 300F,
+            currency = "EUR",
+            budgetType = BudgetType.Monthly,
+            defaultPaymentDayOfMonth = 1
+        )
+    }
+
+    @ExperimentalCoroutinesApi
+    @Before
+    fun setUp() {
+        budgetDataRepository = FakeBudgetDataRepository()
+        viewModel = MainScreenViewModel(
+            budgetDataRepository = budgetDataRepository,
+            nowDateProvider = { TEST_DATE }
+        )
+    }
+
+    private suspend fun createValidUIState() {
+        budgetDataRepository.saveBudgetData(CONSTANT_MONTHLY_BUDGET)
+    }
+
+    @Test
+    fun `ViewModel starts with empty ViewState`() = runTest { //TODO: Test metrics calculation individually
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(MainScreenViewModel.ViewState())
+        }
+    }
+
+    @Test
+    fun `toggleDetailsExpanded toggles isExpanded`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+            createValidUIState()
+
+            assertThat(awaitItem().isExpanded).isTrue()
+            viewModel.toggleDetailsExpanded()
+            assertThat(awaitItem().isExpanded).isFalse()
+        }
+    }
+
+    @Test
+    fun `onPickTargetDate updates targetDate`() = runTest {
+        val newDate = LocalDate.of(2024, 4, 5)
+        viewModel.viewState.test {
+            awaitItem()
+            createValidUIState()
+
+            viewModel.onPickTargetDate(newDate)
+            assertThat(awaitItem().targetDate).isEqualTo(newDate)
+        }
+    }
+
+    @Test
+    fun `ViewModel creates correct ViewState for constant monthly budget`() = runTest { //TODO: Test metrics calculation individually
+        viewModel.viewState.test {
+            awaitItem()
+
+            val constantMonthlyBudget = BudgetData(
+                isBudgetConstant = true,
+                constantBudgetAmount = 300F,
+                currency = "EUR",
+                budgetType = BudgetType.Monthly,
+                defaultPaymentDayOfMonth = 1
+            )
+            budgetDataRepository.saveBudgetData(constantMonthlyBudget)
+
+            val resultingViewState: MainScreenViewModel.ViewState = awaitItem()
+
+            assertThat(resultingViewState.isLoading).isFalse()
+            assertThat(resultingViewState.hasIncompleteData).isFalse()
+            assertThat(resultingViewState.startDate).isEqualTo(TEST_DATE)
+            assertThat(resultingViewState.targetDate).isEqualTo(TEST_DATE)
+            assertThat(resultingViewState.targetDateInEpochMillis).isEqualTo(TEST_DATE.toEpochMillis())
+            assertThat(resultingViewState.remainingBudget).isEqualTo(290F)
+            assertThat(resultingViewState.remainingBudgetPercentage).isEqualTo(290F / 300F)
+            assertThat(resultingViewState.currency).isEqualTo("EUR")
+            assertThat(resultingViewState.metrics).isNotEmpty()//TODO: Specify the exact metrics when metrics are refactored
+            assertThat(resultingViewState.isExpanded).isTrue()
+        }
+    }
+
+    //TODO: Add more tests for each budget type
+}

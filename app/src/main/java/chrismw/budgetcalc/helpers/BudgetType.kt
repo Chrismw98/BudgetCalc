@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import chrismw.budgetcalc.R
 
 @Immutable
-sealed class BudgetType(
+public sealed class BudgetType(
     @StringRes val textResId: Int,
     val name: String
 ) {

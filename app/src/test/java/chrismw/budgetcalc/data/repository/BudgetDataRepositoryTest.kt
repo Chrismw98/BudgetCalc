@@ -1,11 +1,11 @@
 package chrismw.budgetcalc.data.repository
 
+import app.cash.turbine.test
 import chrismw.budgetcalc.data.BudgetData
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
@@ -17,6 +17,8 @@ class BudgetDataRepositoryTest {
     private lateinit var budgetDataRepository: BudgetDataRepository
 
     companion object {
+
+        val EMPTY_MONTHLY_BUDGET = BudgetData()
 
         val CONSTANT_MONTHLY_BUDGET = BudgetData(
             isBudgetConstant = true,
@@ -30,23 +32,22 @@ class BudgetDataRepositoryTest {
     @Before
     fun setUp() {
         budgetDataRepository = FakeBudgetDataRepository()
-
-        val budgetDataToSave = CONSTANT_MONTHLY_BUDGET.copy()
-
-        runBlocking {
-            budgetDataRepository.saveBudgetData(budgetDataToSave)
-        }
     }
 
     @Test
-    fun `Saved BudgetData equals retrieved BudgetData`() = runBlocking {
+    fun `Default BudgetData equals empty BudgetData`() = runTest {
         val budgetData = budgetDataRepository.getBudgetData()
-        assertThat(budgetData).isEqualTo(CONSTANT_MONTHLY_BUDGET)
+        assertThat(budgetData).isEqualTo(EMPTY_MONTHLY_BUDGET)
     }
 
     @Test
-    fun `Saved BudgetData equals observed BudgetData`() = runBlocking {
-        val budgetData = budgetDataRepository.observeBudgetData().first()
-        assertThat(budgetData).isEqualTo(CONSTANT_MONTHLY_BUDGET)
+    fun `Saved BudgetData equals observed BudgetData`() = runTest {
+        budgetDataRepository.observeBudgetData().test {
+            assertThat(awaitItem()).isEqualTo(EMPTY_MONTHLY_BUDGET)
+
+            budgetDataRepository.saveBudgetData(CONSTANT_MONTHLY_BUDGET.copy())
+
+            assertThat(awaitItem()).isEqualTo(CONSTANT_MONTHLY_BUDGET)
+        }
     }
 }
