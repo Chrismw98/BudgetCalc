@@ -8,7 +8,7 @@ import org.junit.Test
 import java.time.LocalDate
 
 /**
- * Test class for [Budget].
+ * Test class for [Budget] parsing.
  */
 class BudgetParsingTest {
 
@@ -109,6 +109,8 @@ class BudgetParsingTest {
         }
     }
 
+    // *********** Monthly Budget ***********
+
     @Test
     fun `Constant Monthly Budget correctly parsed`() {
         val today = LocalDate.of(2024, 4, 15)
@@ -169,6 +171,8 @@ class BudgetParsingTest {
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 4, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 4, 30))
     }
+
+    // *********** Weekly Budget ***********
 
     @Test
     fun `Weekly Rate Budget correctly parsed`() {

@@ -88,7 +88,7 @@ fun BudgetData.toBudget(today: LocalDate): Budget {
 }
 
 internal fun Budget.extractMetrics(targetDate: LocalDate): PersistentList<Metric> {
-    val paymentCycleLengthInDays = ChronoUnit.DAYS.between(startDate, endDate).toInt()
+    val paymentCycleLengthInDays = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
     val dailyBudget = amount / paymentCycleLengthInDays
 
     val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDate.plusDays(1)).toInt()
