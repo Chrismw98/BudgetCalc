@@ -9,24 +9,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import chrismw.budgetcalc.R
 import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricType.DaysSinceStart
 import chrismw.budgetcalc.helpers.MetricUnit
-import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY
-import chrismw.budgetcalc.helpers.MetricUnit.CURRENCY_PER_DAY
-import chrismw.budgetcalc.helpers.MetricUnit.DAYS
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
-import java.text.NumberFormat
 
 @Composable
 fun MetricItem(
@@ -39,32 +30,14 @@ fun MetricItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        val metricNameString = stringResource(id = metric.type.textRes)
-        val metricValueString: String
-        val metricUnitString = getStringForMetricUnit(
-            unit = metric.unit,
-            count = metric.value.toInt(),
-            currency = currency
-        )
-        val metricColor: Color
-        when (metric.unit) {
-            DAYS -> {
-                metricValueString = metric.value.toString()
-                metricColor = if (metric.value.toDouble() < 0) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                }
-            }
-
-            else -> {
-                val numberFormat = NumberFormat.getNumberInstance()
-                numberFormat.maximumFractionDigits = 2
-                numberFormat.minimumFractionDigits = 2
-                metricValueString = numberFormat.format(metric.value)
-                metricColor = MaterialTheme.colorScheme.onPrimaryContainer
-            }
+        val metricNameString = stringResource(id = metric.textResId)
+        val metricValueString = metric.getValueString()
+        val metricUnitString = when (metric.unit) {
+            is MetricUnit.Days -> metric.unit.getString(metric.value.toInt())
+            is MetricUnit.Currency -> currency
+            is MetricUnit.CurrencyPerDay -> metric.unit.getString(currency)
         }
+        val metricColor = metric.getColor()
 
         Text(
             text = metricNameString,
@@ -95,20 +68,10 @@ fun MetricItem(
     }
 }
 
-@ReadOnlyComposable
-@Composable
-fun getStringForMetricUnit(unit: MetricUnit, count: Int = 1, currency: String = "$"): String {
-    return when (unit) {
-        DAYS -> pluralStringResource(id = R.plurals.days, count = count)
-        CURRENCY_PER_DAY -> "${currency}/${stringResource(id = R.string.day)}"
-        CURRENCY -> currency
-    }
-}
-
 @Preview(showBackground = true, widthDp = 600, heightDp = 800)
 @Composable
 fun MetricItemPreview() {
-    val testMetric = Metric(DaysSinceStart, 19, DAYS)
+    val testMetric = Metric.DaysSinceStart(19)
     BudgetCalcTheme {
         MetricItem(
             modifier = Modifier

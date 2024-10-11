@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
-import chrismw.budgetcalc.extensions.dateString
+import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog

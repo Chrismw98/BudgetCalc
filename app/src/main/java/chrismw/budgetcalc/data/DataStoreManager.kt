@@ -1,7 +1,6 @@
 package chrismw.budgetcalc.data
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -150,36 +149,6 @@ data class BudgetData(
     val defaultStartDate: String? = null,
     val defaultEndDate: String? = null,
 ) {
-
-    fun needsMoreData(): Boolean {
-        try {
-            if (isBudgetConstant) {
-                checkNotNull(constantBudgetAmount)
-            } else {
-                checkNotNull(budgetRateAmount)
-            }
-            checkNotNull(currency) //TODO: There might be a better way to handle this 2024-03-07
-            currency.ifBlank { throw IllegalStateException("Currency cannot be blank") }
-            when (budgetType) {
-                BudgetType.OnceOnly -> {
-                    checkNotNull(defaultStartDate)
-                    checkNotNull(defaultEndDate)
-                }
-
-                BudgetType.Weekly -> {
-                    checkNotNull(defaultPaymentDayOfWeek)
-                }
-
-                BudgetType.Monthly -> {
-                    checkNotNull(defaultPaymentDayOfMonth)
-                }
-            }
-        } catch (e: Exception) {
-            Log.d("DataStoreManager", "Missing budget data: $this")
-            return true
-        }
-        return false
-    }
 
     fun toBudgetDataDTO(): BudgetDataDTO {
         return BudgetDataDTO(

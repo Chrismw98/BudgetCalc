@@ -48,10 +48,8 @@ import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.CircularProgressbar
 import chrismw.budgetcalc.components.MetricItem
 import chrismw.budgetcalc.decimalFormatSymbols
-import chrismw.budgetcalc.extensions.dateString
 import chrismw.budgetcalc.helpers.Metric
-import chrismw.budgetcalc.helpers.MetricType
-import chrismw.budgetcalc.helpers.MetricUnit
+import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -292,12 +290,18 @@ fun DefaultPreview() {
                 remainingBudget = 270f,
                 currency = "€",
                 metrics = persistentListOf(
-                    Metric(MetricType.DaysSinceStart, 3, MetricUnit.DAYS),
-                    Metric(MetricType.DaysRemaining, 27, MetricUnit.DAYS),
-                    Metric(MetricType.DailyBudget, 10f, MetricUnit.CURRENCY_PER_DAY),
-                    Metric(MetricType.BudgetUntilTargetDate, 270f, MetricUnit.CURRENCY),
-                    Metric(MetricType.RemainingBudget, 270f, MetricUnit.CURRENCY),
-                    Metric(MetricType.TotalBudget, 540f, MetricUnit.CURRENCY),
+                    Metric.DaysSinceStart(3),
+                    Metric.DaysRemaining(27),
+                    Metric.DailyBudget(10f),
+                    Metric.BudgetUntilTargetDate(270f),
+                    Metric.RemainingBudget(270f),
+                    Metric.TotalBudget(540f),
+//                    Metric(MetricType.DaysSinceStart, 3, MetricUnit.DAYS),
+//                    Metric(MetricType.DaysRemaining, 27, MetricUnit.DAYS),
+//                    Metric(MetricType.DailyBudget, 10f, MetricUnit.CURRENCY_PER_DAY),
+//                    Metric(MetricType.BudgetUntilTargetDate, 270f, MetricUnit.CURRENCY),
+//                    Metric(MetricType.RemainingBudget, 270f, MetricUnit.CURRENCY),
+//                    Metric(MetricType.TotalBudget, 540f, MetricUnit.CURRENCY),
                 ),
                 isExpanded = true,
                 hasIncompleteData = false
