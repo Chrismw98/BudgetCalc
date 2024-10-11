@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import chrismw.budgetcalc.extensions.popBackStackIfResumed
+import chrismw.budgetcalc.helpers.LifecycleEffect
 import chrismw.budgetcalc.screens.MainScreen
 import chrismw.budgetcalc.screens.MainScreenViewModel
 import chrismw.budgetcalc.screens.SettingsScreen
@@ -40,6 +41,13 @@ fun BudgetCalcNavHost(
         composable(route = MAIN_SCREEN_ROUTE) {
             val viewModel: MainScreenViewModel = hiltViewModel()
             val state by viewModel.viewState.collectAsStateWithLifecycle()
+
+            LifecycleEffect(
+                onResume = {
+                    viewModel.updateCurrentDate()
+                }
+            )
+
             MainScreen(
                 viewState = state,
                 onClickSettingsButton = navController::navigateToSettingsScreen,

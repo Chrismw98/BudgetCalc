@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -35,30 +34,41 @@ class MainScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val todayStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
     private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
 
-    private val budgetSharedFlow: SharedFlow<Budget?> = budgetDataRepository.observeBudgetData()
-        .map {
+    private val todaySharedFlow: SharedFlow<LocalDate> = todayStateFlow.shareIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        1
+    )
+
+    private val budgetSharedFlow: SharedFlow<Budget?> =
+        combine(
+            todaySharedFlow,
+            budgetDataRepository.observeBudgetData(),
+        ) { today, budget ->
             try {
-                it.toBudget(
-                    today = nowDateProvider.get(),
+                budget.toBudget(
+                    today = today,
                 )
             } catch (e: IllegalStateException) {
                 null
             }
         }
-        .shareIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            1
-        )
+            .shareIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                1
+            )
 
     private val targetDateSharedFlow: Flow<LocalDate> = combine(
         budgetSharedFlow,
+        todaySharedFlow,
         targetDateStateFlow
-    ) { budget, chosenTargetDate ->
+    ) { budget, today, chosenTargetDate ->
         if (budget?.startDate?.isAfter(chosenTargetDate) == true) {
-            nowDateProvider.get()
+            today
         } else {
             chosenTargetDate
         }
@@ -118,6 +128,10 @@ class MainScreenViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ViewState()
         )
+
+    fun updateCurrentDate() {
+        todayStateFlow.value = nowDateProvider.get()
+    }
 
     fun toggleDetailsExpanded() {
         isExpandedStateFlow.update { isExpanded ->
