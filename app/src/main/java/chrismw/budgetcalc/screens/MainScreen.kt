@@ -131,8 +131,8 @@ private fun MainScreenContent(
                 if (showDatePicker) {
                     DatePickerModal(
                         targetDate = viewState.targetDate,
-                        budgetStartDate = viewState.startDate,
-                        budgetEndDate = viewState.endDate,
+                        minDate = viewState.datePickerMinDate,
+                        maxDate = viewState.datePickerMaxDate,
                         onDateSelected = { selectedDate ->
                             showDatePicker = false
                             selectedDate?.let {
@@ -295,19 +295,19 @@ private fun DatePickerModal(
     onDateSelected: (LocalDate?) -> Unit,
     onDismiss: () -> Unit,
     targetDate: LocalDate,
-    budgetStartDate: LocalDate,
-    budgetEndDate: LocalDate,
+    minDate: LocalDate,
+    maxDate: LocalDate,
 ) {
     val targetDateMillis = targetDate.toEpochMillis()
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = targetDateMillis,
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return utcTimeMillis >= budgetStartDate.toEpochMillis() //TODO: Change this according to budget type
+                return utcTimeMillis in minDate.toEpochMillis()..maxDate.toEpochMillis()
             }
 
             override fun isSelectableYear(year: Int): Boolean {
-                return year in budgetStartDate.year..budgetEndDate.year
+                return year in minDate.year..maxDate.year
             }
         },
         initialDisplayedMonthMillis = targetDateMillis

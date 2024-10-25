@@ -7,7 +7,6 @@ import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.extensions.extractMetrics
 import chrismw.budgetcalc.extensions.toBudget
-import chrismw.budgetcalc.extensions.toLocalDate
 import chrismw.budgetcalc.helpers.Metric
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -109,8 +108,8 @@ class MainScreenViewModel @Inject constructor(
                 isLoading = false,
                 hasIncompleteData = false,
 
-                startDate = budget.startDate,
-                endDate = budget.endDate,
+                datePickerMinDate = budget.startDate,
+                datePickerMaxDate = budget.endDate,
                 targetDate = targetDate,
 
                 remainingBudget = remainingBudget,
@@ -147,9 +146,9 @@ class MainScreenViewModel @Inject constructor(
         val isLoading: Boolean = true,
         val hasIncompleteData: Boolean = true,
 
-        val startDate: LocalDate = LocalDate.now().minusDays(1),
-        val endDate: LocalDate = LocalDate.now().plusDays(1),
         val targetDate: LocalDate = LocalDate.now(),
+        val datePickerMinDate: LocalDate = LocalDate.now().minusDays(1),
+        val datePickerMaxDate: LocalDate = LocalDate.now(),
 
         val remainingBudget: Float? = null,
         val remainingBudgetPercentage: Float = 0F,

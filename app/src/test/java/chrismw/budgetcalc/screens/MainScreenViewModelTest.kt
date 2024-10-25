@@ -100,9 +100,9 @@ class MainScreenViewModelTest {
 
             assertThat(resultingViewState.isLoading).isFalse()
             assertThat(resultingViewState.hasIncompleteData).isFalse()
-            assertThat(resultingViewState.startDate).isEqualTo(TEST_DATE)
+            assertThat(resultingViewState.datePickerMinDate).isEqualTo(TEST_DATE)
             assertThat(resultingViewState.targetDate).isEqualTo(TEST_DATE)
-            assertThat(resultingViewState.endDate).isEqualTo(TEST_DATE.plusMonths(1).minusDays(1))
+            assertThat(resultingViewState.datePickerMaxDate).isEqualTo(TEST_DATE.plusMonths(1).minusDays(1))
             assertThat(resultingViewState.remainingBudget).isEqualTo(290F)
             assertThat(resultingViewState.remainingBudgetPercentage).isEqualTo(290F / 300F)
             assertThat(resultingViewState.currency).isEqualTo("EUR")
