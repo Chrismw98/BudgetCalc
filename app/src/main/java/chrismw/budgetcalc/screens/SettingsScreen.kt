@@ -13,8 +13,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -182,25 +182,10 @@ internal fun SettingsScreen(
                 modifier = Modifier.height(6.dp)
             )
 
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp, horizontal = 6.dp)
+            HorizontalDivider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp, horizontal = 6.dp)
             )
-
-//            RadioItem(
-//                modifier = Modifier.fillMaxWidth(),
-//                text = stringResource(R.string.label_specify_cyclic_budget),
-//                isSelected = state.isBudgetConstant,
-//                onClick = onClickConstantBudget
-//            )
-//
-//            RadioItem(
-//                modifier = Modifier.fillMaxWidth(),
-//                text = stringResource(R.string.label_specify_start_end_date),
-//                isSelected = !state.isBudgetConstant,
-//                onClick = onClickBudgetRate
-//            ) //TODO: Enable me
 
             GenericDropDownMenu<BudgetType>(
                 modifier = Modifier.fillMaxWidth(),

@@ -1,5 +1,7 @@
 package chrismw.budgetcalc.data.repository
 
+import chrismw.budgetcalc.extensions.toEpochMillis
+import chrismw.budgetcalc.extensions.toLocalDate
 import chrismw.budgetcalc.helpers.findLatestOccurrenceOfDayOfMonth
 import chrismw.budgetcalc.helpers.findLatestOccurrenceOfDayOfWeek
 import chrismw.budgetcalc.helpers.findNextOccurrenceOfDayOfMonth
@@ -126,5 +128,19 @@ class UtilsTest {
         )
 
         assertThat(result).isEqualTo(expectedPreviousSaturday)
+    }
+
+    @Test
+    fun `toEpochMillis converts LocalDate to epoch millis`() {
+        val dateUTC = LocalDate.of(2024, 4, 1)
+        val epochMillisUTC = 1711929600000L
+        assertThat(dateUTC.toEpochMillis()).isEqualTo(epochMillisUTC)
+    }
+
+    @Test
+    fun `toLocalDate converts epochMillis to LocalDate`() {
+        val epochMillisUTC = 1711929600000L
+        val dateUTC = LocalDate.of(2024, 4, 1)
+        assertThat(epochMillisUTC.toLocalDate()).isEqualTo(dateUTC)
     }
 }
