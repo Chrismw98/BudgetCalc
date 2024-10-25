@@ -5,7 +5,6 @@ import chrismw.budgetcalc.TestCoroutineRule
 import chrismw.budgetcalc.data.BudgetData
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.data.repository.FakeBudgetDataRepository
-import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -103,7 +102,7 @@ class MainScreenViewModelTest {
             assertThat(resultingViewState.hasIncompleteData).isFalse()
             assertThat(resultingViewState.startDate).isEqualTo(TEST_DATE)
             assertThat(resultingViewState.targetDate).isEqualTo(TEST_DATE)
-            assertThat(resultingViewState.targetDateInEpochMillis).isEqualTo(TEST_DATE.toEpochMillis())
+            assertThat(resultingViewState.endDate).isEqualTo(TEST_DATE.plusMonths(1).minusDays(1))
             assertThat(resultingViewState.remainingBudget).isEqualTo(290F)
             assertThat(resultingViewState.remainingBudgetPercentage).isEqualTo(290F / 300F)
             assertThat(resultingViewState.currency).isEqualTo("EUR")

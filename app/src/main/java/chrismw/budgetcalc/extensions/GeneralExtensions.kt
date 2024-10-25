@@ -2,6 +2,7 @@ package chrismw.budgetcalc.extensions
 
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -17,8 +18,15 @@ public fun NavController.popBackStackIfResumed() {
 }
 
 /**
- * Convert the LocalDate to epoch millis using the system default timezone. The time is the start of the day.
+ * Convert the [LocalDate] to epoch millis using the system default timezone.
  */
 fun LocalDate.toEpochMillis(): Long {
     return atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+/**
+ * Convert the epoch millis to [LocalDate] using the system default timezone.
+ */
+fun Long.toLocalDate(): LocalDate {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
 }

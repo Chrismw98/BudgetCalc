@@ -13,13 +13,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -27,17 +23,26 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -47,13 +52,13 @@ import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.CircularProgressbar
 import chrismw.budgetcalc.components.MetricItem
+import chrismw.budgetcalc.components.VerticalSpacer
 import chrismw.budgetcalc.decimalFormatSymbols
+import chrismw.budgetcalc.extensions.toEpochMillis
+import chrismw.budgetcalc.extensions.toLocalDate
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
-import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 
@@ -108,7 +113,7 @@ private fun MainScreenContent(
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit
 ) {
-    val datePickerDialogState = rememberMaterialDialogState()
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -116,72 +121,66 @@ private fun MainScreenContent(
             .fillMaxSize()
             .padding(contentPadding)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(6.dp)
-                .verticalScroll(rememberScrollState()),
+        LazyColumn(
+            modifier = Modifier.padding(6.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-            CircularProgressbar(
-                remainingBudget = viewState.remainingBudget ?: 0f,
-                remainingBudgetPercentage = viewState.remainingBudgetPercentage,
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                targetDateString = dateString(viewState.targetDateInEpochMillis),
-                currency = viewState.currency,
-                onClick = { datePickerDialogState.show() }
-            )
-
-            Column(
-                modifier = Modifier.padding(vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.clickable(
-                        onClick = toggleShowDetails
-                    )
-                ) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 24.dp),
-                        text = if (viewState.isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Start
-                    )
-
-                    Divider(thickness = 1.dp)
-
-//                    IconButton(
-//                        modifier = Modifier.padding(top = 30.dp),
-//                        onClick = { expanded = !expanded }
-//                    ) {
-                    Icon(
-                        imageVector = if (viewState.isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        modifier = Modifier
-                            .size(size = 64.dp) //TODO: Check if this is the right way to set the size (2023-06-14)
-                            .padding(top = 30.dp),
-//                            tint = colorResource(id = R.color.color_accent), //TODO: Use Material UI Colors (2023-06-14)
-                        contentDescription = if (viewState.isExpanded) {
-                            stringResource(R.string.show_less)
-                        } else {
-                            stringResource(R.string.show_more)
+            item("date_picker") {
+                if (showDatePicker) {
+                    DatePickerModal(
+                        targetDate = viewState.targetDate,
+                        budgetStartDate = viewState.startDate,
+                        budgetEndDate = viewState.endDate,
+                        onDateSelected = { selectedDate ->
+                            showDatePicker = false
+                            selectedDate?.let {
+                                onPickTargetDate(it)
+                            }
+                        },
+                        onDismiss = {
+                            showDatePicker = false
                         }
                     )
-//                    }
                 }
+            }
+
+            item("circular_progress_bar") {
+                CircularProgressbar(
+                    remainingBudget = viewState.remainingBudget ?: 0f,
+                    remainingBudgetPercentage = viewState.remainingBudgetPercentage,
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth()
+                        .aspectRatio(1f),
+                    targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                    currency = viewState.currency,
+                    onClick = { showDatePicker = true }
+                )
+            }
+
+            item("spacer") {
+                VerticalSpacer(24.dp)
+            }
+
+            item("toggle_details_button") {
+                ToggleDetailsButton(
+                    isExpanded = viewState.isExpanded,
+                    onClick = toggleShowDetails,
+                )
+            }
+
+            item("metrics_list") {
                 AnimatedVisibility(
                     visible = viewState.isExpanded,
                     enter = expandVertically(),
                     exit = shrinkVertically()
                 ) {
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(3.dp),
-                        modifier = Modifier.heightIn(max = 250.dp)) {
-                        items(items = viewState.metrics) { metric ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(3.dp),
+                    ) {
+                        viewState.metrics.forEach { metric ->
                             Card(
                                 shape = MaterialTheme.shapes.small,
                                 colors = CardDefaults.cardColors(
@@ -194,32 +193,46 @@ private fun MainScreenContent(
                                     currency = viewState.currency
                                 )
                             }
-
                         }
                     }
                 }
             }
-
         }
-
     }
+}
 
-    MaterialDialog(
-        dialogState = datePickerDialogState,
-        buttons = {
-            positiveButton(stringResource(id = R.string.label_ok))
-            negativeButton(stringResource(id = R.string.label_cancel))
-        },
+@Composable
+private fun ToggleDetailsButton(
+    isExpanded: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.clickable(
+            onClick = onClick
+        )
     ) {
-        datepicker(
-            initialDate = viewState.targetDate,
-            title = stringResource(R.string.dialog_title_pick_target_date),
-            allowedDateValidator = {
-                !it.isBefore(viewState.startDate)
-            },
-        ) {
-            onPickTargetDate(it)
-        }
+        Text(
+            modifier = Modifier.padding(bottom = 24.dp),
+            text = if (isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Start
+        )
+
+        HorizontalDivider(thickness = 1.dp)
+
+        Icon(
+            imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            modifier = Modifier
+                .size(size = 64.dp) //TODO: Check if this is the right way to set the size (2023-06-14)
+                .padding(top = 30.dp),
+            contentDescription = if (isExpanded) {
+                stringResource(R.string.show_less)
+            } else {
+                stringResource(R.string.show_more)
+            }
+        )
     }
 }
 
@@ -276,6 +289,60 @@ private fun MissingDataContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerModal(
+    onDateSelected: (LocalDate?) -> Unit,
+    onDismiss: () -> Unit,
+    targetDate: LocalDate,
+    budgetStartDate: LocalDate,
+    budgetEndDate: LocalDate,
+) {
+    val targetDateMillis = targetDate.toEpochMillis()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = targetDateMillis,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= budgetStartDate.toEpochMillis() //TODO: Change this according to budget type
+            }
+
+            override fun isSelectableYear(year: Int): Boolean {
+                return year in budgetStartDate.year..budgetEndDate.year
+            }
+        },
+        initialDisplayedMonthMillis = targetDateMillis
+    )
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis?.toLocalDate())
+                    onDismiss()
+                }) {
+                Text(stringResource(id = R.string.label_ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.label_cancel))
+            }
+        }
+    ) {
+        DatePicker(
+            state = datePickerState,
+            title = {
+                Text(
+                    modifier = Modifier.padding(start = 24.dp, end = 12.dp, top = 16.dp),
+                    text = stringResource(id = R.string.dialog_title_pick_target_date)
+                )
+            },
+            showModeToggle = false,
+        )
+    }
+}
+
 @Preview
 @Composable
 fun DefaultPreview() {
@@ -285,7 +352,6 @@ fun DefaultPreview() {
                 isLoading = false,
 
                 targetDate = LocalDate.of(2023, 9, 16),
-                targetDateInEpochMillis = 1694857746876,
 
                 remainingBudget = 270f,
                 currency = "€",
@@ -296,12 +362,6 @@ fun DefaultPreview() {
                     Metric.BudgetUntilTargetDate(270f),
                     Metric.RemainingBudget(270f),
                     Metric.TotalBudget(540f),
-//                    Metric(MetricType.DaysSinceStart, 3, MetricUnit.DAYS),
-//                    Metric(MetricType.DaysRemaining, 27, MetricUnit.DAYS),
-//                    Metric(MetricType.DailyBudget, 10f, MetricUnit.CURRENCY_PER_DAY),
-//                    Metric(MetricType.BudgetUntilTargetDate, 270f, MetricUnit.CURRENCY),
-//                    Metric(MetricType.RemainingBudget, 270f, MetricUnit.CURRENCY),
-//                    Metric(MetricType.TotalBudget, 540f, MetricUnit.CURRENCY),
                 ),
                 isExpanded = true,
                 hasIncompleteData = false
