@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "chrismw.budgetcalc"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode 4
         versionName "1.0.3"
 
