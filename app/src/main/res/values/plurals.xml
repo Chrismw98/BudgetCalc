@@ -4,4 +4,8 @@
         <item quantity="one">Day</item>
         <item quantity="other">Days</item>
     </plurals>
+    <plurals name="days_mid_sentence">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
 </resources>

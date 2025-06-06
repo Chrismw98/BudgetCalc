@@ -1,6 +1,8 @@
 package chrismw.budgetcalc.data
 
+import chrismw.budgetcalc.helpers.BudgetState
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 public sealed class Budget(
     open val amount: Float,
@@ -8,6 +10,24 @@ public sealed class Budget(
     open val startDate: LocalDate,
     open val endDate: LocalDate,
 ) {
+
+    public fun extractBudgetState(targetDate: LocalDate): BudgetState {
+        return when {
+
+            targetDate == endDate -> BudgetState.LastDay
+
+            targetDate.isAfter(endDate) -> {
+                val daysPastEnd = ChronoUnit.DAYS.between(endDate, targetDate).toInt()
+                BudgetState.HasEnded(
+                    daysPastEnd = daysPastEnd
+                )
+            }
+
+            targetDate.isBefore(startDate).not() -> BudgetState.Ongoing
+
+            else -> BudgetState.HasNotStarted
+        }
+    }
 
     internal data class OnceOnly(
         override val amount: Float,

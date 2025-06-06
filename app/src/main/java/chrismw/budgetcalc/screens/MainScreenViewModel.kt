@@ -7,6 +7,7 @@ import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.extensions.extractMetrics
 import chrismw.budgetcalc.extensions.toBudget
+import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -54,12 +55,11 @@ class MainScreenViewModel @Inject constructor(
             } catch (e: IllegalStateException) {
                 null
             }
-        }
-            .shareIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5_000),
-                1
-            )
+        }.shareIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            1
+        )
 
     private val targetDateSharedFlow: Flow<LocalDate> = combine(
         budgetSharedFlow,
@@ -77,19 +77,14 @@ class MainScreenViewModel @Inject constructor(
         1
     )
 
-    private val metricsFlow: Flow<ImmutableList<Metric>?> = combine(
-        budgetSharedFlow,
-        targetDateSharedFlow
-    ) { budget, targetDate ->
-        budget?.extractMetrics(targetDate)?.toImmutableList()
-    }
-
     val viewState: StateFlow<ViewState> = combine(
         budgetSharedFlow,
         isExpandedStateFlow,
         targetDateSharedFlow,
-        metricsFlow,
-    ) { budget, isExpanded, targetDate, metrics ->
+        todayStateFlow,
+    ) { budget, isExpanded, targetDate, today ->
+        val metrics = budget?.extractMetrics(targetDate)?.toImmutableList()
+
         if (budget == null || metrics == null) {
             ViewState(
                 isLoading = false,
@@ -107,6 +102,9 @@ class MainScreenViewModel @Inject constructor(
             ViewState(
                 isLoading = false,
                 hasIncompleteData = false,
+                today = today,
+
+                budgetState = budget.extractBudgetState(targetDate),
 
                 datePickerMinDate = budget.startDate,
                 datePickerMaxDate = budget.endDate,
@@ -145,6 +143,9 @@ class MainScreenViewModel @Inject constructor(
     data class ViewState(
         val isLoading: Boolean = true,
         val hasIncompleteData: Boolean = true,
+        val today: LocalDate = LocalDate.now(),
+
+        val budgetState: BudgetState = BudgetState.HasNotStarted,
 
         val targetDate: LocalDate = LocalDate.now(),
         val datePickerMinDate: LocalDate = LocalDate.now().minusDays(1),

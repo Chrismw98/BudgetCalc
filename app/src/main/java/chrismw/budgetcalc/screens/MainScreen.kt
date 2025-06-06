@@ -1,6 +1,7 @@
 package chrismw.budgetcalc.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -21,8 +22,6 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,23 +38,27 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.CircularProgressbar
-import chrismw.budgetcalc.components.MetricItem
+import chrismw.budgetcalc.components.CircularTextOverview
+import chrismw.budgetcalc.components.MetricItemCard
 import chrismw.budgetcalc.components.VerticalSpacer
 import chrismw.budgetcalc.decimalFormatSymbols
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.extensions.toLocalDate
+import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
@@ -115,6 +118,10 @@ private fun MainScreenContent(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
+    LaunchedEffect(viewState.budgetState) {
+        onPickTargetDate(viewState.today)
+    }
+
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
@@ -146,18 +153,48 @@ private fun MainScreenContent(
                 }
             }
 
-            item("circular_progress_bar") {
-                CircularProgressbar(
-                    remainingBudget = viewState.remainingBudget ?: 0f,
-                    remainingBudgetPercentage = viewState.remainingBudgetPercentage,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                    currency = viewState.currency,
-                    onClick = { showDatePicker = true }
-                )
+            item("circular_overview") {
+                Crossfade(targetState = viewState.budgetState, label = "overview_crossfade") {
+                    when (it) {
+                        is BudgetState.Ongoing -> {
+                            CircularProgressbar(
+                                remainingBudget = viewState.remainingBudget ?: 0f,
+                                remainingBudgetPercentage = viewState.remainingBudgetPercentage,
+                                modifier = Modifier
+                                    .padding(24.dp)
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f),
+                                targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                                currency = viewState.currency,
+                                onClick = { showDatePicker = true }
+                            )
+                        }
+
+                        else -> {
+                            CircularTextOverview(
+                                modifier = Modifier
+                                    .padding(24.dp)
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f),
+                                text = if (it is BudgetState.HasEnded) {
+                                    stringResource(id = it.textResId,
+                                        it.daysPastEnd,
+                                        pluralStringResource(id = R.plurals.days_mid_sentence, count = it.daysPastEnd)
+                                    )
+                                } else {
+                                    stringResource(id = it.textResId)
+                                },
+                                targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                                backgroundCircleColor = if (it is BudgetState.HasNotStarted) {
+                                    MaterialTheme.colorScheme.tertiary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                },
+                                onClick = { showDatePicker = true }
+                            )
+                        }
+                    }
+                }
             }
 
             item("spacer") {
@@ -178,21 +215,13 @@ private fun MainScreenContent(
                     exit = shrinkVertically()
                 ) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(3.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         viewState.metrics.forEach { metric ->
-                            Card(
-                                shape = MaterialTheme.shapes.small,
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                                )
-                            ) {
-                                MetricItem(
-                                    metric = metric,
-                                    modifier = Modifier.padding(6.dp),
-                                    currency = viewState.currency
-                                )
-                            }
+                            MetricItemCard(
+                                metric = metric,
+                                currency = viewState.currency
+                            )
                         }
                     }
                 }
@@ -212,21 +241,26 @@ private fun ToggleDetailsButton(
             onClick = onClick
         )
     ) {
-        Text(
-            modifier = Modifier.padding(bottom = 24.dp),
-            text = if (isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Start
-        )
+        Column(
+            modifier = Modifier.align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = if (isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
 
-        HorizontalDivider(thickness = 1.dp)
+            HorizontalDivider(thickness = 1.dp)
+        }
+
 
         Icon(
-            imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             modifier = Modifier
-                .size(size = 64.dp) //TODO: Check if this is the right way to set the size (2023-06-14)
-                .padding(top = 30.dp),
+                .align(Alignment.BottomCenter)
+                .padding(top = 16.dp)
+                .size(40.dp),
+            imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             contentDescription = if (isExpanded) {
                 stringResource(R.string.show_less)
             } else {

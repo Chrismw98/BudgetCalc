@@ -31,7 +31,7 @@
     <string name="show_more">Περισσότερες λεπτομέρειες</string>
     <string name="label_ok">ΟΚ</string>
     <string name="label_cancel">Ακύρωση</string>
-    <string name="label_remaining_as_of">Υπόλοιπο, από</string>
+    <string name="label_remaining_as_of">Υπόλοιπο, στις</string>
     <string name="label_is_budget_constant">Budget ως σταθερό ποσό</string>
     <string name="label_is_budget_rate">Budget ως ημερήσιο ποσό</string>
     <string name="label_specify_cyclic_budget">Το budget επαναλαμβάνεται</string>
@@ -61,4 +61,8 @@
     <string name="title_home">Σύνοψη</string>
     <string name="metric_text_total_budget">Συνολικό budget</string>
     <string name="text_loading">Φόρτωση …</string>
+    <string name="budget_state_not_started">Δεν έχει ξεκινήσει</string>
+    <string name="budget_state_last_day">Τελευταία μέρα</string>
+    <string name="budget_state_has_ended">Τελείωσε πριν %1$s %2$s</string>
+    <string name="label_as_of">στις</string>
 </resources>

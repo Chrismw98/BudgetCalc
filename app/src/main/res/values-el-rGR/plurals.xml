@@ -4,4 +4,8 @@
         <item quantity="one">Mέρα</item>
         <item quantity="other">Mέρες</item>
     </plurals>
+    <plurals name="days_mid_sentence">
+        <item quantity="one">μέρα</item>
+        <item quantity="other">μέρες</item>
+    </plurals>
 </resources>

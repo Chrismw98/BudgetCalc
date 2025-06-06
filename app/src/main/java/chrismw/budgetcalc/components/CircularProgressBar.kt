@@ -189,7 +189,7 @@ private fun DisplayNumberText(
 
 @Preview(showBackground = false, widthDp = 100, heightDp = 100)
 @Composable
-fun CircularProgressBarPreviewSmall() {
+private fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
         CircularProgressbar(
             remainingBudget = 47f,
@@ -203,7 +203,7 @@ fun CircularProgressBarPreviewSmall() {
 
 @Preview(showBackground = false, widthDp = 250, heightDp = 250)
 @Composable
-fun CircularProgressBarPreviewNormal() {
+private fun CircularProgressBarPreviewNormal() {
     BudgetCalcTheme {
         CircularProgressbar(
             remainingBudget = 47f,
@@ -217,7 +217,7 @@ fun CircularProgressBarPreviewNormal() {
 
 @Preview(showBackground = false, widthDp = 500, heightDp = 500)
 @Composable
-fun CircularProgressBarPreviewLarge() {
+private fun CircularProgressBarPreviewLarge() {
     BudgetCalcTheme {
         CircularProgressbar(
             remainingBudget = 47f,
@@ -231,7 +231,7 @@ fun CircularProgressBarPreviewLarge() {
 
 @Preview(showBackground = false, widthDp = 500, heightDp = 800)
 @Composable
-fun CircularProgressBarPreviewCustom() {
+private fun CircularProgressBarPreviewCustom() {
     BudgetCalcTheme {
         CircularProgressbar(
             remainingBudget = 47f,

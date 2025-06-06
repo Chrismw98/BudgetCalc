@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,63 +22,69 @@ import chrismw.budgetcalc.helpers.MetricUnit
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 
 @Composable
-fun MetricItem(
+fun MetricItemCard(
     modifier: Modifier = Modifier,
     metric: Metric,
     currency: String,
 ) {
-    Row(
+    Card(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
     ) {
-        val metricNameString = stringResource(id = metric.textResId)
-        val metricValueString = metric.getValueString()
-        val metricUnitString = when (metric.unit) {
-            is MetricUnit.Days -> metric.unit.getString(metric.value.toInt())
-            is MetricUnit.Currency -> currency
-            is MetricUnit.CurrencyPerDay -> metric.unit.getString(currency)
+        Row(
+            modifier = Modifier.padding(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            val metricNameString = stringResource(id = metric.textResId)
+            val metricValueString = metric.getValueString()
+            val metricUnitString = when (metric.unit) {
+                is MetricUnit.Days -> metric.unit.getString(metric.value.toInt())
+                is MetricUnit.Currency -> currency
+                is MetricUnit.CurrencyPerDay -> metric.unit.getString(currency)
+            }
+            val metricColor = metric.getColor()
+
+            Text(
+                text = metricNameString,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.weight(3f)
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            Text(
+                text = metricValueString,
+                style = MaterialTheme.typography.bodyLarge,
+                color = metricColor,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.End
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            Text(
+                text = metricUnitString,
+                style = MaterialTheme.typography.bodyLarge,
+                color = metricColor,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
         }
-        val metricColor = metric.getColor()
-
-        Text(
-            text = metricNameString,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.weight(3f)
-        )
-
-        Spacer(modifier = Modifier.width(6.dp))
-
-        Text(
-            text = metricValueString,
-            style = MaterialTheme.typography.bodyLarge,
-            color = metricColor,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.End
-        )
-
-        Spacer(modifier = Modifier.width(6.dp))
-
-        Text(
-            text = metricUnitString,
-            style = MaterialTheme.typography.bodyLarge,
-            color = metricColor,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Start
-        )
     }
 }
 
-@Preview(showBackground = true, widthDp = 600, heightDp = 800)
+@Preview(showBackground = true)
 @Composable
 fun MetricItemPreview() {
     val testMetric = Metric.DaysSinceStart(19)
     BudgetCalcTheme {
-        MetricItem(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(3.dp),
+        MetricItemCard(
+            modifier = Modifier.fillMaxWidth(),
             metric = testMetric,
             currency = "€"
         )

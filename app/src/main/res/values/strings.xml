@@ -63,4 +63,8 @@
     <string name="label_save_changes">Save changes</string>
     <string name="title_home">Home</string>
     <string name="text_loading">Loading …</string>
+    <string name="budget_state_not_started">Not started yet</string>
+    <string name="budget_state_last_day">Last day</string>
+    <string name="budget_state_has_ended">Ended %1$s %2$s ago</string>
+    <string name="label_as_of">as of</string>
 </resources>

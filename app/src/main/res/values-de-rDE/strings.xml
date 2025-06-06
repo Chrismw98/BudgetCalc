@@ -64,4 +64,8 @@
     <string name="title_home">Übersicht</string>
     <string name="metric_text_total_budget">Gesamtbudget</string>
     <string name="text_loading">Lädt …</string>
+    <string name="budget_state_not_started">Noch nicht begonnen</string>
+    <string name="budget_state_last_day">Letzter Tag</string>
+    <string name="budget_state_has_ended">Endete vor %1$s %2$s</string>
+    <string name="label_as_of">Stand</string>
 </resources>

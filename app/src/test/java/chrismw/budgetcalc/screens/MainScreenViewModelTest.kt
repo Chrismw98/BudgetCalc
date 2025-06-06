@@ -5,6 +5,7 @@ import chrismw.budgetcalc.TestCoroutineRule
 import chrismw.budgetcalc.data.BudgetData
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.data.repository.FakeBudgetDataRepository
+import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -108,6 +109,40 @@ class MainScreenViewModelTest {
             assertThat(resultingViewState.currency).isEqualTo("EUR")
             assertThat(resultingViewState.metrics).isNotEmpty()//TODO: Specify the exact metrics when metrics are refactored
             assertThat(resultingViewState.isExpanded).isTrue()
+        }
+    }
+
+    @Test
+    fun `Target date reset to today after budget update`() = runTest {
+
+        val constantMonthlyBudget = BudgetData(
+            isBudgetConstant = true,
+            constantBudgetAmount = 300F,
+            currency = "EUR",
+            budgetType = BudgetType.Monthly,
+            defaultPaymentDayOfMonth = 1
+        )
+
+        val onceOnlyBudget = BudgetData(
+            isBudgetConstant = false,
+            budgetRateAmount = 10F,
+            currency = "EUR",
+            budgetType = BudgetType.OnceOnly,
+            defaultStartDate = LocalDate.of(2024, 4, 10).toString(),
+            defaultEndDate = LocalDate.of(2024, 4, 30).toString()
+        )
+
+        viewModel.viewState.test {
+            awaitItem()
+
+            budgetDataRepository.saveBudgetData(constantMonthlyBudget)
+            assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
+
+            budgetDataRepository.saveBudgetData(onceOnlyBudget)
+            with(awaitItem()) {
+                assertThat(targetDate).isEqualTo(TEST_DATE)
+                assertThat(budgetState).isInstanceOf(BudgetState.HasNotStarted::class.java)
+            }
         }
     }
 
