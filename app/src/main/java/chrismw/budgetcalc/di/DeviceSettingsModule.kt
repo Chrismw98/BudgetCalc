@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
@@ -18,9 +19,15 @@ internal object DeviceSettingsModule {
     }
 
     @Provides
-    @DateTimeNow
-    internal fun provideNowDateTime(zone: ZoneId): OffsetDateTime {
+    @OffsetDateTimeNow
+    internal fun provideNowOffsetDateTime(zone: ZoneId): OffsetDateTime {
         return OffsetDateTime.now(zone)
+    }
+
+    @Provides
+    @DateTimeNow
+    internal fun provideNowDateTime(): LocalDateTime {
+        return LocalDateTime.now()
     }
 
     @Provides

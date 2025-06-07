@@ -63,7 +63,7 @@ class MainScreenViewModelTest2 {
 
     private suspend fun createValidUIState() {
 //        budgetDataRepository.saveBudgetData(CONSTANT_MONTHLY_BUDGET)
-        every {budgetDataRepositoryMock.observeBudgetData()} returns flowOf(CONSTANT_MONTHLY_BUDGET)
+        every {budgetDataRepositoryMock.budgetDataFlow} returns flowOf(CONSTANT_MONTHLY_BUDGET)
     }
 
     @Test

@@ -1,6 +1,9 @@
 package chrismw.budgetcalc.data
 
 import chrismw.budgetcalc.helpers.BudgetState
+import chrismw.budgetcalc.helpers.Metric
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -18,7 +21,7 @@ public sealed class Budget(
 
             targetDate.isAfter(endDate) -> {
                 val daysPastEnd = ChronoUnit.DAYS.between(endDate, targetDate).toInt()
-                BudgetState.HasEnded(
+                BudgetState.Expired(
                     daysPastEnd = daysPastEnd
                 )
             }
@@ -27,6 +30,36 @@ public sealed class Budget(
 
             else -> BudgetState.HasNotStarted
         }
+    }
+
+    public fun extractMetrics(targetDate: LocalDate): PersistentList<Metric> {
+        val paymentCycleLengthInDays = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
+        val dailyBudget = amount / paymentCycleLengthInDays
+
+        val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDate.plusDays(1)).toInt()
+        val daysRemaining = paymentCycleLengthInDays - daysSinceStart
+
+        val currentBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
+            daysSinceStart * dailyBudget
+        } else {
+            amount
+        }
+        val remainingBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
+            amount - currentBudget
+        } else {
+            0F
+        }
+
+        val metrics = persistentListOf(
+            Metric.DaysSinceStart(daysSinceStart),
+            Metric.DaysRemaining(daysRemaining),
+            Metric.DailyBudget(dailyBudget),
+            Metric.BudgetUntilTargetDate(currentBudget),
+            Metric.RemainingBudget(remainingBudget),
+            Metric.TotalBudget(amount),
+        )
+
+        return metrics
     }
 
     internal data class OnceOnly(

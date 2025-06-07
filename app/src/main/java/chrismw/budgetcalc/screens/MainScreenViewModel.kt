@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.data.Budget
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.di.DateNow
-import chrismw.budgetcalc.extensions.extractMetrics
 import chrismw.budgetcalc.extensions.toBudget
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
@@ -15,7 +14,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,29 +27,32 @@ import javax.inject.Provider
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    budgetDataRepository: BudgetDataRepository,
+    private val budgetDataRepository: BudgetDataRepository,
     @DateNow private val nowDateProvider: Provider<LocalDate>,
 ) : ViewModel() {
 
     private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val todayStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
-    private val targetDateStateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(nowDateProvider.get())
+    private val todayStateFlow: MutableStateFlow<LocalDate> =
+        MutableStateFlow(nowDateProvider.get())
 
-    private val todaySharedFlow: SharedFlow<LocalDate> = todayStateFlow.shareIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        1
-    )
-
-    private val budgetSharedFlow: SharedFlow<Budget?> =
+    private val budgetWithTargetDateFlow: Flow<Pair<Budget, LocalDate>?> =
         combine(
-            todaySharedFlow,
-            budgetDataRepository.observeBudgetData(),
-        ) { today, budget ->
+            todayStateFlow,
+            budgetDataRepository.targetDateFlow,
+            budgetDataRepository.observeBudgetDataWithNowDate(),
+        ) { today, customTargetDate, (budget, defaultTargetDate) ->
             try {
-                budget.toBudget(
+                val budget = budget.toBudget(
                     today = today,
                 )
+                val targetDate =
+                    if (customTargetDate.createdAt.isAfter(defaultTargetDate.createdAt)) {
+                        customTargetDate.date
+                    } else {
+                        defaultTargetDate.date
+                    }
+
+                budget to targetDate
             } catch (e: IllegalStateException) {
                 null
             }
@@ -61,28 +62,14 @@ class MainScreenViewModel @Inject constructor(
             1
         )
 
-    private val targetDateSharedFlow: Flow<LocalDate> = combine(
-        budgetSharedFlow,
-        todaySharedFlow,
-        targetDateStateFlow
-    ) { budget, today, chosenTargetDate ->
-        if (budget?.startDate?.isAfter(chosenTargetDate) == true) {
-            today
-        } else {
-            chosenTargetDate
-        }
-    }.shareIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        1
-    )
-
     val viewState: StateFlow<ViewState> = combine(
-        budgetSharedFlow,
+        budgetWithTargetDateFlow,
         isExpandedStateFlow,
-        targetDateSharedFlow,
         todayStateFlow,
-    ) { budget, isExpanded, targetDate, today ->
+    ) { budgetWithTargetDate, isExpanded, today ->
+        val budget = budgetWithTargetDate?.first
+        val targetDate = budgetWithTargetDate?.second ?: today
+
         val metrics = budget?.extractMetrics(targetDate)?.toImmutableList()
 
         if (budget == null || metrics == null) {
@@ -91,7 +78,8 @@ class MainScreenViewModel @Inject constructor(
                 hasIncompleteData = true
             )
         } else {
-            val remainingBudget = checkNotNull(metrics.find { it is Metric.RemainingBudget }?.value).toFloat()
+            val remainingBudget =
+                checkNotNull(metrics.find { it is Metric.RemainingBudget }?.value).toFloat()
             val maxBudget = checkNotNull(metrics.find { it is Metric.TotalBudget }?.value).toFloat()
             val remainingBudgetPercentage = if (maxBudget == 0F) {
                 1F
@@ -118,12 +106,11 @@ class MainScreenViewModel @Inject constructor(
                 metrics = metrics,
             )
         }
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ViewState()
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ViewState()
+    )
 
     fun updateCurrentDate() {
         todayStateFlow.value = nowDateProvider.get()
@@ -135,8 +122,12 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    fun onPickTargetDate(newDate: LocalDate) {
-        targetDateStateFlow.value = newDate
+    fun onResetTargetDate() {
+        budgetDataRepository.setTargetDate(nowDateProvider.get())
+    }
+
+    fun onPickTargetDate(targetDate: LocalDate) {
+        budgetDataRepository.setTargetDate(targetDate)
     }
 
     @Immutable
@@ -157,5 +148,7 @@ class MainScreenViewModel @Inject constructor(
         val currency: String = "",
         val metrics: ImmutableList<Metric> = persistentListOf(),
         val isExpanded: Boolean = true,
-    )
+    ) {
+        val showJumpToTodayButton: Boolean = !hasIncompleteData && today != targetDate
+    }
 }

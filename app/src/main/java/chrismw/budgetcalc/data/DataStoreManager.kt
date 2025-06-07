@@ -10,15 +10,11 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import chrismw.budgetcalc.decimalFormat
-import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.getBudgetTypeFromName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import java.time.DayOfWeek
-import java.time.LocalDate
 
 const val SETTINGS_DATASTORE = "settings_datastore"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATASTORE)
@@ -67,19 +63,43 @@ class DataStoreManager(val context: Context) {
     suspend fun saveToDataStore(budgetData: BudgetData) {
         context.dataStore.edit { preferences ->
             preferences[IS_BUDGET_CONSTANT] = budgetData.isBudgetConstant
-            updateOrRemoveNullableFloat(preferences, CONSTANT_BUDGET_AMOUNT, budgetData.constantBudgetAmount)
-            updateOrRemoveNullableFloat(preferences, BUDGET_RATE_AMOUNT, budgetData.budgetRateAmount)
+            updateOrRemoveNullableFloat(
+                preferences,
+                CONSTANT_BUDGET_AMOUNT,
+                budgetData.constantBudgetAmount
+            )
+            updateOrRemoveNullableFloat(
+                preferences,
+                BUDGET_RATE_AMOUNT,
+                budgetData.budgetRateAmount
+            )
             updateOrRemoveNullableString(preferences, CURRENCY, budgetData.currency)
 
             preferences[BUDGET_TYPE] = budgetData.budgetType.name
-            updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY_OF_MONTH, budgetData.defaultPaymentDayOfMonth)
-            updateOrRemoveNullableInt(preferences, DEFAULT_PAYMENT_DAY_OF_WEEK, budgetData.defaultPaymentDayOfWeek)
-            updateOrRemoveNullableString(preferences, DEFAULT_START_DATE, budgetData.defaultStartDate)
+            updateOrRemoveNullableInt(
+                preferences,
+                DEFAULT_PAYMENT_DAY_OF_MONTH,
+                budgetData.defaultPaymentDayOfMonth
+            )
+            updateOrRemoveNullableInt(
+                preferences,
+                DEFAULT_PAYMENT_DAY_OF_WEEK,
+                budgetData.defaultPaymentDayOfWeek
+            )
+            updateOrRemoveNullableString(
+                preferences,
+                DEFAULT_START_DATE,
+                budgetData.defaultStartDate
+            )
             updateOrRemoveNullableString(preferences, DEFAULT_END_DATE, budgetData.defaultEndDate)
         }
     }
 
-    private fun updateOrRemoveNullableFloat(preferences: MutablePreferences, key: Preferences.Key<Float>, value: Float?) {
+    private fun updateOrRemoveNullableFloat(
+        preferences: MutablePreferences,
+        key: Preferences.Key<Float>,
+        value: Float?
+    ) {
         if (value != null) {
             preferences[key] = value
         } else {
@@ -87,7 +107,11 @@ class DataStoreManager(val context: Context) {
         }
     }
 
-    private fun updateOrRemoveNullableInt(preferences: MutablePreferences, key: Preferences.Key<Int>, value: Int?) {
+    private fun updateOrRemoveNullableInt(
+        preferences: MutablePreferences,
+        key: Preferences.Key<Int>,
+        value: Int?
+    ) {
         if (value != null) {
             preferences[key] = value
         } else {
@@ -95,7 +119,11 @@ class DataStoreManager(val context: Context) {
         }
     }
 
-    private fun updateOrRemoveNullableString(preferences: MutablePreferences, key: Preferences.Key<String>, value: String?) {
+    private fun updateOrRemoveNullableString(
+        preferences: MutablePreferences,
+        key: Preferences.Key<String>,
+        value: String?
+    ) {
         if (value != null && value.isNotBlank()) {
             preferences[key] = value
         } else {
@@ -125,44 +153,5 @@ class DataStoreManager(val context: Context) {
 
     suspend fun clearDataStore() = context.dataStore.edit {
         it.clear()
-    }
-
-//    suspend fun updateBudgetData(callback: (BudgetData) -> BudgetData) {
-//        val oldValue = .value
-//        val updatedValue = callback(
-//            oldValue
-//        )
-//        _currentSettings.emit(updatedValue)
-//    }
-}
-
-data class BudgetData(
-    val isBudgetConstant: Boolean = false,
-
-    val constantBudgetAmount: Float? = null,
-    val budgetRateAmount: Float? = null,
-    val currency: String? = null,
-
-    val budgetType: BudgetType = BudgetType.Monthly,
-    val defaultPaymentDayOfMonth: Int? = null,
-    val defaultPaymentDayOfWeek: Int? = null,
-    val defaultStartDate: String? = null,
-    val defaultEndDate: String? = null,
-) {
-
-    fun toBudgetDataDTO(): BudgetDataDTO {
-        return BudgetDataDTO(
-            isBudgetConstant = isBudgetConstant,
-
-            constantBudgetAmount = constantBudgetAmount?.let { decimalFormat.format(it) },
-            budgetRateAmount = budgetRateAmount?.let { decimalFormat.format(it) },
-            currency = currency,
-
-            budgetType = budgetType,
-            defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
-            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek?.let { DayOfWeek.of(it) },
-            startDate = defaultStartDate?.let { LocalDate.parse(it) },
-            endDate = defaultEndDate?.let { LocalDate.parse(it) },
-        )
     }
 }

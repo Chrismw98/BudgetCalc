@@ -50,7 +50,8 @@ fun BudgetCalcNavHost(
 
             MainScreen(
                 viewState = state,
-                onClickSettingsButton = navController::navigateToSettingsScreen,
+                onJumpToTodayClick = viewModel::onResetTargetDate,
+                onSettingsClick = navController::navigateToSettingsScreen,
                 toggleShowDetails = viewModel::toggleDetailsExpanded,
                 onPickTargetDate = viewModel::onPickTargetDate
             )

@@ -17,7 +17,7 @@ public sealed class BudgetState(
         textResId = R.string.budget_state_last_day
     )
 
-    internal data class HasEnded(
+    internal data class Expired(
         val daysPastEnd: Int,
     ) : BudgetState(
         textResId = R.string.budget_state_has_ended

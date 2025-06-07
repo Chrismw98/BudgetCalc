@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -38,7 +39,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +69,8 @@ import java.time.LocalDate
 @Composable
 internal fun MainScreen(
     viewState: MainScreenViewModel.ViewState,
-    onClickSettingsButton: () -> Unit,
+    onJumpToTodayClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit,
 ) {
@@ -80,9 +81,22 @@ internal fun MainScreen(
                     Text(text = stringResource(R.string.title_home))
                 },
                 actions = {
-                    IconButton(onClick = onClickSettingsButton
+                    if (viewState.showJumpToTodayButton) {
+                        IconButton(
+                            onClick = onJumpToTodayClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Today,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = onSettingsClick
                     ) {
-                        Icon(imageVector = Icons.Default.Settings,
+                        Icon(
+                            imageVector = Icons.Default.Settings,
                             contentDescription = null
                         )
                     }
@@ -95,7 +109,7 @@ internal fun MainScreen(
             if (viewState.hasIncompleteData) {
                 MissingDataContent(
                     contentPadding,
-                    onClickSettingsButton
+                    onSettingsClick
                 )
             } else {
                 MainScreenContent(
@@ -118,9 +132,9 @@ private fun MainScreenContent(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
-    LaunchedEffect(viewState.budgetState) {
-        onPickTargetDate(viewState.today)
-    }
+//    LaunchedEffect(viewState.budgetState) {
+//        onPickTargetDate(viewState.today)
+//    }
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -176,10 +190,14 @@ private fun MainScreenContent(
                                     .padding(24.dp)
                                     .fillMaxWidth()
                                     .aspectRatio(1f),
-                                text = if (it is BudgetState.HasEnded) {
-                                    stringResource(id = it.textResId,
+                                text = if (it is BudgetState.Expired) {
+                                    stringResource(
+                                        id = it.textResId,
                                         it.daysPastEnd,
-                                        pluralStringResource(id = R.plurals.days_mid_sentence, count = it.daysPastEnd)
+                                        pluralStringResource(
+                                            id = R.plurals.days_mid_sentence,
+                                            count = it.daysPastEnd
+                                        )
                                     )
                                 } else {
                                     stringResource(id = it.textResId)
@@ -246,7 +264,9 @@ private fun ToggleDetailsButton(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = if (isExpanded) stringResource(id = R.string.show_less) else stringResource(id = R.string.show_more),
+                text = if (isExpanded) stringResource(id = R.string.show_less) else stringResource(
+                    id = R.string.show_more
+                ),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground,
             )
@@ -270,7 +290,10 @@ private fun ToggleDetailsButton(
     }
 }
 
-private fun validateNumberInputString(numberInputString: String, allowDecimalSeparator: Boolean = false): Boolean {
+private fun validateNumberInputString(
+    numberInputString: String,
+    allowDecimalSeparator: Boolean = false
+): Boolean {
     val maxDecimalSeparatorCount = if (allowDecimalSeparator) 1 else 0
     var decimalSeparatorCounter = 0
     for (char in numberInputString) {
@@ -400,7 +423,8 @@ fun DefaultPreview() {
                 isExpanded = true,
                 hasIncompleteData = false
             ),
-            onClickSettingsButton = {},
+            onJumpToTodayClick = {},
+            onSettingsClick = {},
             toggleShowDetails = {},
             onPickTargetDate = {}
         )
@@ -416,7 +440,8 @@ fun MissingDataPreview() {
                 isLoading = false,
                 hasIncompleteData = true
             ),
-            onClickSettingsButton = {},
+            onJumpToTodayClick = {},
+            onSettingsClick = {},
             toggleShowDetails = {},
             onPickTargetDate = {}
         )

@@ -6,6 +6,13 @@ import javax.inject.Qualifier
  * DI qualifier for the OffsetDateTime for now.
  */
 @Qualifier
+public annotation class OffsetDateTimeNow
+
+/**
+ * DI qualifier for the LocalDateTime for now.
+ */
+
+@Qualifier
 public annotation class DateTimeNow
 
 /**
