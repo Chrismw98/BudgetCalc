@@ -25,7 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
@@ -92,10 +92,10 @@ fun CircularProgressbar(
     BoxWithConstraints(
         modifier = modifier
             .defaultMinSize(250.dp)
-            .clip(shape = CircleShape)
-            .clickable(
-                enabled = true,
-                onClick = onClick
+            .padding(16.dp)
+            .shadow(
+                elevation = 8.dp,
+                shape = CircleShape,
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -111,6 +111,8 @@ fun CircularProgressbar(
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surface,
+            onClick = onClick,
+            enabled = true,
             modifier = Modifier.size(boxWidth - INDICATOR_THICKNESS_DP * 2),
             shadowElevation = 3.dp
         ) {
@@ -187,7 +189,7 @@ private fun DisplayNumberText(
     }
 }
 
-@Preview(showBackground = false, widthDp = 100, heightDp = 100)
+@Preview(showBackground = true, widthDp = 100, heightDp = 100)
 @Composable
 private fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
@@ -201,7 +203,7 @@ private fun CircularProgressBarPreviewSmall() {
     }
 }
 
-@Preview(showBackground = false, widthDp = 250, heightDp = 250)
+@Preview(showBackground = true, widthDp = 250, heightDp = 250)
 @Composable
 private fun CircularProgressBarPreviewNormal() {
     BudgetCalcTheme {
@@ -215,7 +217,7 @@ private fun CircularProgressBarPreviewNormal() {
     }
 }
 
-@Preview(showBackground = false, widthDp = 500, heightDp = 500)
+@Preview(showBackground = true, widthDp = 500, heightDp = 500)
 @Composable
 private fun CircularProgressBarPreviewLarge() {
     BudgetCalcTheme {
@@ -229,7 +231,7 @@ private fun CircularProgressBarPreviewLarge() {
     }
 }
 
-@Preview(showBackground = false, widthDp = 500, heightDp = 800)
+@Preview(showBackground = true, widthDp = 500, heightDp = 800)
 @Composable
 private fun CircularProgressBarPreviewCustom() {
     BudgetCalcTheme {

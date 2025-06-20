@@ -1,10 +1,15 @@
 package chrismw.budgetcalc.helpers
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.EventAvailable
+import androidx.compose.material.icons.outlined.LocalMall
+import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import chrismw.budgetcalc.R
@@ -14,6 +19,8 @@ sealed class Metric(
     open val value: Number,
     val unit: MetricUnit,
     @StringRes val textResId: Int,
+    @DrawableRes val iconDrawableRes: Int? = null,
+    val iconImageVector: ImageVector? = null,
 ) {
 
     fun getValueString(): String = if (unit is MetricUnit.Days) {
@@ -25,20 +32,13 @@ sealed class Metric(
         numberFormat.format(value)
     }
 
-    @Composable
-    @ReadOnlyComposable
-    fun getColor(): Color = if (unit is MetricUnit.Days && value.toDouble() < 0) {
-        MaterialTheme.colorScheme.error
-    } else {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    }
-
     data class DaysSinceStart(
         override val value: Int
     ) : Metric(
         value = value,
         unit = MetricUnit.Days,
-        textResId = R.string.metric_text_days_since_start
+        textResId = R.string.metric_text_days_since_start,
+        iconImageVector = Icons.Outlined.CalendarMonth,
     )
 
     data class DaysRemaining(
@@ -46,7 +46,8 @@ sealed class Metric(
     ) : Metric(
         value = value,
         unit = MetricUnit.Days,
-        textResId = R.string.metric_text_days_remaining
+        textResId = R.string.metric_text_days_remaining,
+        iconDrawableRes = R.drawable.ic_event_upcoming,
     )
 
     data class DailyBudget(
@@ -54,7 +55,8 @@ sealed class Metric(
     ) : Metric(
         value = value,
         unit = MetricUnit.CurrencyPerDay,
-        textResId = R.string.metric_text_daily_budget
+        textResId = R.string.metric_text_daily_budget,
+        iconDrawableRes = R.drawable.ic_clock,
     )
 
     data class BudgetUntilTargetDate(
@@ -62,7 +64,8 @@ sealed class Metric(
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,
-        textResId = R.string.metric_text_budget_until_target_date
+        textResId = R.string.metric_text_budget_until_target_date,
+        iconImageVector = Icons.Outlined.LocalMall,
     )
 
     data class RemainingBudget(
@@ -70,7 +73,8 @@ sealed class Metric(
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,
-        textResId = R.string.metric_text_remaining_budget
+        textResId = R.string.metric_text_remaining_budget,
+        iconImageVector = Icons.Outlined.Savings,
     )
 
     data class TotalBudget(
@@ -78,7 +82,8 @@ sealed class Metric(
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,
-        textResId = R.string.metric_text_total_budget
+        textResId = R.string.metric_text_total_budget,
+        iconDrawableRes = R.drawable.ic_money_bag,
     )
 }
 

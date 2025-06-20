@@ -53,7 +53,13 @@ fun BudgetCalcNavHost(
                 onJumpToTodayClick = viewModel::onResetTargetDate,
                 onSettingsClick = navController::navigateToSettingsScreen,
                 toggleShowDetails = viewModel::toggleDetailsExpanded,
-                onPickTargetDate = viewModel::onPickTargetDate
+                onPickTargetDate = viewModel::onPickTargetDate,
+                onShowDatePicker = {
+                    viewModel.onSetShowDatePicker(true)
+                },
+                onHideDatePicker = {
+                    viewModel.onSetShowDatePicker(false)
+                }
             )
         }
 

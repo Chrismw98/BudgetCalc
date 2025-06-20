@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,17 +31,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -73,6 +67,8 @@ internal fun MainScreen(
     onSettingsClick: () -> Unit,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit,
+    onShowDatePicker: () -> Unit,
+    onHideDatePicker: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -103,20 +99,23 @@ internal fun MainScreen(
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background,
     ) { contentPadding ->
         if (!viewState.isLoading) {
             if (viewState.hasIncompleteData) {
                 MissingDataContent(
-                    contentPadding,
-                    onSettingsClick
+                    contentPadding = contentPadding,
+                    onSettingsClick = onSettingsClick,
                 )
             } else {
                 MainScreenContent(
-                    contentPadding,
-                    viewState,
-                    toggleShowDetails,
-                    onPickTargetDate,
+                    contentPadding = contentPadding,
+                    viewState = viewState,
+                    toggleShowDetails = toggleShowDetails,
+                    onPickTargetDate = onPickTargetDate,
+                    onShowDatePicker = onShowDatePicker,
+                    onHideDatePicker = onHideDatePicker,
                 )
             }
         }
@@ -128,119 +127,104 @@ private fun MainScreenContent(
     contentPadding: PaddingValues,
     viewState: MainScreenViewModel.ViewState,
     toggleShowDetails: () -> Unit,
-    onPickTargetDate: (LocalDate) -> Unit
+    onPickTargetDate: (LocalDate) -> Unit,
+    onShowDatePicker: () -> Unit,
+    onHideDatePicker: () -> Unit,
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
-
-//    LaunchedEffect(viewState.budgetState) {
-//        onPickTargetDate(viewState.today)
-//    }
-
-    Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-    ) {
-        LazyColumn(
-            modifier = Modifier.padding(6.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-
-            item("date_picker") {
-                if (showDatePicker) {
-                    DatePickerModal(
-                        targetDate = viewState.targetDate,
-                        minDate = viewState.datePickerMinDate,
-                        maxDate = viewState.datePickerMaxDate,
-                        onDateSelected = { selectedDate ->
-                            showDatePicker = false
-                            selectedDate?.let {
-                                onPickTargetDate(it)
-                            }
-                        },
-                        onDismiss = {
-                            showDatePicker = false
-                        }
-                    )
+    if (viewState.showDatePicker) {
+        DatePickerModal(
+            targetDate = viewState.targetDate,
+            minDate = viewState.datePickerMinDate,
+            maxDate = viewState.datePickerMaxDate,
+            onDateSelected = { selectedDate ->
+                onHideDatePicker()
+                selectedDate?.let {
+                    onPickTargetDate(it)
                 }
-            }
+            },
+            onDismiss = onHideDatePicker,
+        )
+    }
 
-            item("circular_overview") {
-                Crossfade(targetState = viewState.budgetState, label = "overview_crossfade") {
-                    when (it) {
-                        is BudgetState.Ongoing -> {
-                            CircularProgressbar(
-                                remainingBudget = viewState.remainingBudget ?: 0f,
-                                remainingBudgetPercentage = viewState.remainingBudgetPercentage,
-                                modifier = Modifier
-                                    .padding(24.dp)
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f),
-                                targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                                currency = viewState.currency,
-                                onClick = { showDatePicker = true }
-                            )
-                        }
+    LazyColumn(
+        modifier = Modifier
+            .padding(contentPadding)
+            .padding(vertical = 6.dp, horizontal = 12.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
 
-                        else -> {
-                            CircularTextOverview(
-                                modifier = Modifier
-                                    .padding(24.dp)
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f),
-                                text = if (it is BudgetState.Expired) {
-                                    stringResource(
-                                        id = it.textResId,
-                                        it.daysPastEnd,
-                                        pluralStringResource(
-                                            id = R.plurals.days_mid_sentence,
-                                            count = it.daysPastEnd
-                                        )
+        item("circular_overview") {
+            Crossfade(targetState = viewState.budgetState, label = "overview_crossfade") {
+                when (it) {
+                    is BudgetState.Ongoing -> {
+                        CircularProgressbar(
+                            remainingBudget = viewState.remainingBudget ?: 0f,
+                            remainingBudgetPercentage = viewState.remainingBudgetPercentage,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                            currency = viewState.currency,
+                            onClick = onShowDatePicker
+                        )
+                    }
+
+                    else -> {
+                        CircularTextOverview(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            text = if (it is BudgetState.Expired) {
+                                stringResource(
+                                    id = it.textResId,
+                                    it.daysPastEnd,
+                                    pluralStringResource(
+                                        id = R.plurals.days_mid_sentence,
+                                        count = it.daysPastEnd
                                     )
-                                } else {
-                                    stringResource(id = it.textResId)
-                                },
-                                targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                                backgroundCircleColor = if (it is BudgetState.HasNotStarted) {
-                                    MaterialTheme.colorScheme.tertiary
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceVariant
-                                },
-                                onClick = { showDatePicker = true }
-                            )
-                        }
+                                )
+                            } else {
+                                stringResource(id = it.textResId)
+                            },
+                            targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                            backgroundCircleColor = if (it is BudgetState.HasNotStarted) {
+                                MaterialTheme.colorScheme.tertiary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                            onClick = onShowDatePicker
+                        )
                     }
                 }
             }
+        }
 
-            item("spacer") {
-                VerticalSpacer(24.dp)
-            }
+        item("spacer") {
+            VerticalSpacer(24.dp)
+        }
 
-            item("toggle_details_button") {
-                ToggleDetailsButton(
-                    isExpanded = viewState.isExpanded,
-                    onClick = toggleShowDetails,
-                )
-            }
+        item("toggle_details_button") {
+            ToggleDetailsButton(
+                isExpanded = viewState.isExpanded,
+                onClick = toggleShowDetails,
+            )
+        }
 
-            item("metrics_list") {
-                AnimatedVisibility(
-                    visible = viewState.isExpanded,
-                    enter = expandVertically(),
-                    exit = shrinkVertically()
+        item("metrics_list") {
+            AnimatedVisibility(
+                visible = viewState.isExpanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        viewState.metrics.forEach { metric ->
-                            MetricItemCard(
-                                metric = metric,
-                                currency = viewState.currency
-                            )
-                        }
+                    viewState.metrics.forEach { metric ->
+                        MetricItemCard(
+                            metric = metric,
+                            currency = viewState.currency
+                        )
                     }
                 }
             }
@@ -313,13 +297,13 @@ private fun validateNumberInputString(
 @Composable
 private fun MissingDataContent(
     contentPadding: PaddingValues,
-    onNavigateToSettings: () -> Unit
+    onSettingsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(contentPadding)
-            .padding(6.dp),
+            .padding(vertical = 6.dp, horizontal = 12.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -340,7 +324,7 @@ private fun MissingDataContent(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Button(onClick = onNavigateToSettings) {
+        Button(onClick = onSettingsClick) {
             Text(text = stringResource(R.string.label_enter_data))
         }
     }
@@ -426,7 +410,9 @@ fun DefaultPreview() {
             onJumpToTodayClick = {},
             onSettingsClick = {},
             toggleShowDetails = {},
-            onPickTargetDate = {}
+            onPickTargetDate = {},
+            onShowDatePicker = {},
+            onHideDatePicker = {},
         )
     }
 }
@@ -443,7 +429,9 @@ fun MissingDataPreview() {
             onJumpToTodayClick = {},
             onSettingsClick = {},
             toggleShowDetails = {},
-            onPickTargetDate = {}
+            onPickTargetDate = {},
+            onShowDatePicker = {},
+            onHideDatePicker = {},
         )
     }
 }

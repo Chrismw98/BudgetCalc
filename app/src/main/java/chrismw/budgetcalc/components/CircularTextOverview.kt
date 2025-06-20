@@ -1,6 +1,5 @@
 package chrismw.budgetcalc.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,10 +37,10 @@ fun CircularTextOverview(
     BoxWithConstraints(
         modifier = modifier
             .defaultMinSize(250.dp)
-            .clip(shape = CircleShape)
-            .clickable(
-                enabled = true,
-                onClick = onClick
+            .padding(16.dp)
+            .shadow(
+                elevation = 8.dp,
+                shape = CircleShape,
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -58,7 +57,9 @@ fun CircularTextOverview(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.size(boxWidth - INDICATOR_THICKNESS_DP * 2),
-            shadowElevation = 3.dp
+            shadowElevation = 3.dp,
+            onClick = onClick,
+            enabled = true,
         ) {
             DisplayNumberText(
                 text = text,
@@ -98,9 +99,9 @@ private fun DisplayNumberText(
     }
 }
 
-@Preview(showBackground = false, widthDp = 100, heightDp = 100)
-@Preview(showBackground = false, widthDp = 250, heightDp = 250)
-@Preview(showBackground = false, widthDp = 500, heightDp = 500)
+@Preview(showBackground = true, widthDp = 100, heightDp = 100)
+@Preview(showBackground = true, widthDp = 250, heightDp = 250)
+@Preview(showBackground = true, widthDp = 500, heightDp = 500)
 @Composable
 private fun CircularTextOverviewPreview() {
     BudgetCalcTheme {

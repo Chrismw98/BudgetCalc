@@ -2,19 +2,18 @@ package chrismw.budgetcalc.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.helpers.Metric
@@ -32,12 +31,15 @@ fun MetricItemCard(
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp,
+        ),
     ) {
         Row(
-            modifier = Modifier.padding(6.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             val metricNameString = stringResource(id = metric.textResId)
             val metricValueString = metric.getValueString()
@@ -46,33 +48,40 @@ fun MetricItemCard(
                 is MetricUnit.Currency -> currency
                 is MetricUnit.CurrencyPerDay -> metric.unit.getString(currency)
             }
-            val metricColor = metric.getColor()
+
+            if (metric.iconImageVector != null){
+                Icon(
+                    imageVector = metric.iconImageVector,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            } else if (metric.iconDrawableRes != null) {
+                Icon(
+                    painter = painterResource(metric.iconDrawableRes),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
 
             Text(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .weight(1f),
                 text = metricNameString,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.weight(3f)
             )
-
-            Spacer(modifier = Modifier.width(6.dp))
 
             Text(
                 text = metricValueString,
                 style = MaterialTheme.typography.bodyLarge,
-                color = metricColor,
-                modifier = Modifier.weight(1.5f),
-                textAlign = TextAlign.End
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-
-            Spacer(modifier = Modifier.width(6.dp))
 
             Text(
                 text = metricUnitString,
                 style = MaterialTheme.typography.bodyLarge,
-                color = metricColor,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Start
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
     }
@@ -81,7 +90,7 @@ fun MetricItemCard(
 @Preview(showBackground = true)
 @Composable
 fun MetricItemPreview() {
-    val testMetric = Metric.DaysSinceStart(19)
+    val testMetric = Metric.DaysRemaining(19)
     BudgetCalcTheme {
         MetricItemCard(
             modifier = Modifier.fillMaxWidth(),

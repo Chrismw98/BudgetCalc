@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.data.Budget
 import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.di.DateNow
-import chrismw.budgetcalc.extensions.toBudget
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +31,7 @@ class MainScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val isExpandedStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val showDatePickerStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val todayStateFlow: MutableStateFlow<LocalDate> =
         MutableStateFlow(nowDateProvider.get())
 
@@ -66,7 +66,8 @@ class MainScreenViewModel @Inject constructor(
         budgetWithTargetDateFlow,
         isExpandedStateFlow,
         todayStateFlow,
-    ) { budgetWithTargetDate, isExpanded, today ->
+        showDatePickerStateFlow,
+    ) { budgetWithTargetDate, isExpanded, today, showDatePicker ->
         val budget = budgetWithTargetDate?.first
         val targetDate = budgetWithTargetDate?.second ?: today
 
@@ -94,9 +95,10 @@ class MainScreenViewModel @Inject constructor(
 
                 budgetState = budget.extractBudgetState(targetDate),
 
+                showDatePicker = showDatePicker,
+                targetDate = targetDate,
                 datePickerMinDate = budget.startDate,
                 datePickerMaxDate = budget.endDate,
-                targetDate = targetDate,
 
                 remainingBudget = remainingBudget,
                 remainingBudgetPercentage = remainingBudgetPercentage,
@@ -130,6 +132,10 @@ class MainScreenViewModel @Inject constructor(
         budgetDataRepository.setTargetDate(targetDate)
     }
 
+    fun onSetShowDatePicker(value: Boolean){
+        showDatePickerStateFlow.value = value
+    }
+
     @Immutable
     data class ViewState(
         val isLoading: Boolean = true,
@@ -138,6 +144,7 @@ class MainScreenViewModel @Inject constructor(
 
         val budgetState: BudgetState = BudgetState.HasNotStarted,
 
+        val showDatePicker: Boolean = false,
         val targetDate: LocalDate = LocalDate.now(),
         val datePickerMinDate: LocalDate = LocalDate.now().minusDays(1),
         val datePickerMaxDate: LocalDate = LocalDate.now(),
