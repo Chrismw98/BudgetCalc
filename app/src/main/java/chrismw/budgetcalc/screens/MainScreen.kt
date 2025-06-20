@@ -1,7 +1,6 @@
 package chrismw.budgetcalc.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -155,47 +154,45 @@ private fun MainScreenContent(
     ) {
 
         item("circular_overview") {
-            Crossfade(targetState = viewState.budgetState, label = "overview_crossfade") {
-                when (it) {
-                    is BudgetState.Ongoing -> {
-                        CircularProgressbar(
-                            remainingBudget = viewState.remainingBudget ?: 0f,
-                            remainingBudgetPercentage = viewState.remainingBudgetPercentage,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f),
-                            targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                            currency = viewState.currency,
-                            onClick = onShowDatePicker
-                        )
-                    }
+            when (viewState.budgetState) {
+                is BudgetState.Ongoing -> {
+                    CircularProgressbar(
+                        remainingBudget = viewState.remainingBudget ?: 0f,
+                        remainingBudgetPercentage = viewState.remainingBudgetPercentage,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                        currency = viewState.currency,
+                        onClick = onShowDatePicker
+                    )
+                }
 
-                    else -> {
-                        CircularTextOverview(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f),
-                            text = if (it is BudgetState.Expired) {
-                                stringResource(
-                                    id = it.textResId,
-                                    it.daysPastEnd,
-                                    pluralStringResource(
-                                        id = R.plurals.days_mid_sentence,
-                                        count = it.daysPastEnd
-                                    )
+                else -> {
+                    CircularTextOverview(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        text = if (viewState.budgetState is BudgetState.Expired) {
+                            stringResource(
+                                id = viewState.budgetState.textResId,
+                                viewState.budgetState.daysPastEnd,
+                                pluralStringResource(
+                                    id = R.plurals.days_mid_sentence,
+                                    count = viewState.budgetState.daysPastEnd
                                 )
-                            } else {
-                                stringResource(id = it.textResId)
-                            },
-                            targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                            backgroundCircleColor = if (it is BudgetState.HasNotStarted) {
-                                MaterialTheme.colorScheme.tertiary
-                            } else {
-                                MaterialTheme.colorScheme.surfaceVariant
-                            },
-                            onClick = onShowDatePicker
-                        )
-                    }
+                            )
+                        } else {
+                            stringResource(id = viewState.budgetState.textResId)
+                        },
+                        targetDateString = dateString(viewState.targetDate.toEpochMillis()),
+                        backgroundCircleColor = if (viewState.budgetState is BudgetState.HasNotStarted) {
+                            MaterialTheme.colorScheme.tertiary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        onClick = onShowDatePicker
+                    )
                 }
             }
         }
