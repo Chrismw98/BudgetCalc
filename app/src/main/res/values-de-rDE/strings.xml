@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BudgetCalc</string>
-    <string name="title_instructions">Geben Sie Ihre Daten ein, um Ihr tägliches Budget zu berechnen.</string>
-    <string name="budget_start_date_excl">Startdatum (exkl.)</string>
-    <string name="target_date_incl">Stichtag (inkl.)</string>
-    <string name="easy_adjust">Einfach anpassen</string>
-    <string name="today">Heute</string>
     <string name="budget_amount">Budgetbetrag</string>
-    <string name="results">Ergebnisse:</string>
-    <string name="hint">Hilfe</string>
 
     <string name="metric_text_days_since_start">Tage seit Start</string>
     <string name="metric_text_days_remaining">Übrige Tage</string>
@@ -17,8 +10,6 @@
     <string name="metric_text_remaining_budget">Übriges Budget</string>
 
     <string name="day">Tag</string>
-    <string name="days">Tage</string>
-    <string name="per_day">/Tag</string>
     <string name="label_payment_day_of_week">Zahlungstag der Woche</string>
     <string name="label_payment_day_of_month">Zahlungstag des Monats</string>
     <string name="budget_in_monetary_units_per_day">Budget pro Tag</string>
