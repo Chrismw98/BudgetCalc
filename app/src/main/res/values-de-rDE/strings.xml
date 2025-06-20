@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BudgetCalc</string>
-    <string name="title_instructions">Füllen Sie die Felder aus um das tägliche Budget zu berechnen.</string>
+    <string name="title_instructions">Geben Sie Ihre Daten ein, um Ihr tägliches Budget zu berechnen.</string>
     <string name="budget_start_date_excl">Startdatum (exkl.)</string>
     <string name="target_date_incl">Stichtag (inkl.)</string>
     <string name="easy_adjust">Einfach anpassen</string>
     <string name="today">Heute</string>
     <string name="budget_amount">Budgetbetrag</string>
-    <string name="payment_cycle_length">Zahlungszykluslänge</string>
     <string name="results">Ergebnisse:</string>
     <string name="hint">Hilfe</string>
-    <string name="hint_message">* Das Budget wird ab dem nächsten Tag kalkuliert.\n
-                ** \"Einfach Anpassen\" wird das Start Datum des Budgets konfigurierte Zahlungsdatum des letzten Monats
-        setzen.\n
-                *** Das Startdatum muss vor dem Stichtag liegen.</string>
 
     <string name="metric_text_days_since_start">Tage seit Start</string>
     <string name="metric_text_days_remaining">Übrige Tage</string>
@@ -29,7 +24,6 @@
     <string name="budget_in_monetary_units_per_day">Budget pro Tag</string>
     <string name="currency">Währung</string>
     <string name="settings">Einstellungen</string>
-    <string name="settings_hint">Alle Einstellung werden benutzt um die Berechnung der Standardwerte zu vereinfachen. Standardwerte sind die Werte, die in Eingabefeldern auf der Startseite angezeigt werden, wenn KEINE Eingaben vorhanden sind. Dies ermöglicht die schnellste Berechnung der Ergebnisse direkt beim Öffnen der Applikation, ohne dass Sie etwas eingeben müssen.</string>
     <string name="show_less">Details ausblenden</string>
     <string name="show_more">Details anzeigen</string>
     <string name="label_ok">OK</string>
@@ -37,8 +31,6 @@
     <string name="label_remaining_as_of">Übrig, Stand</string>
     <string name="label_is_budget_constant">Konstanten Budgetbetrag festlegen</string>
     <string name="label_is_budget_rate">Budget als Tagesrate festlegen</string>
-    <string name="label_specify_cyclic_budget">Budget zyklisch festlegen</string>
-    <string name="label_specify_start_end_date">Anfangs- und Enddatum festlegen</string>
     <string name="label_monthly">Monatlich</string>
     <string name="label_weekly">Wöchentlich</string>
     <string name="label_once_only">Einmalig</string>
@@ -53,9 +45,9 @@
     <string name="label_select_date">Datum wählen</string>
     <string name="label_start_date">Startdatum</string>
     <string name="label_end_date">Enddatum</string>
-    <string name="dialog_title_pick_target_date">Datumsauswahl</string>
+    <string name="dialog_title_pick_target_date">Zieldatum auswählen</string>
     <string name="title_welcome">Willkommen zu BudgetCalc!</string>
-    <string name="text_enter_your_data">Um zu beginnen, fahren Sie bitte zur Budgetdateneingabe fort.</string>
+    <string name="text_enter_your_data">Um loszulegen, geben Sie bitte Ihre Budgetdaten ein.</string>
     <string name="label_enter_data">Daten eingeben</string>
     <string name="dialog_title_unsaved_changes">Ungespeicherte Änderungen</string>
     <string name="dialog_text_unsaved_changes">Sie verlassen die Einstellungen ohne gespeichert zu haben. Alle Änderungen werden verworfen wenn Sie sie nicht speichern.</string>
@@ -66,6 +58,8 @@
     <string name="text_loading">Lädt …</string>
     <string name="budget_state_not_started">Noch nicht begonnen</string>
     <string name="budget_state_last_day">Letzter Tag</string>
-    <string name="budget_state_has_ended">Endete vor %1$s %2$s</string>
+    <string name="budget_state_expired">Abgelaufen</string>
     <string name="label_as_of">Stand</string>
+    <string name="metric_text_budget_start_in">Budget startet in</string>
+    <string name="metric_text_days_past_expiration">Tage nach Ablauf</string>
 </resources>

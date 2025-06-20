@@ -173,18 +173,7 @@ private fun MainScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f),
-                        text = if (viewState.budgetState is BudgetState.Expired) {
-                            stringResource(
-                                id = viewState.budgetState.textResId,
-                                viewState.budgetState.daysPastEnd,
-                                pluralStringResource(
-                                    id = R.plurals.days_mid_sentence,
-                                    count = viewState.budgetState.daysPastEnd
-                                )
-                            )
-                        } else {
-                            stringResource(id = viewState.budgetState.textResId)
-                        },
+                        text = stringResource(id = viewState.budgetState.textResId),
                         targetDateString = dateString(viewState.targetDate.toEpochMillis()),
                         backgroundCircleColor = if (viewState.budgetState is BudgetState.HasNotStarted) {
                             MaterialTheme.colorScheme.tertiary

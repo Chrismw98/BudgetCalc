@@ -2,8 +2,6 @@ package chrismw.budgetcalc.data
 
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -14,9 +12,8 @@ public sealed class Budget(
     open val endDate: LocalDate,
 ) {
 
-    public fun extractBudgetState(targetDate: LocalDate): BudgetState {
-        return when {
-
+    public fun extractBudgetStateWithMetrics(targetDate: LocalDate): Pair<BudgetState, List<Metric>> {
+        val budgetState = when {
             targetDate == endDate -> BudgetState.LastDay
 
             targetDate.isAfter(endDate) -> {
@@ -28,12 +25,16 @@ public sealed class Budget(
 
             targetDate.isBefore(startDate).not() -> BudgetState.Ongoing
 
-            else -> BudgetState.HasNotStarted
+            else -> {
+                val daysUntilStart = ChronoUnit.DAYS.between(targetDate, startDate).toInt()
+                BudgetState.HasNotStarted(
+                    daysUntilStart = daysUntilStart
+                )
+            }
         }
-    }
 
-    public fun extractMetrics(targetDate: LocalDate): PersistentList<Metric> {
-        val paymentCycleLengthInDays = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
+        val paymentCycleLengthInDays =
+            ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)).toInt()
         val dailyBudget = amount / paymentCycleLengthInDays
 
         val daysSinceStart = ChronoUnit.DAYS.between(startDate, targetDate.plusDays(1)).toInt()
@@ -50,16 +51,36 @@ public sealed class Budget(
             0F
         }
 
-        val metrics = persistentListOf(
-            Metric.DaysSinceStart(daysSinceStart),
-            Metric.DaysRemaining(daysRemaining),
-            Metric.DailyBudget(dailyBudget),
-            Metric.BudgetUntilTargetDate(currentBudget),
-            Metric.RemainingBudget(remainingBudget),
-            Metric.TotalBudget(amount),
-        )
+        val metrics = when (budgetState) {
+            is BudgetState.HasNotStarted -> {
+                listOf(
+                    Metric.DaysUntilStart(budgetState.daysUntilStart),
+                    Metric.DailyBudget(dailyBudget),
+                    Metric.TotalBudget(amount),
+                )
+            }
 
-        return metrics
+            is BudgetState.Expired -> {
+                listOf(
+                    Metric.DaysPastExpiration(budgetState.daysPastEnd),
+                    Metric.DailyBudget(dailyBudget),
+                    Metric.TotalBudget(amount),
+                )
+            }
+
+            else -> {
+                listOf(
+                    Metric.DaysSinceStart(daysSinceStart),
+                    Metric.DaysRemaining(daysRemaining),
+                    Metric.DailyBudget(dailyBudget),
+                    Metric.BudgetUntilTargetDate(currentBudget),
+                    Metric.RemainingBudget(remainingBudget),
+                    Metric.TotalBudget(amount),
+                )
+            }
+        }
+
+        return budgetState to metrics
     }
 
     internal data class OnceOnly(

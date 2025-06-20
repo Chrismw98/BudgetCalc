@@ -4,9 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.LocalMall
 import androidx.compose.material.icons.outlined.Savings
+import androidx.compose.material.icons.outlined.SportsScore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -84,6 +84,24 @@ sealed class Metric(
         unit = MetricUnit.Currency,
         textResId = R.string.metric_text_total_budget,
         iconDrawableRes = R.drawable.ic_money_bag,
+    )
+
+    data class DaysUntilStart(
+        override val value: Int
+    ) : Metric(
+        value = value,
+        unit = MetricUnit.Days,
+        textResId = R.string.metric_text_budget_start_in,
+        iconImageVector = Icons.Outlined.SportsScore
+    )
+
+    data class DaysPastExpiration(
+        override val value: Int
+    ) : Metric(
+        value = value,
+        unit = MetricUnit.Days,
+        textResId = R.string.metric_text_days_past_expiration,
+        iconDrawableRes = R.drawable.ic_history
     )
 }
 

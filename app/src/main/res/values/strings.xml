@@ -6,12 +6,8 @@
     <string name="easy_adjust">Easy adjust</string>
     <string name="today">Today</string>
     <string name="budget_amount">Budget amount</string>
-    <string name="payment_cycle_length">Payment cycle length</string>
     <string name="results">Results:</string>
     <string name="hint">Hint</string>
-    <string name="hint_message">* The budget will start counting from the next day.\n
-        ** \"Easy Adjust\" will snap the budget start date to the configured default payment date of the last month.\n
-        *** The start date has to be before the target date.</string>
 
     <string name="metric_text_days_since_start">Days since start</string>
     <string name="metric_text_days_remaining">Days remaining</string>
@@ -19,6 +15,8 @@
     <string name="metric_text_budget_until_target_date">Budget until target date</string>
     <string name="metric_text_remaining_budget">Remaining budget</string>
     <string name="metric_text_total_budget">Total budget</string>
+    <string name="metric_text_budget_start_in">Budget start in</string>
+    <string name="metric_text_days_past_expiration">Days past expiration</string>
 
     <string name="EUR" translatable="false">€</string>
     <string name="day">Day</string>
@@ -28,7 +26,6 @@
     <string name="budget_in_monetary_units_per_day">Budget per day</string>
     <string name="currency">Currency</string>
     <string name="settings">Settings</string>
-    <string name="settings_hint">All of the settings are used to simplify the calculation of the default values. Default values are the values which appear when NO data has been entered into the fields on the main screen. This is to give you the fastest budget calculation directly upon opening the application, without having to do anything.</string>
     <string name="show_less">Hide details</string>
     <string name="show_more">Show details</string>
     <string name="label_ok">OK</string>
@@ -38,8 +35,6 @@
     <string name="dialog_text_unsaved_changes">You are leaving the settings with unsaved changes. Your changes will be lost if you do not save them.</string>
     <string name="label_is_budget_constant">Specify budget as constant amount</string>
     <string name="label_is_budget_rate">Specify budget as daily rate</string>
-    <string name="label_specify_cyclic_budget">Specify cyclic budget</string>
-    <string name="label_specify_start_end_date">Specify start/end date</string>
     <string name="label_payment_day_of_week">Payment day of week</string>
     <string name="label_monthly">Monthly</string>
     <string name="label_weekly">Weekly</string>
@@ -65,6 +60,6 @@
     <string name="text_loading">Loading …</string>
     <string name="budget_state_not_started">Not started yet</string>
     <string name="budget_state_last_day">Last day</string>
-    <string name="budget_state_has_ended">Ended %1$s %2$s ago</string>
+    <string name="budget_state_expired">Expired</string>
     <string name="label_as_of">as of</string>
 </resources>

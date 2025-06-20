@@ -71,21 +71,21 @@ class MainScreenViewModel @Inject constructor(
         val budget = budgetWithTargetDate?.first
         val targetDate = budgetWithTargetDate?.second ?: today
 
-        val metrics = budget?.extractMetrics(targetDate)?.toImmutableList()
+        val budgetStateWithMetrics = budget?.extractBudgetStateWithMetrics(targetDate)
 
-        if (budget == null || metrics == null) {
+        if (budget == null || budgetStateWithMetrics == null) {
             ViewState(
                 isLoading = false,
-                hasIncompleteData = true
+                hasIncompleteData = true,
             )
         } else {
-            val remainingBudget =
-                checkNotNull(metrics.find { it is Metric.RemainingBudget }?.value).toFloat()
-            val maxBudget = checkNotNull(metrics.find { it is Metric.TotalBudget }?.value).toFloat()
-            val remainingBudgetPercentage = if (maxBudget == 0F) {
-                1F
-            } else {
+            val (budgetState, metrics) = budgetStateWithMetrics
+            val remainingBudget = metrics.find { it is Metric.RemainingBudget }?.value?.toFloat()
+            val maxBudget = metrics.find { it is Metric.TotalBudget }?.value?.toFloat()
+            val remainingBudgetPercentage = if (remainingBudget != null && maxBudget != null && maxBudget != 0F) {
                 remainingBudget / maxBudget
+            } else {
+                1F
             }
 
             ViewState(
@@ -93,7 +93,7 @@ class MainScreenViewModel @Inject constructor(
                 hasIncompleteData = false,
                 today = today,
 
-                budgetState = budget.extractBudgetState(targetDate),
+                budgetState = budgetState,
 
                 showDatePicker = showDatePicker,
                 targetDate = targetDate,
@@ -105,7 +105,7 @@ class MainScreenViewModel @Inject constructor(
 
                 currency = checkNotNull(budget.currency),
                 isExpanded = isExpanded,
-                metrics = metrics,
+                metrics = metrics.toImmutableList(),
             )
         }
     }.stateIn(
@@ -132,7 +132,7 @@ class MainScreenViewModel @Inject constructor(
         budgetDataRepository.setTargetDate(targetDate)
     }
 
-    fun onSetShowDatePicker(value: Boolean){
+    fun onSetShowDatePicker(value: Boolean) {
         showDatePickerStateFlow.value = value
     }
 
@@ -142,7 +142,7 @@ class MainScreenViewModel @Inject constructor(
         val hasIncompleteData: Boolean = true,
         val today: LocalDate = LocalDate.now(),
 
-        val budgetState: BudgetState = BudgetState.HasNotStarted,
+        val budgetState: BudgetState = BudgetState.Ongoing,
 
         val showDatePicker: Boolean = false,
         val targetDate: LocalDate = LocalDate.now(),

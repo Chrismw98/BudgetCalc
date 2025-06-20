@@ -7,7 +7,9 @@ public sealed class BudgetState(
     @StringRes val textResId: Int,
 ) {
 
-    internal object HasNotStarted : BudgetState(
+    internal data class HasNotStarted(
+        val daysUntilStart: Int,
+    ) : BudgetState(
         textResId = R.string.budget_state_not_started
     )
 
@@ -20,6 +22,6 @@ public sealed class BudgetState(
     internal data class Expired(
         val daysPastEnd: Int,
     ) : BudgetState(
-        textResId = R.string.budget_state_has_ended
+        textResId = R.string.budget_state_expired
     )
 }

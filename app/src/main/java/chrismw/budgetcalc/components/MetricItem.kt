@@ -89,8 +89,21 @@ fun MetricItemCard(
 
 @Preview(showBackground = true)
 @Composable
-fun MetricItemPreview() {
+fun MetricItemWithVectorIconPreview() {
     val testMetric = Metric.DaysRemaining(19)
+    BudgetCalcTheme {
+        MetricItemCard(
+            modifier = Modifier.fillMaxWidth(),
+            metric = testMetric,
+            currency = "€"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MetricItemWithDrawableResPreview() {
+    val testMetric = Metric.DaysUntilStart(10)
     BudgetCalcTheme {
         MetricItemCard(
             modifier = Modifier.fillMaxWidth(),
