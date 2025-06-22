@@ -1,6 +1,5 @@
 package chrismw.budgetcalc.data
 
-import chrismw.budgetcalc.extensions.extractMetrics
 import chrismw.budgetcalc.helpers.Metric
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -21,19 +20,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 4, 30)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(10)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(20)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(100F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(200F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(300F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(10),
+            Metric.DaysRemaining(20),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(100F),
+            Metric.RemainingBudget(200F),
+            Metric.TotalBudget(300F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -46,19 +45,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 4, 30)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(1)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(29)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(10F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(290F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(300F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(1),
+            Metric.DaysRemaining(29),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(10F),
+            Metric.RemainingBudget(290F),
+            Metric.TotalBudget(300F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -71,19 +70,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 4, 30)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(30)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(0)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(300F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(300F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(30),
+            Metric.DaysRemaining(0),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(300F),
+            Metric.RemainingBudget(0F),
+            Metric.TotalBudget(300F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -96,19 +95,16 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 4, 30)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(31)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(-1)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(300F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(300F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysPastExpiration(1),
+            Metric.DailyBudget(10F),
+            Metric.TotalBudget(300F),
+        )
+
+        assertThat(metrics).hasSize(3)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -121,19 +117,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 7, 7)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(3)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(4)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(30F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(40F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(70F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(3),
+            Metric.DaysRemaining(4),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(30F),
+            Metric.RemainingBudget(40F),
+            Metric.TotalBudget(70F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -146,19 +142,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 7, 7)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(1)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(6)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(10F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(60F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(70F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(1),
+            Metric.DaysRemaining(6),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(10F),
+            Metric.RemainingBudget(60F),
+            Metric.TotalBudget(70F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -171,19 +167,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 7, 7)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(7)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(0)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(70F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(70F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(7),
+            Metric.DaysRemaining(0),
+            Metric.DailyBudget(10F),
+            Metric.BudgetUntilTargetDate(70F),
+            Metric.RemainingBudget(0F),
+            Metric.TotalBudget(70F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -196,19 +192,16 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 7, 7)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(14)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(-7)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(10F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(70F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(70F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysPastExpiration(7),
+            Metric.DailyBudget(10F),
+            Metric.TotalBudget(70F),
+        )
+
+        assertThat(metrics).hasSize(3)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -221,19 +214,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 12, 31)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(185)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(181)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(1F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(185F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(181F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(366F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(185),
+            Metric.DaysRemaining(181),
+            Metric.DailyBudget(1F),
+            Metric.BudgetUntilTargetDate(185F),
+            Metric.RemainingBudget(181F),
+            Metric.TotalBudget(366F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -246,19 +239,19 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 12, 31)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(1)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(365)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(1F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(1F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(365F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(366F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(1),
+            Metric.DaysRemaining(365),
+            Metric.DailyBudget(1F),
+            Metric.BudgetUntilTargetDate(1F),
+            Metric.RemainingBudget(365F),
+            Metric.TotalBudget(366F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -271,19 +264,41 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 12, 31)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(366)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(0)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(1F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(366F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(366F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysSinceStart(366),
+            Metric.DaysRemaining(0),
+            Metric.DailyBudget(1F),
+            Metric.BudgetUntilTargetDate(366F),
+            Metric.RemainingBudget(0F),
+            Metric.TotalBudget(366F),
+        )
+
+        assertThat(metrics).hasSize(6)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
+    }
+
+    @Test
+    fun `Metrics correct for OnceOnly Budget exceeding lower bound`() {
+        val targetDate = LocalDate.of(2023, 12, 31)
+        val monthlyBudget = Budget.OnceOnly(
+            amount = 366F,
+            currency = "EUR",
+            startDate = LocalDate.of(2024, 1, 1),
+            endDate = LocalDate.of(2024, 12, 31)
+        )
+
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
+
+        val expectedMetrics = listOf(
+            Metric.DaysUntilStart(1),
+            Metric.DailyBudget(1F),
+            Metric.TotalBudget(366F),
+        )
+
+        assertThat(metrics).hasSize(3)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 
     @Test
@@ -296,18 +311,15 @@ class MetricsTest {
             endDate = LocalDate.of(2024, 12, 31)
         )
 
-        val metrics = monthlyBudget.extractMetrics(targetDate)
+        val (_, metrics) = monthlyBudget.extractBudgetStateWithMetrics(targetDate)
 
-        assertThat(metrics).isNotEmpty()
-        metrics.forEach {
-            when (it) {
-                is Metric.DaysSinceStart -> assertThat(it.value).isEqualTo(376)
-                is Metric.DaysRemaining -> assertThat(it.value).isEqualTo(-10)
-                is Metric.DailyBudget -> assertThat(it.value).isEqualTo(1F)
-                is Metric.BudgetUntilTargetDate -> assertThat(it.value).isEqualTo(366F)
-                is Metric.RemainingBudget -> assertThat(it.value).isEqualTo(0F)
-                is Metric.TotalBudget -> assertThat(it.value).isEqualTo(366F)
-            }
-        }
+        val expectedMetrics = listOf(
+            Metric.DaysPastExpiration(10),
+            Metric.DailyBudget(1F),
+            Metric.TotalBudget(366F),
+        )
+
+        assertThat(metrics).hasSize(3)
+        assertThat(metrics).containsExactlyElementsIn(expectedMetrics)
     }
 }

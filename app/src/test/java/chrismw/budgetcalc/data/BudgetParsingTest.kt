@@ -1,6 +1,5 @@
 package chrismw.budgetcalc.data
 
-import chrismw.budgetcalc.extensions.toBudget
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
