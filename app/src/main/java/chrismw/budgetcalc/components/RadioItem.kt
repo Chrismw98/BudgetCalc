@@ -43,7 +43,7 @@ fun RadioItem(
     }
 }
 
-@Preview(showBackground = false)
+@Preview(showBackground = true)
 @Composable
 fun RadioItemPreview() {
     BudgetCalcTheme {
