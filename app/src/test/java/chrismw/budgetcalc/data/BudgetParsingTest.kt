@@ -1,5 +1,9 @@
 package chrismw.budgetcalc.data
 
+import chrismw.budgetcalc.data.budget.Budget
+import chrismw.budgetcalc.data.budget.BudgetDataPreferences
+import chrismw.budgetcalc.data.budget.BudgetTypePreferences
+import chrismw.budgetcalc.data.budget.toBudget
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
@@ -11,10 +15,45 @@ import java.time.LocalDate
  */
 class BudgetParsingTest {
 
+    private fun createBudgetData(
+        isBudgetConstant: Boolean,
+        constantBudgetAmount: Float? = null,
+        budgetRateAmount: Float? = null,
+        currency: String,
+        budgetType: BudgetType,
+        defaultPaymentDayOfMonth: Int? = null,
+        defaultPaymentDayOfWeek: Int? = null,
+        defaultStartDate: LocalDate? = null,
+        defaultEndDate: LocalDate? = null
+    ): BudgetDataPreferences {
+        return BudgetDataPreferences.newBuilder()
+            .setIsBudgetConstant(isBudgetConstant)
+            .apply {
+                constantBudgetAmount?.let { setConstantBudgetAmount(it) }
+                budgetRateAmount?.let { setBudgetRateAmount(it) }
+            }
+            .setCurrency(currency)
+            .setBudgetType(
+                when (budgetType) {
+                    BudgetType.OnceOnly -> BudgetTypePreferences.ONCE_ONLY
+                    BudgetType.Weekly -> BudgetTypePreferences.WEEKLY
+                    BudgetType.Monthly -> BudgetTypePreferences.MONTHLY
+                }
+            )
+            .apply {
+                defaultPaymentDayOfMonth?.let { setDefaultPaymentDayOfMonth(it) } ?: clearDefaultPaymentDayOfMonth()
+                defaultPaymentDayOfWeek?.let { setDefaultPaymentDayOfWeek(it) } ?: clearDefaultPaymentDayOfWeek()
+                defaultStartDate?.let { setDefaultStartDate(it.toString()) } ?: clearDefaultStartDate()
+                defaultEndDate?.let { setDefaultEndDate(it.toString()) } ?: clearDefaultEndDate()
+            }
+            .build()
+    }
+
+
     @Test
     fun `Blank currency throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteMonthlyBudgetData = BudgetData(
+        val incompleteMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "  ",
@@ -30,7 +69,7 @@ class BudgetParsingTest {
     @Test
     fun `Missing constant budget data throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteMonthlyBudgetData = BudgetData(
+        val incompleteMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = null,
             currency = "EUR",
@@ -46,7 +85,7 @@ class BudgetParsingTest {
     @Test
     fun `Missing rate budget data throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteMonthlyBudgetData = BudgetData(
+        val incompleteMonthlyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = null,
             currency = "EUR",
@@ -62,12 +101,12 @@ class BudgetParsingTest {
     @Test
     fun `Incomplete Monthly Budget Parsing throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteMonthlyBudgetData = BudgetData(
+        val incompleteMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
             budgetType = BudgetType.Monthly,
-            defaultPaymentDayOfMonth = null
+            defaultPaymentDayOfMonth = null,
         )
 
         assertThrows(IllegalStateException::class.java) {
@@ -78,7 +117,7 @@ class BudgetParsingTest {
     @Test
     fun `Incomplete Weekly Budget Parsing throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteWeeklyBudgetData = BudgetData(
+        val incompleteWeeklyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
@@ -94,7 +133,7 @@ class BudgetParsingTest {
     @Test
     fun `Incomplete OnceOnly Budget Parsing throws error`() {
         val today = LocalDate.of(2024, 4, 15)
-        val incompleteOnceOnlyBudgetData = BudgetData(
+        val incompleteOnceOnlyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
@@ -113,7 +152,7 @@ class BudgetParsingTest {
     @Test
     fun `Constant Monthly Budget correctly parsed`() {
         val today = LocalDate.of(2024, 4, 15)
-        val constantMonthlyBudgetData = BudgetData(
+        val constantMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -133,7 +172,7 @@ class BudgetParsingTest {
     @Test
     fun `Constant Monthly Budget correctly parsed lower bound`() {
         val today = LocalDate.of(2024, 4, 1)
-        val constantMonthlyBudgetData = BudgetData(
+        val constantMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -153,7 +192,7 @@ class BudgetParsingTest {
     @Test
     fun `Constant Monthly Budget correctly parsed upper bound`() {
         val today = LocalDate.of(2024, 4, 30)
-        val constantMonthlyBudgetData = BudgetData(
+        val constantMonthlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -178,7 +217,7 @@ class BudgetParsingTest {
         val monday = LocalDate.of(2024, 7, 1)
         val thursday = LocalDate.of(2024, 7, 4)
         val sunday = LocalDate.of(2024, 7, 7)
-        val rateWeeklyBudgetData = BudgetData(
+        val rateWeeklyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
@@ -199,7 +238,7 @@ class BudgetParsingTest {
     fun `Weekly Rate Budget correctly parsed lower bound`() {
         val monday = LocalDate.of(2024, 7, 1)
         val sunday = LocalDate.of(2024, 7, 7)
-        val rateWeeklyBudgetData = BudgetData(
+        val rateWeeklyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
@@ -222,7 +261,7 @@ class BudgetParsingTest {
     fun `Weekly Rate Budget correctly parsed upper bound`() {
         val monday = LocalDate.of(2024, 7, 1)
         val sunday = LocalDate.of(2024, 7, 7)
-        val rateWeeklyBudgetData = BudgetData(
+        val rateWeeklyBudgetData = createBudgetData(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
@@ -245,13 +284,13 @@ class BudgetParsingTest {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 12, 31)
         val today = LocalDate.of(2024, 4, 15)
-        val constantOnceOnlyBudgetData = BudgetData(
+        val constantOnceOnlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 3_660F, //2024 is a leap year
             currency = "EUR",
             budgetType = BudgetType.OnceOnly,
-            defaultStartDate = startDate.toString(),
-            defaultEndDate = endDate.toString()
+            defaultStartDate = startDate,
+            defaultEndDate = endDate,
         )
 
         val budget = constantOnceOnlyBudgetData.toBudget(today)
@@ -267,13 +306,13 @@ class BudgetParsingTest {
     fun `Constant OnceOnly Budget correctly parsed lower bound`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 12, 31)
-        val constantOnceOnlyBudgetData = BudgetData(
+        val constantOnceOnlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 3_660F, //2024 is a leap year
             currency = "EUR",
             budgetType = BudgetType.OnceOnly,
-            defaultStartDate = startDate.toString(),
-            defaultEndDate = endDate.toString()
+            defaultStartDate = startDate,
+            defaultEndDate = endDate,
         )
 
         val budget = constantOnceOnlyBudgetData.toBudget(startDate)
@@ -289,13 +328,13 @@ class BudgetParsingTest {
     fun `Constant OnceOnly Budget correctly parsed upper bound`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 12, 31)
-        val constantOnceOnlyBudgetData = BudgetData(
+        val constantOnceOnlyBudgetData = createBudgetData(
             isBudgetConstant = true,
             constantBudgetAmount = 3_660F, //2024 is a leap year
             currency = "EUR",
             budgetType = BudgetType.OnceOnly,
-            defaultStartDate = startDate.toString(),
-            defaultEndDate = endDate.toString()
+            defaultStartDate = startDate,
+            defaultEndDate = endDate,
         )
 
         val budget = constantOnceOnlyBudgetData.toBudget(endDate)

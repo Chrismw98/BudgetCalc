@@ -90,7 +90,8 @@ internal fun SettingsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(imageVector = Icons.Default.ArrowBack,
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = null
                         )
                     }
@@ -111,19 +112,18 @@ internal fun SettingsScreen(
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.label_is_budget_constant),
-                isSelected = viewState.isBudgetConstant,
+                isSelected = viewState.isBudgetConstant == true,
                 onClick = onClickConstantBudget
             )
 
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.label_is_budget_rate),
-                isSelected = !viewState.isBudgetConstant,
+                isSelected = viewState.isBudgetConstant != true,
                 onClick = onClickBudgetRate
             )
 
-            if (viewState.isBudgetConstant) {
-
+            if (viewState.isBudgetConstant == true) {
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = viewState.constantBudgetAmount.orEmpty(),
@@ -182,9 +182,10 @@ internal fun SettingsScreen(
                 modifier = Modifier.height(6.dp)
             )
 
-            HorizontalDivider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 6.dp, horizontal = 6.dp)
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp, horizontal = 6.dp)
             )
 
             GenericDropDownMenu<BudgetType>(
@@ -204,23 +205,6 @@ internal fun SettingsScreen(
             )
 
             when (viewState.budgetType) {
-                BudgetType.Monthly -> {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = viewState.defaultPaymentDayOfMonth.orEmpty(),
-                        onValueChange = onDefaultPaymentDayChanged,
-                        label = {
-                            Text(
-                                text = stringResource(id = R.string.label_payment_day_of_month)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Decimal,
-                            imeAction = ImeAction.Next,
-                        ),
-                    )
-                }
-
                 BudgetType.Weekly -> {
                     GenericDropDownMenu<DayOfWeek>(
                         modifier = Modifier.fillMaxWidth(),
@@ -243,6 +227,23 @@ internal fun SettingsScreen(
                         today = viewState.today,
                         onClickStartDate = onStartDateChanged,
                         onClickTargetDate = onEndDateChanged
+                    )
+                }
+
+                else -> {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = viewState.defaultPaymentDayOfMonth.orEmpty(),
+                        onValueChange = onDefaultPaymentDayChanged,
+                        label = {
+                            Text(
+                                text = stringResource(id = R.string.label_payment_day_of_month)
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Next,
+                        ),
                     )
                 }
             }

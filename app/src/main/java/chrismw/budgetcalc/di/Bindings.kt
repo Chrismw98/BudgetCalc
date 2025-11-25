@@ -1,7 +1,7 @@
 package chrismw.budgetcalc.di
 
-import chrismw.budgetcalc.data.BudgetDataRepository
-import chrismw.budgetcalc.data.BudgetDataRepositoryImpl
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.BudgetDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

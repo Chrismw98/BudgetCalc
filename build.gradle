@@ -15,6 +15,9 @@ buildscript {
         kotlinx_immutable_collections_version = '0.3.5'
 
         accompanist_version = '0.34.0'
+
+        protobuf_version = '4.33.4'
+        datastore_version = '1.0.0'
     }
 
     dependencies {
@@ -23,8 +26,8 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '8.13.1' apply false
-    id 'com.android.library' version '8.13.1' apply false
+    id 'com.android.application' version '8.13.2' apply false
+    id 'com.android.library' version '8.13.2' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.22' apply false
 }
 

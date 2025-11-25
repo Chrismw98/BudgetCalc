@@ -1,10 +1,13 @@
-package chrismw.budgetcalc.data
+package chrismw.budgetcalc.data.budget
 
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+/**
+ * Represents a budget with an amount, currency, start date, and end date.
+ */
 public sealed class Budget(
     open val amount: Float,
     open val currency: String,
@@ -12,6 +15,12 @@ public sealed class Budget(
     open val endDate: LocalDate,
 ) {
 
+    /**
+     * Extracts the budget state and relevant metrics for a given target date.
+     *
+     * @param targetDate The date for which to extract the budget state and metrics.
+     * @return A pair containing the [BudgetState] and a list of [Metric]s.
+     */
     public fun extractBudgetStateWithMetrics(targetDate: LocalDate): Pair<BudgetState, List<Metric>> {
         val budgetState = when {
             targetDate == endDate -> BudgetState.LastDay

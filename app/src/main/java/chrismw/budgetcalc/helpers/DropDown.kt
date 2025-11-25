@@ -7,5 +7,5 @@ enum class DropDown {
 
     BUDGET_TYPE,
     PAYMENT_DAY_OF_WEEK,
-    NONE
+    NONE;
 }

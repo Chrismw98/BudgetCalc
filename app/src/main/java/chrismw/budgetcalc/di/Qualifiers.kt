@@ -20,3 +20,33 @@ public annotation class DateTimeNow
  */
 @Qualifier
 public annotation class DateNow
+
+/**
+ * DI qualifier for the default coroutines dispatcher.
+ */
+@Qualifier
+public annotation class DefaultDispatcher
+
+/**
+ * DI qualifier for the I/O coroutines dispatcher.
+ */
+@Qualifier
+public annotation class IODispatcher
+
+/**
+ * DI qualifier for the Main UI thread coroutines dispatcher.
+ */
+@Qualifier
+public annotation class MainDispatcher
+
+/**
+ * DI qualifier for the unconfined coroutines dispatcher.
+ */
+@Qualifier
+public annotation class UnconfinedDispatcher
+
+/**
+ * DI qualifier for the application coroutines scope.
+ */
+@Qualifier
+public annotation class ApplicationScope

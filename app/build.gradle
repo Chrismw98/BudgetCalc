@@ -3,15 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt' // Kotlin support with annotation processing
     id 'dagger.hilt.android.plugin'
+    id 'com.google.protobuf' version "0.9.6"
 }
 
 android {
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "chrismw.budgetcalc"
         minSdk 21
-        targetSdk 35
+        targetSdk 36
         versionCode 5
         versionName "1.0.4"
 
@@ -53,6 +54,24 @@ android {
     namespace 'chrismw.budgetcalc'
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobuf_version"
+    }
+    // Generates the java Protobuf-lite code for the Protobufs in this project. See
+    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
+    // for more information.
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation "androidx.appcompat:appcompat:1.7.0"
@@ -79,6 +98,10 @@ dependencies {
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    //Data store
+    implementation  "androidx.datastore:datastore:1.0.0"
+    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
 
     //Navigation
     implementation "androidx.navigation:navigation-compose:$androidx_navigation_version"

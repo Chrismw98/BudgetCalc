@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_package = "chrismw.budgetcalc.data.budget";
+option java_multiple_files = true;
+
+import "google/protobuf/wrappers.proto";
+
+message BudgetDataPreferences {
+  optional bool isBudgetConstant = 1;
+
+  optional float constantBudgetAmount = 2;
+  optional float budgetRateAmount = 3;
+  optional string currency = 4;
+
+  optional BudgetTypePreferences budgetType = 5;
+  optional int32 defaultPaymentDayOfMonth = 6;
+  optional int32 defaultPaymentDayOfWeek = 7;
+  optional string defaultStartDate = 8;
+  optional string defaultEndDate = 9;
+}
+
+enum BudgetTypePreferences {
+  ONCE_ONLY = 0;
+  WEEKLY = 1;
+  MONTHLY = 2;
+}

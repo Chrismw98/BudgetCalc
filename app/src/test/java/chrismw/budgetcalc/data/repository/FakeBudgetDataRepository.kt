@@ -1,8 +1,8 @@
 package chrismw.budgetcalc.data.repository
 
-import chrismw.budgetcalc.data.BudgetData
-import chrismw.budgetcalc.data.BudgetDataRepository
 import chrismw.budgetcalc.data.DateWithTimestamp
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.helpers.BudgetDataDTO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ class FakeBudgetDataRepository(
     private val nowDateTimeProvider: Provider<LocalDateTime>,
 ) : BudgetDataRepository {
 
-    private val budgetDataStateFlow = MutableStateFlow(BudgetData())
+    private val budgetDataStateFlow = MutableStateFlow(BudgetDataDTO())
     private val targetDateStateFlow = MutableStateFlow(
         DateWithTimestamp(
             date = nowDateProvider.get(),
@@ -26,7 +26,7 @@ class FakeBudgetDataRepository(
 
     override val targetDateFlow: Flow<DateWithTimestamp> = targetDateStateFlow.asStateFlow()
 
-    override val budgetDataFlow: Flow<BudgetData> = budgetDataStateFlow.asStateFlow()
+    override val budgetDataFlow: Flow<BudgetDataDTO> = budgetDataStateFlow.asStateFlow()
 
     override fun setTargetDate(date: LocalDate) {
         targetDateStateFlow.value = DateWithTimestamp(
@@ -35,7 +35,7 @@ class FakeBudgetDataRepository(
         )
     }
 
-    override fun observeBudgetDataWithNowDate(): Flow<Pair<BudgetData, DateWithTimestamp>> {
+    override fun observeBudgetDataWithNowDate(): Flow<Pair<BudgetDataDTO, DateWithTimestamp>> {
         return budgetDataStateFlow.map {
             it to DateWithTimestamp(
                 date = nowDateProvider.get(),
@@ -44,11 +44,11 @@ class FakeBudgetDataRepository(
         }
     }
 
-    override suspend fun getBudgetData(): BudgetData {
+    override suspend fun getBudgetData(): BudgetDataDTO {
         return budgetDataStateFlow.value
     }
 
-    override suspend fun saveBudgetData(budgetData: BudgetData) {
+    override suspend fun saveBudgetData(budgetData: BudgetDataDTO) {
         budgetDataStateFlow.value = budgetData
     }
 }

@@ -4,11 +4,13 @@ import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.toBudgetDataDTO
+import chrismw.budgetcalc.di.DateNow
+import chrismw.budgetcalc.extensions.toDecimalFormatString
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
-import chrismw.budgetcalc.data.BudgetDataRepository
-import chrismw.budgetcalc.di.DateNow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -63,12 +65,12 @@ class SettingsViewModel @Inject constructor(
 
             isBudgetConstant = budgetDataDTO.isBudgetConstant,
 
-            constantBudgetAmount = budgetDataDTO.constantBudgetAmount,
-            budgetRateAmount = budgetDataDTO.budgetRateAmount,
+            constantBudgetAmount = budgetDataDTO.constantBudgetAmount?.toDecimalFormatString(),
+            budgetRateAmount = budgetDataDTO.budgetRateAmount?.toDecimalFormatString(),
             currency = budgetDataDTO.currency,
 
             budgetType = budgetDataDTO.budgetType,
-            defaultPaymentDayOfMonth = budgetDataDTO.defaultPaymentDayOfMonth,
+            defaultPaymentDayOfMonth = budgetDataDTO.defaultPaymentDayOfMonth?.toString(),
             defaultPaymentDayOfWeek = budgetDataDTO.defaultPaymentDayOfWeek,
             startDate = budgetDataDTO.startDate,
             endDate = budgetDataDTO.endDate,
@@ -87,7 +89,7 @@ class SettingsViewModel @Inject constructor(
 
     fun loadSettings() {
         viewModelScope.launch {
-            val loadedBudgetDataDTO = budgetDataRepository.getBudgetData().toBudgetDataDTO()
+            val loadedBudgetDataDTO = budgetDataRepository.getBudgetData()
             budgetDataDTOStateFlow.value = loadedBudgetDataDTO
             initialBudgetDataDTOStateFlow.value = loadedBudgetDataDTO
         }
@@ -101,9 +103,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentBudgetDataDTO = budgetDataDTOStateFlow.value
             initialBudgetDataDTOStateFlow.value = currentBudgetDataDTO
-            budgetDataRepository.saveBudgetData(
-                currentBudgetDataDTO.toBudgetData()
-            )
+            budgetDataRepository.saveBudgetData(currentBudgetDataDTO)
         }
     }
 
@@ -116,7 +116,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setConstantBudgetAmount(value: String) {
-        val correctedValue = correctFloatString(value)
+        val correctedValue = correctFloatString(value)?.toFloatOrNull() //TODO: Remove this in favor of error states
         if (correctedValue != null) {
             updateBudgetDataDTO {
                 it.copy(
@@ -127,11 +127,11 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setBudgetRateAmount(value: String) {
-        val correctedValue = correctFloatString(value)
+        val correctedValue = correctFloatString(value)?.toFloatOrNull() //TODO: Remove this in favor of error states
         if (correctedValue != null) {
             updateBudgetDataDTO {
                 it.copy(
-                    budgetRateAmount = value
+                    budgetRateAmount = correctedValue
                 )
             }
         }
@@ -151,7 +151,7 @@ class SettingsViewModel @Inject constructor(
             if (defaultPaymentDay == null || defaultPaymentDay in 1..31) {
                 updateBudgetDataDTO {
                     it.copy(
-                        defaultPaymentDayOfMonth = value
+                        defaultPaymentDayOfMonth = defaultPaymentDay
                     )
                 }
             }
@@ -199,13 +199,13 @@ class SettingsViewModel @Inject constructor(
         val isLoading: Boolean = true,
         val today: LocalDate = LocalDate.now(),
 
-        val isBudgetConstant: Boolean = false,
+        val isBudgetConstant: Boolean? = null,
 
         val constantBudgetAmount: String? = null,
         val budgetRateAmount: String? = null,
         val currency: String? = null,
 
-        val budgetType: BudgetType = BudgetType.Monthly,
+        val budgetType: BudgetType? = null,
         val defaultPaymentDayOfMonth: String? = null,
         val defaultPaymentDayOfWeek: DayOfWeek? = null,
         val startDate: LocalDate? = null,

@@ -2,8 +2,9 @@ package chrismw.budgetcalc.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import chrismw.budgetcalc.data.Budget
-import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.Budget
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.toBudget
 import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric

@@ -1,8 +1,7 @@
 package chrismw.budgetcalc.data.repository
 
-import app.cash.turbine.test
-import chrismw.budgetcalc.data.BudgetData
-import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -20,9 +19,9 @@ class BudgetDataRepositoryTest {
 
     companion object {
 
-        val EMPTY_MONTHLY_BUDGET = BudgetData()
+        val EMPTY_MONTHLY_BUDGET = BudgetDataDTO()
 
-        val CONSTANT_MONTHLY_BUDGET = BudgetData(
+        val CONSTANT_MONTHLY_BUDGET = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 500F,
             currency = "EUR",
@@ -40,13 +39,13 @@ class BudgetDataRepositoryTest {
     }
 
     @Test
-    fun `Default BudgetData equals empty BudgetData`() = runTest {
+    fun `Default BudgetDataDTO equals empty BudgetDataDTO`() = runTest {
         val budgetData = budgetDataRepository.getBudgetData()
         assertThat(budgetData).isEqualTo(EMPTY_MONTHLY_BUDGET)
     }
 
 //    @Test
-//    fun `Saved BudgetData equals observed BudgetData`() = runTest {
+//    fun `Saved BudgetDataDTO equals observed BudgetDataDTO`() = runTest {
 //        budgetDataRepository.observeBudgetData().test {
 //            assertThat(awaitItem()).isEqualTo(EMPTY_MONTHLY_BUDGET)
 //

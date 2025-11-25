@@ -2,9 +2,9 @@ package chrismw.budgetcalc.screens
 
 import app.cash.turbine.test
 import chrismw.budgetcalc.TestCoroutineRule
-import chrismw.budgetcalc.data.BudgetData
-import chrismw.budgetcalc.data.BudgetDataRepository
+import chrismw.budgetcalc.data.budget.BudgetDataRepository
 import chrismw.budgetcalc.data.repository.FakeBudgetDataRepository
+import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.BudgetType
 import com.google.common.truth.Truth.assertThat
@@ -34,7 +34,7 @@ class MainScreenViewModelTest {
 
         val TEST_DATE: LocalDate = LocalDate.of(2024, 4, 1)
         val TEST_DATE_TIME: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0)
-        val CONSTANT_MONTHLY_BUDGET = BudgetData(
+        val CONSTANT_MONTHLY_BUDGET = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -65,7 +65,7 @@ class MainScreenViewModelTest {
 
     @Test
     fun `ViewModel starts with empty ViewState`() =
-        runTest { //TODO: Test metrics calculation individually
+        runTest {
             viewModel.viewState.test {
                 assertThat(awaitItem()).isEqualTo(MainScreenViewModel.ViewState())
             }
@@ -107,7 +107,7 @@ class MainScreenViewModelTest {
             viewModel.viewState.test {
                 awaitItem()
 
-                val constantMonthlyBudget = BudgetData(
+                val constantMonthlyBudget = BudgetDataDTO(
                     isBudgetConstant = true,
                     constantBudgetAmount = 300F,
                     currency = "EUR",
@@ -136,7 +136,7 @@ class MainScreenViewModelTest {
     @Test
     fun `Target date reset to today after budget update - target date after start date, before end date`() =
         runTest {
-            val constantMonthlyBudget = BudgetData(
+            val constantMonthlyBudget = BudgetDataDTO(
                 isBudgetConstant = true,
                 constantBudgetAmount = 300F,
                 currency = "EUR",
@@ -144,13 +144,13 @@ class MainScreenViewModelTest {
                 defaultPaymentDayOfMonth = 25
             )
 
-            val onceOnlyBudget = BudgetData(
+            val onceOnlyBudget = BudgetDataDTO(
                 isBudgetConstant = false,
                 budgetRateAmount = 10F,
                 currency = "EUR",
                 budgetType = BudgetType.OnceOnly,
-                defaultStartDate = LocalDate.of(2024, 3, 20).toString(),
-                defaultEndDate = LocalDate.of(2024, 4, 10).toString()
+                startDate = LocalDate.of(2024, 3, 20),
+                endDate = LocalDate.of(2024, 4, 10),
             )
 
             viewModel.viewState.test {
@@ -178,7 +178,7 @@ class MainScreenViewModelTest {
     @Test
     fun `Target date reset to today after budget update - target date before start date`() =
         runTest {
-            val constantMonthlyBudget = BudgetData(
+            val constantMonthlyBudget = BudgetDataDTO(
                 isBudgetConstant = true,
                 constantBudgetAmount = 300F,
                 currency = "EUR",
@@ -186,13 +186,13 @@ class MainScreenViewModelTest {
                 defaultPaymentDayOfMonth = 1
             )
 
-            val onceOnlyBudget = BudgetData(
+            val onceOnlyBudget = BudgetDataDTO(
                 isBudgetConstant = false,
                 budgetRateAmount = 10F,
                 currency = "EUR",
                 budgetType = BudgetType.OnceOnly,
-                defaultStartDate = LocalDate.of(2024, 4, 10).toString(),
-                defaultEndDate = LocalDate.of(2024, 4, 30).toString()
+                startDate = LocalDate.of(2024, 4, 10),
+                endDate = LocalDate.of(2024, 4, 30),
             )
 
             viewModel.viewState.test {
@@ -219,7 +219,7 @@ class MainScreenViewModelTest {
 
     @Test
     fun `Target date reset to today after budget update - target date after end date`() = runTest {
-        val constantMonthlyBudget = BudgetData(
+        val constantMonthlyBudget = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -227,13 +227,13 @@ class MainScreenViewModelTest {
             defaultPaymentDayOfMonth = 1
         )
 
-        val onceOnlyBudget = BudgetData(
+        val onceOnlyBudget = BudgetDataDTO(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
             budgetType = BudgetType.OnceOnly,
-            defaultStartDate = LocalDate.of(2024, 3, 20).toString(),
-            defaultEndDate = LocalDate.of(2024, 3, 30).toString()
+            startDate = LocalDate.of(2024, 3, 20),
+            endDate = LocalDate.of(2024, 3, 30),
         )
 
         viewModel.viewState.test {
@@ -260,7 +260,7 @@ class MainScreenViewModelTest {
 
     @Test
     fun `Target date reset to today after budget update - target date equals end date`() = runTest {
-        val constantMonthlyBudget = BudgetData(
+        val constantMonthlyBudget = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
             currency = "EUR",
@@ -268,13 +268,13 @@ class MainScreenViewModelTest {
             defaultPaymentDayOfMonth = 1
         )
 
-        val onceOnlyBudget = BudgetData(
+        val onceOnlyBudget = BudgetDataDTO(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
             currency = "EUR",
             budgetType = BudgetType.OnceOnly,
-            defaultStartDate = LocalDate.of(2024, 3, 20).toString(),
-            defaultEndDate = LocalDate.of(2024, 4, 1).toString()
+            startDate = LocalDate.of(2024, 3, 20),
+            endDate = LocalDate.of(2024, 4, 1),
         )
 
         viewModel.viewState.test {

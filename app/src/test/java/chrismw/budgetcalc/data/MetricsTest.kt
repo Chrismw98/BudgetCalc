@@ -1,5 +1,6 @@
 package chrismw.budgetcalc.data
 
+import chrismw.budgetcalc.data.budget.Budget
 import chrismw.budgetcalc.helpers.Metric
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

@@ -2,6 +2,7 @@ package chrismw.budgetcalc.extensions
 
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
+import chrismw.budgetcalc.decimalFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -30,3 +31,8 @@ fun LocalDate.toEpochMillis(): Long {
 fun Long.toLocalDate(): LocalDate {
     return Instant.ofEpochMilli(this).atZone(ZoneId.of("UTC")).toLocalDate()
 }
+
+/**
+ * Formats the Float to a String using the app's [decimalFormat].
+ */
+fun Float.toDecimalFormatString(): String = decimalFormat.format(this)

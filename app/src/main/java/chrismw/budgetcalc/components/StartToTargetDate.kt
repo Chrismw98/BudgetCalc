@@ -58,12 +58,15 @@ fun StartToTargetDate(
         ClickableDatePickerTextField(
             modifier = Modifier.weight(1f),
             value = startDate?.toEpochMillis()?.let { dateString(it) } ?: stringResource(
-                R.string.label_select_date), //TODO: This logic could be inside the ViewModel, or its own state
+                R.string.label_select_date
+            ), //TODO: This logic could be inside the ViewModel, or its own state
             onClick = onClickStartDate,
             label = stringResource(id = R.string.label_start_date),
             leadingIcon = {
-                Icon(imageVector = Icons.Default.Today,
-                    contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Today,
+                    contentDescription = null
+                )
             },
             initialDate = startDate ?: if (endDate != null) endDate.minusDays(1) else today,
             allowedDateValidator = {
@@ -77,8 +80,10 @@ fun StartToTargetDate(
             onClick = onClickTargetDate,
             label = stringResource(id = R.string.label_end_date),
             leadingIcon = {
-                Icon(imageVector = Icons.Default.Event,
-                    contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Event,
+                    contentDescription = null
+                )
             },
             initialDate = endDate ?: if (startDate != null) startDate.plusDays(1) else today.plusDays(1),
             allowedDateValidator = {
@@ -141,7 +146,7 @@ fun ClickableDatePickerTextField(
                     indication = ripple(
                         bounded = true
                     ),
-                    interactionSource = MutableInteractionSource(),
+                    interactionSource = remember { MutableInteractionSource() },
                 ),
         )
     }
