@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.android4you.protodatastorel";
+option java_multiple_files = true;
+
+message Budget {
+  float amount = 1;
+  string currency = 2;
+  LocalDate startDate = 3; // ISO-8601 format
+  LocalDate endDate = 4;   // ISO-8601 format
+}
+
+message LocalDate {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}

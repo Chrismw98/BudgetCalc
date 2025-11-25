@@ -15,6 +15,9 @@ buildscript {
         kotlinx_immutable_collections_version = '0.3.5'
 
         accompanist_version = '0.34.0'
+
+        protobuf_version = '3.21.11'
+        datastore_version = '1.0.0'
     }
 
     dependencies {
