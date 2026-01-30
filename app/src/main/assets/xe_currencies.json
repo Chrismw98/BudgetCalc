@@ -519,11 +519,11 @@
         "code": "VEF",
         "symbol": "Bs"
     },
-    },
     {
         "name": "Viet Nam Dong",
         "code": "VND",
-        "symbol": "₫",
+        "symbol": "₫"
+    },
     {
         "name": "Yemen Rial",
         "code": "YER",

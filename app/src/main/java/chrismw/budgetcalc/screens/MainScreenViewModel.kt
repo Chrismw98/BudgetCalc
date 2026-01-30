@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.data.budget.Budget
 import chrismw.budgetcalc.data.budget.BudgetDataRepository
-import chrismw.budgetcalc.data.budget.toBudget
+import chrismw.budgetcalc.data.currency.CurrencyRepository
 import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
@@ -28,6 +28,7 @@ import javax.inject.Provider
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val budgetDataRepository: BudgetDataRepository,
+    private val currencyRepository: CurrencyRepository,
     @DateNow private val nowDateProvider: Provider<LocalDate>,
 ) : ViewModel() {
 
@@ -41,10 +42,12 @@ class MainScreenViewModel @Inject constructor(
             todayStateFlow,
             budgetDataRepository.targetDateFlow,
             budgetDataRepository.observeBudgetDataWithNowDate(),
-        ) { today, customTargetDate, (budget, defaultTargetDate) ->
+            currencyRepository.codeToCurrencyMapFlow,
+        ) { today, customTargetDate, (budgetDto, defaultTargetDate), currenciesMap ->
             try {
-                val budget = budget.toBudget(
+                val budget = budgetDto.toBudget(
                     today = today,
+                    currenciesMap = currenciesMap,
                 )
                 val targetDate =
                     if (customTargetDate.createdAt.isAfter(defaultTargetDate.createdAt)) {
@@ -104,7 +107,7 @@ class MainScreenViewModel @Inject constructor(
                 remainingBudget = remainingBudget,
                 remainingBudgetPercentage = remainingBudgetPercentage,
 
-                currency = checkNotNull(budget.currency),
+                currencySymbol = budget.currency.symbol,
                 isExpanded = isExpanded,
                 metrics = metrics.toImmutableList(),
             )
@@ -153,7 +156,7 @@ class MainScreenViewModel @Inject constructor(
         val remainingBudget: Float? = null,
         val remainingBudgetPercentage: Float = 0F,
 
-        val currency: String = "",
+        val currencySymbol: String = "",
         val metrics: ImmutableList<Metric> = persistentListOf(),
         val isExpanded: Boolean = true,
     ) {

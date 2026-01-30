@@ -38,7 +38,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -163,7 +162,7 @@ private fun MainScreenContent(
                             .fillMaxWidth()
                             .aspectRatio(1f),
                         targetDateString = dateString(viewState.targetDate.toEpochMillis()),
-                        currency = viewState.currency,
+                        currency = viewState.currencySymbol,
                         onClick = onShowDatePicker
                     )
                 }
@@ -209,7 +208,7 @@ private fun MainScreenContent(
                     viewState.metrics.forEach { metric ->
                         MetricItemCard(
                             metric = metric,
-                            currency = viewState.currency
+                            currency = viewState.currencySymbol
                         )
                     }
                 }
@@ -381,7 +380,7 @@ fun DefaultPreview() {
                 targetDate = LocalDate.of(2023, 9, 16),
 
                 remainingBudget = 270f,
-                currency = "€",
+                currencySymbol = "€",
                 metrics = persistentListOf(
                     Metric.DaysSinceStart(3),
                     Metric.DaysRemaining(27),

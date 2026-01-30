@@ -24,7 +24,7 @@ class BudgetDataRepositoryTest {
         val CONSTANT_MONTHLY_BUDGET = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 500F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
         )

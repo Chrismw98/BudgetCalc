@@ -5,7 +5,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import chrismw.budgetcalc.data.budget.BudgetDataRepository
-import chrismw.budgetcalc.data.budget.toBudgetDataDTO
+import chrismw.budgetcalc.data.currency.Currency
+import chrismw.budgetcalc.data.currency.CurrencyRepository
 import chrismw.budgetcalc.di.DateNow
 import chrismw.budgetcalc.extensions.toDecimalFormatString
 import chrismw.budgetcalc.helpers.BudgetDataDTO
@@ -31,6 +32,7 @@ import javax.inject.Provider
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val budgetDataRepository: BudgetDataRepository,
+    private val currencyRepository: CurrencyRepository,
     @DateNow private val nowDateProvider: Provider<LocalDate>
 ) : ViewModel() {
 
@@ -54,10 +56,12 @@ class SettingsViewModel @Inject constructor(
     val viewState: StateFlow<ViewState> = combine(
         budgetDataDTOStateFlow,
         hasBudgetDataDTOChangedFlow,
-        currentlyExpandedDropDownStateFlow
+        currentlyExpandedDropDownStateFlow,
+        currencyRepository.currenciesFlow,
     ) { budgetDataDTO,
         hasDataChanged,
-        currentlyExpandedDropDown ->
+        currentlyExpandedDropDown,
+        currencies ->
 
         ViewState(
             isLoading = false,
@@ -65,9 +69,10 @@ class SettingsViewModel @Inject constructor(
 
             isBudgetConstant = budgetDataDTO.isBudgetConstant,
 
+            selectedCurrency = currencies.find { it.code == budgetDataDTO.currencyCode },
+            availableCurrencies = currencies.toImmutableList(),
             constantBudgetAmount = budgetDataDTO.constantBudgetAmount?.toDecimalFormatString(),
             budgetRateAmount = budgetDataDTO.budgetRateAmount?.toDecimalFormatString(),
-            currency = budgetDataDTO.currency,
 
             budgetType = budgetDataDTO.budgetType,
             defaultPaymentDayOfMonth = budgetDataDTO.defaultPaymentDayOfMonth?.toString(),
@@ -137,10 +142,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setCurrency(value: String) {
+    fun setCurrency(value: Currency) {
         updateBudgetDataDTO {
             it.copy(
-                currency = value
+                currencyCode = value.code
             )
         }
     }
@@ -201,9 +206,10 @@ class SettingsViewModel @Inject constructor(
 
         val isBudgetConstant: Boolean? = null,
 
-        val constantBudgetAmount: String? = null,
+        val selectedCurrency: Currency? = null,
+        val availableCurrencies: ImmutableList<Currency> = persistentListOf(),
         val budgetRateAmount: String? = null,
-        val currency: String? = null,
+        val constantBudgetAmount: String? = null,
 
         val budgetType: BudgetType? = null,
         val defaultPaymentDayOfMonth: String? = null,

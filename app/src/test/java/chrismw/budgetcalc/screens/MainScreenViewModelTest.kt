@@ -3,7 +3,9 @@ package chrismw.budgetcalc.screens
 import app.cash.turbine.test
 import chrismw.budgetcalc.TestCoroutineRule
 import chrismw.budgetcalc.data.budget.BudgetDataRepository
+import chrismw.budgetcalc.data.currency.CurrencyRepository
 import chrismw.budgetcalc.data.repository.FakeBudgetDataRepository
+import chrismw.budgetcalc.data.repository.FakeCurrencyRepository
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.BudgetType
@@ -22,6 +24,7 @@ import java.time.LocalDateTime
 class MainScreenViewModelTest {
 
     private lateinit var budgetDataRepository: BudgetDataRepository
+    private lateinit var currencyRepository: CurrencyRepository
     private lateinit var viewModel: MainScreenViewModel
 
     private var nowDate: LocalDate = TEST_DATE
@@ -37,7 +40,7 @@ class MainScreenViewModelTest {
         val CONSTANT_MONTHLY_BUDGET = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
         )
@@ -53,9 +56,12 @@ class MainScreenViewModelTest {
             nowDateProvider = { nowDate },
             nowDateTimeProvider = { nowDateTime }
         )
+        currencyRepository = FakeCurrencyRepository()
+
         viewModel = MainScreenViewModel(
             budgetDataRepository = budgetDataRepository,
-            nowDateProvider = { nowDate }
+            currencyRepository = currencyRepository,
+            nowDateProvider = { nowDate },
         )
     }
 
@@ -110,7 +116,7 @@ class MainScreenViewModelTest {
                 val constantMonthlyBudget = BudgetDataDTO(
                     isBudgetConstant = true,
                     constantBudgetAmount = 300F,
-                    currency = "EUR",
+                    currencyCode = "EUR",
                     budgetType = BudgetType.Monthly,
                     defaultPaymentDayOfMonth = 1
                 )
@@ -127,7 +133,7 @@ class MainScreenViewModelTest {
                 )
                 assertThat(resultingViewState.remainingBudget).isEqualTo(290F)
                 assertThat(resultingViewState.remainingBudgetPercentage).isEqualTo(290F / 300F)
-                assertThat(resultingViewState.currency).isEqualTo("EUR")
+                assertThat(resultingViewState.currencySymbol).isEqualTo("€")
                 assertThat(resultingViewState.metrics).isNotEmpty()//TODO: Specify the exact metrics when metrics are refactored
                 assertThat(resultingViewState.isExpanded).isTrue()
             }
@@ -139,7 +145,7 @@ class MainScreenViewModelTest {
             val constantMonthlyBudget = BudgetDataDTO(
                 isBudgetConstant = true,
                 constantBudgetAmount = 300F,
-                currency = "EUR",
+                currencyCode = "EUR",
                 budgetType = BudgetType.Monthly,
                 defaultPaymentDayOfMonth = 25
             )
@@ -147,7 +153,7 @@ class MainScreenViewModelTest {
             val onceOnlyBudget = BudgetDataDTO(
                 isBudgetConstant = false,
                 budgetRateAmount = 10F,
-                currency = "EUR",
+                currencyCode = "EUR",
                 budgetType = BudgetType.OnceOnly,
                 startDate = LocalDate.of(2024, 3, 20),
                 endDate = LocalDate.of(2024, 4, 10),
@@ -181,7 +187,7 @@ class MainScreenViewModelTest {
             val constantMonthlyBudget = BudgetDataDTO(
                 isBudgetConstant = true,
                 constantBudgetAmount = 300F,
-                currency = "EUR",
+                currencyCode = "EUR",
                 budgetType = BudgetType.Monthly,
                 defaultPaymentDayOfMonth = 1
             )
@@ -189,7 +195,7 @@ class MainScreenViewModelTest {
             val onceOnlyBudget = BudgetDataDTO(
                 isBudgetConstant = false,
                 budgetRateAmount = 10F,
-                currency = "EUR",
+                currencyCode = "EUR",
                 budgetType = BudgetType.OnceOnly,
                 startDate = LocalDate.of(2024, 4, 10),
                 endDate = LocalDate.of(2024, 4, 30),
@@ -222,7 +228,7 @@ class MainScreenViewModelTest {
         val constantMonthlyBudget = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
         )
@@ -230,7 +236,7 @@ class MainScreenViewModelTest {
         val onceOnlyBudget = BudgetDataDTO(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = LocalDate.of(2024, 3, 20),
             endDate = LocalDate.of(2024, 3, 30),
@@ -263,7 +269,7 @@ class MainScreenViewModelTest {
         val constantMonthlyBudget = BudgetDataDTO(
             isBudgetConstant = true,
             constantBudgetAmount = 300F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
         )
@@ -271,7 +277,7 @@ class MainScreenViewModelTest {
         val onceOnlyBudget = BudgetDataDTO(
             isBudgetConstant = false,
             budgetRateAmount = 10F,
-            currency = "EUR",
+            currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = LocalDate.of(2024, 3, 20),
             endDate = LocalDate.of(2024, 4, 1),

@@ -1,5 +1,6 @@
 package chrismw.budgetcalc.data.budget
 
+import chrismw.budgetcalc.data.currency.Currency
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.Metric
 import java.time.LocalDate
@@ -10,7 +11,7 @@ import java.time.temporal.ChronoUnit
  */
 public sealed class Budget(
     open val amount: Float,
-    open val currency: String,
+    open val currency: Currency,
     open val startDate: LocalDate,
     open val endDate: LocalDate,
 ) {
@@ -94,7 +95,7 @@ public sealed class Budget(
 
     internal data class OnceOnly(
         override val amount: Float,
-        override val currency: String,
+        override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,
     ) : Budget(
@@ -106,7 +107,7 @@ public sealed class Budget(
 
     internal data class Weekly(
         override val amount: Float,
-        override val currency: String,
+        override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,
     ) : Budget(
@@ -118,7 +119,7 @@ public sealed class Budget(
 
     internal data class Monthly(
         override val amount: Float,
-        override val currency: String,
+        override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,
     ) : Budget(

@@ -1,6 +1,7 @@
 package chrismw.budgetcalc.data
 
 import chrismw.budgetcalc.data.budget.Budget
+import chrismw.budgetcalc.data.currency.Currency
 import chrismw.budgetcalc.helpers.Metric
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -11,12 +12,18 @@ import java.time.LocalDate
  */
 class MetricsTest {
 
+    private val EURO_CURRENCY = Currency(
+        code = "EUR",
+        name = "Euro",
+        symbol = "€"
+    )
+
     @Test
     fun `Metrics correct for Monthly Budget`() {
         val targetDate = LocalDate.of(2024, 4, 10)
         val monthlyBudget = Budget.Monthly(
             amount = 300F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 4, 1),
             endDate = LocalDate.of(2024, 4, 30)
         )
@@ -41,7 +48,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 4, 1)
         val monthlyBudget = Budget.Monthly(
             amount = 300F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 4, 1),
             endDate = LocalDate.of(2024, 4, 30)
         )
@@ -66,7 +73,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 4, 30)
         val monthlyBudget = Budget.Monthly(
             amount = 300F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 4, 1),
             endDate = LocalDate.of(2024, 4, 30)
         )
@@ -91,7 +98,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 5, 1)
         val monthlyBudget = Budget.Monthly(
             amount = 300F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 4, 1),
             endDate = LocalDate.of(2024, 4, 30)
         )
@@ -113,7 +120,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 7, 3)
         val monthlyBudget = Budget.Weekly(
             amount = 70F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 7, 1),
             endDate = LocalDate.of(2024, 7, 7)
         )
@@ -138,7 +145,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 7, 1)
         val monthlyBudget = Budget.Weekly(
             amount = 70F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 7, 1),
             endDate = LocalDate.of(2024, 7, 7)
         )
@@ -163,7 +170,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 7, 7)
         val monthlyBudget = Budget.Weekly(
             amount = 70F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 7, 1),
             endDate = LocalDate.of(2024, 7, 7)
         )
@@ -188,7 +195,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 7, 14)
         val monthlyBudget = Budget.Weekly(
             amount = 70F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 7, 1),
             endDate = LocalDate.of(2024, 7, 7)
         )
@@ -210,7 +217,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 7, 3)
         val monthlyBudget = Budget.OnceOnly(
             amount = 366F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 1, 1),
             endDate = LocalDate.of(2024, 12, 31)
         )
@@ -235,7 +242,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 1, 1)
         val monthlyBudget = Budget.OnceOnly(
             amount = 366F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 1, 1),
             endDate = LocalDate.of(2024, 12, 31)
         )
@@ -260,7 +267,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2024, 12, 31)
         val monthlyBudget = Budget.OnceOnly(
             amount = 366F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 1, 1),
             endDate = LocalDate.of(2024, 12, 31)
         )
@@ -285,7 +292,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2023, 12, 31)
         val monthlyBudget = Budget.OnceOnly(
             amount = 366F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 1, 1),
             endDate = LocalDate.of(2024, 12, 31)
         )
@@ -307,7 +314,7 @@ class MetricsTest {
         val targetDate = LocalDate.of(2025, 1, 10)
         val monthlyBudget = Budget.OnceOnly(
             amount = 366F,
-            currency = "EUR",
+            currency = EURO_CURRENCY,
             startDate = LocalDate.of(2024, 1, 1),
             endDate = LocalDate.of(2024, 12, 31)
         )

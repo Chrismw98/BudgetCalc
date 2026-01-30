@@ -10,7 +10,7 @@ message BudgetDataPreferences {
 
   optional float constantBudgetAmount = 2;
   optional float budgetRateAmount = 3;
-  optional string currency = 4;
+  optional string currencyCode = 4;
 
   optional BudgetTypePreferences budgetType = 5;
   optional int32 defaultPaymentDayOfMonth = 6;

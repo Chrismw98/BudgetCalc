@@ -3,6 +3,7 @@ package chrismw.budgetcalc.helpers
 import chrismw.budgetcalc.data.budget.Budget
 import chrismw.budgetcalc.data.budget.BudgetDataPreferences
 import chrismw.budgetcalc.data.budget.BudgetTypePreferences
+import chrismw.budgetcalc.data.currency.Currency
 import chrismw.budgetcalc.helpers.Constants.WEEKLY_BUDGET_PAYMENT_CYCLE_LENGTH_IN_DAYS
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -13,7 +14,7 @@ data class BudgetDataDTO(
 
     val constantBudgetAmount: Float? = null,
     val budgetRateAmount: Float? = null,
-    val currency: String? = null,
+    val currencyCode: String? = null,
 
     val budgetType: BudgetType? = BudgetType.Monthly,
     val defaultPaymentDayOfMonth: Int? = null,
@@ -29,7 +30,7 @@ data class BudgetDataDTO(
 
                 this@BudgetDataDTO.constantBudgetAmount?.let { setConstantBudgetAmount(it) } ?: clearConstantBudgetAmount()
                 this@BudgetDataDTO.budgetRateAmount?.let { setBudgetRateAmount(it) } ?: clearBudgetRateAmount()
-                this@BudgetDataDTO.currency?.let { setCurrency(it) } ?: clearCurrency()
+                this@BudgetDataDTO.currencyCode?.let { setCurrencyCode(it) } ?: clearCurrencyCode()
 
                 this@BudgetDataDTO.budgetType?.toBudgetTypePreferences()?.let { setBudgetType(it) } ?: clearBudgetType()
                 this@BudgetDataDTO.defaultPaymentDayOfMonth?.let { setDefaultPaymentDayOfMonth(it) } ?: clearDefaultPaymentDayOfMonth()
@@ -40,9 +41,16 @@ data class BudgetDataDTO(
             .build()
     }
 
-    fun toBudget(today: LocalDate): Budget {
+    fun toBudget(
+        today: LocalDate,
+        currenciesMap: Map<String, Currency>,
+    ): Budget {
         val isBudgetConstant = isBudgetConstant.checkNotNullOrThrow("isBudgetConstant")
-        val currency = currency.checkNotNullOrThrow("currency")
+        val currency = this@BudgetDataDTO.currencyCode
+            .checkNotNullOrThrow("currency code")
+            .let { currenciesMap[it] }
+            .checkNotNullOrThrow("currency")
+
         val budgetType = budgetType.checkNotNullOrThrow("budgetType")
 
         val startDate = when (budgetType) {
@@ -58,7 +66,7 @@ data class BudgetDataDTO(
             BudgetType.Monthly -> {
                 findLatestOccurrenceOfDayOfMonth(
                     today = today,
-                    targetDayOfMonth = defaultPaymentDayOfMonth.checkNotNullOrThrow("defaultPaymentDayOfMonth").toInt()
+                    targetDayOfMonth = defaultPaymentDayOfMonth.checkNotNullOrThrow("defaultPaymentDayOfMonth")
                 )
             }
         }

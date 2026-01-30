@@ -18,6 +18,8 @@ buildscript {
 
         protobuf_version = '4.33.4'
         datastore_version = '1.0.0'
+
+        moshi_version = '1.15.0'
     }
 
     dependencies {

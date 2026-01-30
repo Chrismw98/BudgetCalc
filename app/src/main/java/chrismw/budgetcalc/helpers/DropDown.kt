@@ -6,6 +6,7 @@ package chrismw.budgetcalc.helpers
 enum class DropDown {
 
     BUDGET_TYPE,
+    CURRENCY,
     PAYMENT_DAY_OF_WEEK,
     NONE;
 }

@@ -40,9 +40,11 @@ import chrismw.budgetcalc.components.RadioItem
 import chrismw.budgetcalc.components.StartToTargetDate
 import chrismw.budgetcalc.components.getStringForDayOfWeek
 import chrismw.budgetcalc.components.rememberExitDialogState
+import chrismw.budgetcalc.data.currency.Currency
 import chrismw.budgetcalc.helpers.BudgetType
 import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
+import kotlinx.collections.immutable.persistentListOf
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -58,7 +60,7 @@ internal fun SettingsScreen(
     onConstantBudgetAmountChanged: (String) -> Unit,
     onBudgetRateAmountChanged: (String) -> Unit,
     onDefaultPaymentDayChanged: (String) -> Unit,
-    onCurrencyChanged: (String) -> Unit,
+    onCurrencyChanged: (Currency) -> Unit,
     onBudgetTypeChanged: (BudgetType) -> Unit,
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
     onStartDateChanged: (LocalDate) -> Unit,
@@ -164,18 +166,18 @@ internal fun SettingsScreen(
                 modifier = Modifier.height(6.dp)
             )
 
-            OutlinedTextField(
+            GenericDropDownMenu<Currency>(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewState.currency.orEmpty(),
-                onValueChange = onCurrencyChanged,
-                label = {
-                    Text(
-                        text = stringResource(id = R.string.currency)
-                    )
+                onSelectionChanged = onCurrencyChanged,
+                options = viewState.availableCurrencies,
+                selectedOption = viewState.selectedCurrency,
+                onParseOptionToString = {
+                    it?.toDisplayName().orEmpty()
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next,
-                ),
+                onExpandedMenuChanged = onUpdateExpandedDropDown,
+                dropDownType = DropDown.CURRENCY,
+                isExpanded = viewState.currentlyExpandedDropDown == DropDown.CURRENCY,
+                labelText = stringResource(R.string.currency)
             )
 
             Spacer(
@@ -309,7 +311,13 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
             viewState = SettingsViewModel.ViewState(
                 isLoading = false,
                 isBudgetConstant = false,
-                budgetType = BudgetType.Weekly
+                budgetType = BudgetType.Weekly,
+                selectedCurrency = Currency("USD", "US Dollar", "$"),
+                availableCurrencies = persistentListOf(
+                    Currency("USD", "US Dollar", "$"),
+                    Currency("EUR", "Euro", "€"),
+                    Currency("GBP", "British Pound", "£"),
+                )
             ),
             onNavigateBack = {},
             onLoadSettings = {},
