@@ -12,8 +12,8 @@ import java.time.temporal.ChronoUnit
 data class BudgetDataDTO(
     val isBudgetConstant: Boolean? = false,
 
-    val constantBudgetAmount: Float? = null,
-    val budgetRateAmount: Float? = null,
+    val constantBudgetAmount: Double? = null,
+    val budgetRateAmount: Double? = null,
     val currencyCode: String? = null,
 
     val budgetType: BudgetType? = BudgetType.Monthly,
@@ -116,6 +116,20 @@ data class BudgetDataDTO(
                 endDate = endDate
             )
         }
+    }
+
+    fun toUiBudgetData(currencyMap: Map<String, Currency>): UiBudgetData {
+        return UiBudgetData(
+            isBudgetConstant = isBudgetConstant,
+            constantBudgetAmount = constantBudgetAmount?.times(100)?.toLong()?.toString(),
+            budgetRateAmount = budgetRateAmount?.times(100)?.toLong()?.toString(),
+            currency = currencyCode?.let { currencyMap[it] },
+            budgetType = budgetType,
+            defaultPaymentDayOfMonth = defaultPaymentDayOfMonth?.toString(),
+            defaultPaymentDayOfWeek = defaultPaymentDayOfWeek,
+            startDate = startDate,
+            endDate = endDate,
+        )
     }
 }
 

@@ -84,10 +84,10 @@ class MainScreenViewModel @Inject constructor(
             )
         } else {
             val (budgetState, metrics) = budgetStateWithMetrics
-            val remainingBudget = metrics.find { it is Metric.RemainingBudget }?.value?.toFloat()
-            val maxBudget = metrics.find { it is Metric.TotalBudget }?.value?.toFloat()
-            val remainingBudgetPercentage = if (remainingBudget != null && maxBudget != null && maxBudget != 0F) {
-                remainingBudget / maxBudget
+            val remainingBudget = metrics.find { it is Metric.RemainingBudget }?.value?.toDouble()
+            val maxBudget = metrics.find { it is Metric.TotalBudget }?.value?.toDouble()
+            val remainingBudgetPercentage = if (remainingBudget != null && maxBudget != null && maxBudget != 0.0) {
+                (remainingBudget / maxBudget).toFloat()
             } else {
                 1F
             }
@@ -153,7 +153,7 @@ class MainScreenViewModel @Inject constructor(
         val datePickerMinDate: LocalDate = LocalDate.now().minusDays(1),
         val datePickerMaxDate: LocalDate = LocalDate.now(),
 
-        val remainingBudget: Float? = null,
+        val remainingBudget: Double? = null,
         val remainingBudgetPercentage: Float = 0F,
 
         val currencySymbol: String = "",

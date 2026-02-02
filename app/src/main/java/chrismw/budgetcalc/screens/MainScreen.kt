@@ -156,7 +156,7 @@ private fun MainScreenContent(
             when (viewState.budgetState) {
                 is BudgetState.Ongoing -> {
                     CircularProgressbar(
-                        remainingBudget = viewState.remainingBudget ?: 0f,
+                        remainingBudget = viewState.remainingBudget ?: 0.0,
                         remainingBudgetPercentage = viewState.remainingBudgetPercentage,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -379,15 +379,15 @@ fun DefaultPreview() {
 
                 targetDate = LocalDate.of(2023, 9, 16),
 
-                remainingBudget = 270f,
+                remainingBudget = 270.0,
                 currencySymbol = "€",
                 metrics = persistentListOf(
                     Metric.DaysSinceStart(3),
                     Metric.DaysRemaining(27),
-                    Metric.DailyBudget(10f),
-                    Metric.BudgetUntilTargetDate(270f),
-                    Metric.RemainingBudget(270f),
-                    Metric.TotalBudget(540f),
+                    Metric.DailyBudget(10.0),
+                    Metric.BudgetUntilTargetDate(270.0),
+                    Metric.RemainingBudget(270.0),
+                    Metric.TotalBudget(540.0),
                 ),
                 isExpanded = true,
                 hasIncompleteData = false

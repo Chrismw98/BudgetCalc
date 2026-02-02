@@ -4,7 +4,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
+import chrismw.budgetcalc.helpers.DoubleAnimatable
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,13 +46,13 @@ private val INDICATOR_THICKNESS_DP = 24.dp
 fun CircularProgressbar(
     modifier: Modifier = Modifier,
     remainingBudgetPercentage: Float,
-    remainingBudget: Float,
+    remainingBudget: Double,
     currency: String,
     targetDateString: String = "",
     onClick: () -> Unit,
 ) {
     val remainingBudgetAnimated = remember {
-        Animatable(0F)
+        DoubleAnimatable(0.0)
     }
 
     val remainingBudgetPercentageAnimated = remember {
@@ -62,7 +62,7 @@ fun CircularProgressbar(
     LaunchedEffect(remainingBudget, remainingBudgetPercentage) {
 
         awaitAll(
-            async { remainingBudgetAnimated.snapTo(0F) },
+            async { remainingBudgetAnimated.snapTo(0.0) },
             async { remainingBudgetPercentageAnimated.snapTo(0F) }
         )
 
@@ -155,7 +155,7 @@ fun CircularProgressbar(
 
 @Composable
 private fun DisplayNumberText(
-    amount: Float,
+    amount: Double,
     dataTextStyle: TextStyle = MaterialTheme.typography.headlineLarge,
     remainingTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     targetDateString: String,
@@ -194,7 +194,7 @@ private fun DisplayNumberText(
 private fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
         CircularProgressbar(
-            remainingBudget = 47f,
+            remainingBudget = 47.0,
             remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
@@ -208,7 +208,7 @@ private fun CircularProgressBarPreviewSmall() {
 private fun CircularProgressBarPreviewNormal() {
     BudgetCalcTheme {
         CircularProgressbar(
-            remainingBudget = 47f,
+            remainingBudget = 47.0,
             remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
@@ -222,7 +222,7 @@ private fun CircularProgressBarPreviewNormal() {
 private fun CircularProgressBarPreviewLarge() {
     BudgetCalcTheme {
         CircularProgressbar(
-            remainingBudget = 47f,
+            remainingBudget = 47.0,
             remainingBudgetPercentage = 0.47f,
             targetDateString = "Thu., 16/09/2023",
             currency = "€",
@@ -236,7 +236,7 @@ private fun CircularProgressBarPreviewLarge() {
 private fun CircularProgressBarPreviewCustom() {
     BudgetCalcTheme {
         CircularProgressbar(
-            remainingBudget = 47f,
+            remainingBudget = 47.0,
             remainingBudgetPercentage = 0.47f,
             modifier = Modifier
                 .fillMaxWidth()

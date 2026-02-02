@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
  * Represents a budget with an amount, currency, start date, and end date.
  */
 public sealed class Budget(
-    open val amount: Float,
+    open val amount: Double,
     open val currency: Currency,
     open val startDate: LocalDate,
     open val endDate: LocalDate,
@@ -58,7 +58,7 @@ public sealed class Budget(
         val remainingBudget = if (daysSinceStart <= paymentCycleLengthInDays) {
             amount - currentBudget
         } else {
-            0F
+            0.0
         }
 
         val metrics = when (budgetState) {
@@ -94,7 +94,7 @@ public sealed class Budget(
     }
 
     internal data class OnceOnly(
-        override val amount: Float,
+        override val amount: Double,
         override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,
@@ -106,7 +106,7 @@ public sealed class Budget(
     )
 
     internal data class Weekly(
-        override val amount: Float,
+        override val amount: Double,
         override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,
@@ -118,7 +118,7 @@ public sealed class Budget(
     )
 
     internal data class Monthly(
-        override val amount: Float,
+        override val amount: Double,
         override val currency: Currency,
         override val startDate: LocalDate,
         override val endDate: LocalDate,

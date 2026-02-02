@@ -8,8 +8,8 @@ import "google/protobuf/wrappers.proto";
 message BudgetDataPreferences {
   optional bool isBudgetConstant = 1;
 
-  optional float constantBudgetAmount = 2;
-  optional float budgetRateAmount = 3;
+  optional double constantBudgetAmount = 2;
+  optional double budgetRateAmount = 3;
   optional string currencyCode = 4;
 
   optional BudgetTypePreferences budgetType = 5;

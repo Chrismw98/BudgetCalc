@@ -51,7 +51,7 @@ sealed class Metric(
     )
 
     data class DailyBudget(
-        override val value: Float
+        override val value: Double
     ) : Metric(
         value = value,
         unit = MetricUnit.CurrencyPerDay,
@@ -60,7 +60,7 @@ sealed class Metric(
     )
 
     data class BudgetUntilTargetDate(
-        override val value: Float
+        override val value: Double
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,
@@ -69,7 +69,7 @@ sealed class Metric(
     )
 
     data class RemainingBudget(
-        override val value: Float
+        override val value: Double
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,
@@ -78,7 +78,7 @@ sealed class Metric(
     )
 
     data class TotalBudget(
-        override val value: Float
+        override val value: Double
     ) : Metric(
         value = value,
         unit = MetricUnit.Currency,

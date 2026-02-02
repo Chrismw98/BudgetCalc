@@ -1,5 +1,6 @@
 package chrismw.budgetcalc.screens
 
+import MonetaryAmountVisualTransformation
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -121,7 +122,7 @@ internal fun SettingsScreen(
             RadioItem(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.label_is_budget_rate),
-                isSelected = viewState.isBudgetConstant != true,
+                isSelected = viewState.isBudgetConstant == false,
                 onClick = onClickBudgetRate
             )
 
@@ -139,6 +140,7 @@ internal fun SettingsScreen(
                         keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Next,
                     ),
+                    visualTransformation = MonetaryAmountVisualTransformation(),
                 )
             } else {
                 Row(
@@ -148,16 +150,17 @@ internal fun SettingsScreen(
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
                         value = viewState.budgetRateAmount.orEmpty(),
-                        onValueChange = onBudgetRateAmountChanged, //TODO: Change this component to handle input better (2023-11-12)
+                        onValueChange = onBudgetRateAmountChanged,
                         label = {
                             Text(
-                                text = stringResource(id = R.string.budget_in_monetary_units_per_day) //TODO: Change me
+                                text = stringResource(id = R.string.budget_in_monetary_units_per_day),
                             )
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Decimal,
                             imeAction = ImeAction.Next,
                         ),
+                        visualTransformation = MonetaryAmountVisualTransformation(),
                     )
                 }
             }
@@ -274,8 +277,6 @@ internal fun SettingsScreen(
     LoadingOverlay(visible = viewState.isLoading)
 }
 
-//private fun formatNumberOrEmpty(number: Float?): String = numberFormat.format(number).orEmpty()
-
 @Preview
 @Composable
 fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
@@ -283,7 +284,8 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
         SettingsScreen(
             viewState = SettingsViewModel.ViewState(
                 isLoading = false,
-                isBudgetConstant = true
+                isBudgetConstant = true,
+                constantBudgetAmount = "5910214",
             ),
             onNavigateBack = {},
             onLoadSettings = {},

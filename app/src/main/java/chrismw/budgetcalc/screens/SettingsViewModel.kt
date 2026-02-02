@@ -8,10 +8,11 @@ import chrismw.budgetcalc.data.budget.BudgetDataRepository
 import chrismw.budgetcalc.data.currency.Currency
 import chrismw.budgetcalc.data.currency.CurrencyRepository
 import chrismw.budgetcalc.di.DateNow
-import chrismw.budgetcalc.extensions.toDecimalFormatString
-import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetType
+import chrismw.budgetcalc.helpers.Constants.MAX_DIGITS_FOR_CONSTANT_BUDGET_AMOUNT
+import chrismw.budgetcalc.helpers.Constants.MAX_DIGITS_FOR_DAILY_BUDGET_RATE
 import chrismw.budgetcalc.helpers.DropDown
+import chrismw.budgetcalc.helpers.UiBudgetData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,23 +44,23 @@ class SettingsViewModel @Inject constructor(
         val BUDGET_TYPES_LIST = persistentListOf(BudgetType.OnceOnly, BudgetType.Weekly, BudgetType.Monthly)
     }
 
-    private val budgetDataDTOStateFlow: MutableStateFlow<BudgetDataDTO> = MutableStateFlow(BudgetDataDTO())
-    private val initialBudgetDataDTOStateFlow: MutableStateFlow<BudgetDataDTO> = MutableStateFlow(BudgetDataDTO())
+    private val uiBudgetDataStateFlow: MutableStateFlow<UiBudgetData> = MutableStateFlow(UiBudgetData())
+    private val initialUiBudgetDataStateFlow: MutableStateFlow<UiBudgetData> = MutableStateFlow(UiBudgetData())
     private val currentlyExpandedDropDownStateFlow: MutableStateFlow<DropDown> = MutableStateFlow(DropDown.NONE)
 
     private val hasBudgetDataDTOChangedFlow: Flow<Boolean> = combine(
-        budgetDataDTOStateFlow,
-        initialBudgetDataDTOStateFlow
+        uiBudgetDataStateFlow,
+        initialUiBudgetDataStateFlow
     ) { currentBudgetDataDTO, initialBudgetDataDTO ->
         currentBudgetDataDTO != initialBudgetDataDTO
     }
 
     val viewState: StateFlow<ViewState> = combine(
-        budgetDataDTOStateFlow,
+        uiBudgetDataStateFlow,
         hasBudgetDataDTOChangedFlow,
         currentlyExpandedDropDownStateFlow,
         currencyRepository.currenciesFlow,
-    ) { budgetDataDTO,
+    ) { uiBudgetData,
         hasDataChanged,
         currentlyExpandedDropDown,
         currencies ->
@@ -67,53 +69,55 @@ class SettingsViewModel @Inject constructor(
             isLoading = false,
             today = nowDateProvider.get(),
 
-            isBudgetConstant = budgetDataDTO.isBudgetConstant,
+            isBudgetConstant = uiBudgetData.isBudgetConstant,
 
-            selectedCurrency = currencies.find { it.code == budgetDataDTO.currencyCode },
+            selectedCurrency = uiBudgetData.currency,
             availableCurrencies = currencies.toImmutableList(),
-            constantBudgetAmount = budgetDataDTO.constantBudgetAmount?.toDecimalFormatString(),
-            budgetRateAmount = budgetDataDTO.budgetRateAmount?.toDecimalFormatString(),
+            constantBudgetAmount = uiBudgetData.constantBudgetAmount,
+            budgetRateAmount = uiBudgetData.budgetRateAmount,
 
-            budgetType = budgetDataDTO.budgetType,
-            defaultPaymentDayOfMonth = budgetDataDTO.defaultPaymentDayOfMonth?.toString(),
-            defaultPaymentDayOfWeek = budgetDataDTO.defaultPaymentDayOfWeek,
-            startDate = budgetDataDTO.startDate,
-            endDate = budgetDataDTO.endDate,
+            budgetType = uiBudgetData.budgetType,
+            defaultPaymentDayOfMonth = uiBudgetData.defaultPaymentDayOfMonth,
+            defaultPaymentDayOfWeek = uiBudgetData.defaultPaymentDayOfWeek,
+            startDate = uiBudgetData.startDate,
+            endDate = uiBudgetData.endDate,
 
             budgetTypeOptions = BUDGET_TYPES_LIST,
             dayOfWeekOptions = DAY_OF_WEEK_LIST,
             currentlyExpandedDropDown = currentlyExpandedDropDown,
             showConfirmExitDialog = hasDataChanged
         )
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ViewState()
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ViewState()
+    )
 
     fun loadSettings() {
         viewModelScope.launch {
             val loadedBudgetDataDTO = budgetDataRepository.getBudgetData()
-            budgetDataDTOStateFlow.value = loadedBudgetDataDTO
-            initialBudgetDataDTOStateFlow.value = loadedBudgetDataDTO
+            val currencyMap = currencyRepository.codeToCurrencyMapFlow.first()
+            val initialUiBudgetData = loadedBudgetDataDTO.toUiBudgetData(currencyMap)
+
+            uiBudgetDataStateFlow.value = initialUiBudgetData
+            initialUiBudgetDataStateFlow.value = initialUiBudgetData
         }
     }
 
-    private fun updateBudgetDataDTO(callback: (BudgetDataDTO) -> BudgetDataDTO) {
-        budgetDataDTOStateFlow.update { callback(it) }
+    private fun updateUiBudgetData(callback: (UiBudgetData) -> UiBudgetData) {
+        uiBudgetDataStateFlow.update { callback(it) }
     }
 
     fun saveSettings() {
         viewModelScope.launch {
-            val currentBudgetDataDTO = budgetDataDTOStateFlow.value
-            initialBudgetDataDTOStateFlow.value = currentBudgetDataDTO
-            budgetDataRepository.saveBudgetData(currentBudgetDataDTO)
+            val currentUiBudgetData = uiBudgetDataStateFlow.value
+            initialUiBudgetDataStateFlow.value = currentUiBudgetData
+            budgetDataRepository.saveBudgetData(currentUiBudgetData.toDTO())
         }
     }
 
     fun setIsBudgetConstant(value: Boolean) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
                 isBudgetConstant = value
             )
@@ -121,42 +125,42 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setConstantBudgetAmount(value: String) {
-        val correctedValue = correctFloatString(value)?.toFloatOrNull() //TODO: Remove this in favor of error states
-        if (correctedValue != null) {
-            updateBudgetDataDTO {
+        val trimmedValue = value.trimZeros()
+        if (trimmedValue.isDigitsOnly() && trimmedValue.length <= MAX_DIGITS_FOR_CONSTANT_BUDGET_AMOUNT) {
+            updateUiBudgetData {
                 it.copy(
-                    constantBudgetAmount = correctedValue
+                    constantBudgetAmount = trimmedValue,
                 )
             }
         }
     }
 
     fun setBudgetRateAmount(value: String) {
-        val correctedValue = correctFloatString(value)?.toFloatOrNull() //TODO: Remove this in favor of error states
-        if (correctedValue != null) {
-            updateBudgetDataDTO {
+        val trimmedValue = value.trimZeros()
+        if (trimmedValue.isDigitsOnly() && trimmedValue.length <= MAX_DIGITS_FOR_DAILY_BUDGET_RATE) {
+            updateUiBudgetData {
                 it.copy(
-                    budgetRateAmount = correctedValue
+                    budgetRateAmount = trimmedValue,
                 )
             }
         }
     }
 
     fun setCurrency(value: Currency) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
-                currencyCode = value.code
+                currency = value
             )
         }
     }
 
     fun setDefaultPaymentDayOfMonth(value: String) {
-        if (!value.startsWith("0") && value.isDigitsOnly()) {
-            val defaultPaymentDay = value.toIntOrNull()
-            if (defaultPaymentDay == null || defaultPaymentDay in 1..31) {
-                updateBudgetDataDTO {
+        if (value.isDigitsOnly()) {
+            val defaultPaymentDay = value.trimZeros().toIntOrNull()
+            if (defaultPaymentDay == null || defaultPaymentDay in 1..31) { //TODO: Remove this in favor of error states
+                updateUiBudgetData {
                     it.copy(
-                        defaultPaymentDayOfMonth = defaultPaymentDay
+                        defaultPaymentDayOfMonth = value
                     )
                 }
             }
@@ -164,7 +168,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setDefaultPaymentDayOfWeek(value: DayOfWeek) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
                 defaultPaymentDayOfWeek = value
             )
@@ -172,7 +176,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setBudgetType(value: BudgetType) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
                 budgetType = value
             )
@@ -180,7 +184,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setStartDate(value: LocalDate) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
                 startDate = value
             )
@@ -188,7 +192,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setEndDate(value: LocalDate) {
-        updateBudgetDataDTO {
+        updateUiBudgetData {
             it.copy(
                 endDate = value
             )
@@ -197,6 +201,10 @@ class SettingsViewModel @Inject constructor(
 
     fun updateExpandedDropDown(value: DropDown) {
         currentlyExpandedDropDownStateFlow.value = value
+    }
+
+    private fun String.trimZeros(): String {
+        return this.trimStart('0')
     }
 
     @Immutable
@@ -223,20 +231,4 @@ class SettingsViewModel @Inject constructor(
 
         val showConfirmExitDialog: Boolean = false,
     )
-}
-
-private fun correctFloatString(floatString: String): String? {
-    val separator = '.'
-    val split = floatString.split(separator)
-    return if (floatString.count { it == separator } > 1) {
-        null
-    } else if (floatString == "$separator") {
-        "0$separator"
-    } else if (floatString.contains(separator) && floatString.split(separator)[1].length > 2) {
-        null
-    } else if (split.any { !it.isDigitsOnly() }) {
-        null
-    } else {
-        floatString
-    }
 }

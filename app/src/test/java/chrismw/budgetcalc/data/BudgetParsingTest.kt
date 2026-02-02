@@ -29,7 +29,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val incompleteMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "  ",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
@@ -48,7 +48,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val incompleteMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "NOT_EXISTING_CODE",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
@@ -105,7 +105,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val incompleteMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = null,
@@ -124,7 +124,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val incompleteWeeklyBudgetData = BudgetDataDTO(
             isBudgetConstant = false,
-            budgetRateAmount = 10F,
+            budgetRateAmount = 10.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Weekly,
             defaultPaymentDayOfWeek = null
@@ -143,7 +143,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val incompleteOnceOnlyBudgetData = BudgetDataDTO(
             isBudgetConstant = false,
-            budgetRateAmount = 10F,
+            budgetRateAmount = 10.0,
             currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = null,
@@ -165,7 +165,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val constantMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
@@ -177,7 +177,7 @@ class BudgetParsingTest {
         )
 
         assertThat(budget).isInstanceOf(Budget.Monthly::class.java)
-        assertThat(budget.amount).isEqualTo(300F)
+        assertThat(budget.amount).isEqualTo(300.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 4, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 4, 30))
@@ -188,7 +188,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 1)
         val constantMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
@@ -200,7 +200,7 @@ class BudgetParsingTest {
         )
 
         assertThat(budget).isInstanceOf(Budget.Monthly::class.java)
-        assertThat(budget.amount).isEqualTo(300F)
+        assertThat(budget.amount).isEqualTo(300.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 4, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 4, 30))
@@ -211,7 +211,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 30)
         val constantMonthlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 300F,
+            constantBudgetAmount = 300.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Monthly,
             defaultPaymentDayOfMonth = 1
@@ -224,7 +224,7 @@ class BudgetParsingTest {
 
 
         assertThat(budget).isInstanceOf(Budget.Monthly::class.java)
-        assertThat(budget.amount).isEqualTo(300F)
+        assertThat(budget.amount).isEqualTo(300.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 4, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 4, 30))
@@ -239,7 +239,7 @@ class BudgetParsingTest {
         val sunday = LocalDate.of(2024, 7, 7)
         val rateWeeklyBudgetData = BudgetDataDTO(
             isBudgetConstant = false,
-            budgetRateAmount = 10F,
+            budgetRateAmount = 10.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Weekly,
             defaultPaymentDayOfWeek = DayOfWeek.MONDAY,
@@ -263,7 +263,7 @@ class BudgetParsingTest {
         val sunday = LocalDate.of(2024, 7, 7)
         val rateWeeklyBudgetData = BudgetDataDTO(
             isBudgetConstant = false,
-            budgetRateAmount = 10F,
+            budgetRateAmount = 10.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Weekly,
             defaultPaymentDayOfWeek = DayOfWeek.MONDAY,
@@ -289,7 +289,7 @@ class BudgetParsingTest {
         val sunday = LocalDate.of(2024, 7, 7)
         val rateWeeklyBudgetData = BudgetDataDTO(
             isBudgetConstant = false,
-            budgetRateAmount = 10F,
+            budgetRateAmount = 10.0,
             currencyCode = "EUR",
             budgetType = BudgetType.Weekly,
             defaultPaymentDayOfWeek = DayOfWeek.MONDAY,
@@ -315,7 +315,7 @@ class BudgetParsingTest {
         val today = LocalDate.of(2024, 4, 15)
         val constantOnceOnlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 3_660F, //2024 is a leap year
+            constantBudgetAmount = 3_660.0, //2024 is a leap year
             currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = startDate,
@@ -328,7 +328,7 @@ class BudgetParsingTest {
         )
 
         assertThat(budget).isInstanceOf(Budget.OnceOnly::class.java)
-        assertThat(budget.amount).isEqualTo(3_660F)
+        assertThat(budget.amount).isEqualTo(3_660.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 1, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 12, 31))
@@ -340,7 +340,7 @@ class BudgetParsingTest {
         val endDate = LocalDate.of(2024, 12, 31)
         val constantOnceOnlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 3_660F, //2024 is a leap year
+            constantBudgetAmount = 3_660.0, //2024 is a leap year
             currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = startDate,
@@ -353,7 +353,7 @@ class BudgetParsingTest {
         )
 
         assertThat(budget).isInstanceOf(Budget.OnceOnly::class.java)
-        assertThat(budget.amount).isEqualTo(3_660F)
+        assertThat(budget.amount).isEqualTo(3_660.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 1, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 12, 31))
@@ -365,7 +365,7 @@ class BudgetParsingTest {
         val endDate = LocalDate.of(2024, 12, 31)
         val constantOnceOnlyBudgetData = BudgetDataDTO(
             isBudgetConstant = true,
-            constantBudgetAmount = 3_660F, //2024 is a leap year
+            constantBudgetAmount = 3_660.0, //2024 is a leap year
             currencyCode = "EUR",
             budgetType = BudgetType.OnceOnly,
             startDate = startDate,
@@ -378,7 +378,7 @@ class BudgetParsingTest {
         )
 
         assertThat(budget).isInstanceOf(Budget.OnceOnly::class.java)
-        assertThat(budget.amount).isEqualTo(3_660F)
+        assertThat(budget.amount).isEqualTo(3_660.0)
         assertThat(budget.currency).isEqualTo(EURO_CURRENCY)
         assertThat(budget.startDate).isEqualTo(LocalDate.of(2024, 1, 1))
         assertThat(budget.endDate).isEqualTo(LocalDate.of(2024, 12, 31))

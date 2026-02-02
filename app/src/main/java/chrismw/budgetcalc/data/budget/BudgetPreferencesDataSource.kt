@@ -20,45 +20,4 @@ internal class BudgetLocalDataSource @Inject constructor(
             budgetData
         }
     }
-
-//    suspend fun getLastAchievedBudgetId(): UUID? {
-//        return lastAchievedBudgetIdFlow.first()
-//    }
-//
-//    suspend fun setLastAchievedBudgetId(id: UUID) {
-//        dataStore.updateData { Data ->
-//            Data.toBuilder()
-//                .setLastAchievedBudgetId(id.toString())
-//                .build()
-//        }
-//    }
-//
-//    suspend fun setInitialized() {
-//        dataStore.updateData { Data ->
-//            Data.toBuilder()
-//                .setIsInitialized(true)
-//                .build()
-//        }
-//    }
-//
-//    suspend fun isInitialized(): Boolean {
-//        return dataStore.data.first().getIsInitialized()
-//    }
-//
-//    suspend fun clear() {
-//        dataStore.updateData { Data ->
-//            Data.toBuilder().clear().build()
-//        }
-//    }
-
-//    private val lastAchievedBudgetIdFlow: Flow<UUID?>
-//        get() = dataStore.data.map { Data ->
-//            with(Data.lastAchievedBudgetId) {
-//                if (this == null || isEmpty()) {
-//                    null
-//                } else {
-//                    UUID.fromString(this)
-//                }
-//            }
-//        }
 }
