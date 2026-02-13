@@ -55,6 +55,10 @@ class SettingsViewModel @Inject constructor(
         currentBudgetDataDTO != initialBudgetDataDTO
     }
 
+    init {
+        loadSettings()
+    }
+
     val viewState: StateFlow<ViewState> = combine(
         uiBudgetDataStateFlow,
         hasBudgetDataDTOChangedFlow,
@@ -93,7 +97,7 @@ class SettingsViewModel @Inject constructor(
         initialValue = ViewState()
     )
 
-    fun loadSettings() {
+    private fun loadSettings() {
         viewModelScope.launch {
             val loadedBudgetDataDTO = budgetDataRepository.getBudgetData()
             val currencyMap = currencyRepository.codeToCurrencyMapFlow.first()

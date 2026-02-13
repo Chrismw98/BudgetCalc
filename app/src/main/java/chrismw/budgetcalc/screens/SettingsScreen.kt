@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -54,7 +53,6 @@ import java.time.LocalDate
 internal fun SettingsScreen(
     viewState: SettingsViewModel.ViewState,
     onNavigateBack: () -> Unit,
-    onLoadSettings: () -> Unit,
     onSaveChanges: () -> Unit,
     onClickConstantBudget: () -> Unit,
     onClickBudgetRate: () -> Unit,
@@ -75,10 +73,6 @@ internal fun SettingsScreen(
         } else {
             onNavigateBack()
         }
-    }
-
-    LaunchedEffect(Unit) {
-        onLoadSettings()
     }
 
     BackHandler {
@@ -288,7 +282,6 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
                 constantBudgetAmount = "5910214",
             ),
             onNavigateBack = {},
-            onLoadSettings = {},
             onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
@@ -322,7 +315,6 @@ fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
                 )
             ),
             onNavigateBack = {},
-            onLoadSettings = {},
             onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},
@@ -350,7 +342,6 @@ fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
                 budgetType = BudgetType.OnceOnly
             ),
             onNavigateBack = {},
-            onLoadSettings = {},
             onSaveChanges = {},
             onClickConstantBudget = {},
             onClickBudgetRate = {},

@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -70,7 +69,6 @@ fun BudgetCalcNavHost(
                 viewState = state,
                 onNavigateBack = { navController.popBackStackIfResumed() },
                 onSaveChanges = viewModel::saveSettings,
-                onLoadSettings = viewModel::loadSettings,
                 onClickConstantBudget = { viewModel.setIsBudgetConstant(true) },
                 onClickBudgetRate = { viewModel.setIsBudgetConstant(false) },
                 onConstantBudgetAmountChanged = viewModel::setConstantBudgetAmount,
@@ -87,19 +85,6 @@ fun BudgetCalcNavHost(
 
     }
 }
-
-//fun NavHostController.navigateSingleTopTo(route: String) =
-//    this.navigate(route) { launchSingleTop = true }
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        popUpTo(
-            this@navigateSingleTopTo.graph.findStartDestination().id
-        ) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
 
 fun NavController.navigateToSettingsScreen() {
     navigate(route = SETTINGS_SCREEN_ROUTE)
