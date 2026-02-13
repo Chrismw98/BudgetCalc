@@ -1,4 +1,4 @@
-package chrismw.budgetcalc.screens
+package chrismw.budgetcalc.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,9 +26,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor(
+class HomeScreenViewModel @Inject constructor(
     private val budgetDataRepository: BudgetDataRepository,
-    private val currencyRepository: CurrencyRepository,
+    currencyRepository: CurrencyRepository,
     @DateNow private val nowDateProvider: Provider<LocalDate>,
 ) : ViewModel() {
 

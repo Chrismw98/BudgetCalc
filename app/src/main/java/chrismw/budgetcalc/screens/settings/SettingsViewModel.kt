@@ -1,4 +1,4 @@
-package chrismw.budgetcalc.screens
+package chrismw.budgetcalc.screens.settings
 
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly

@@ -1,4 +1,4 @@
-package chrismw.budgetcalc.screens
+package chrismw.budgetcalc.screens.settings
 
 import MonetaryAmountVisualTransformation
 import androidx.activity.compose.BackHandler

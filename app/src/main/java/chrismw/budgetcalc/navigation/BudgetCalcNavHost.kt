@@ -13,13 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import chrismw.budgetcalc.extensions.popBackStackIfResumed
 import chrismw.budgetcalc.helpers.LifecycleEffect
-import chrismw.budgetcalc.screens.MainScreen
-import chrismw.budgetcalc.screens.MainScreenViewModel
-import chrismw.budgetcalc.screens.SettingsScreen
-import chrismw.budgetcalc.screens.SettingsViewModel
+import chrismw.budgetcalc.screens.home.HomeScreen
+import chrismw.budgetcalc.screens.home.HomeScreenViewModel
+import chrismw.budgetcalc.screens.settings.SettingsScreen
+import chrismw.budgetcalc.screens.settings.SettingsViewModel
 import chrismw.budgetcalc.ui.theme.motion
 
-private const val MAIN_SCREEN_ROUTE = "main_screen"
+private const val HOME_SCREEN_ROUTE = "home_screen"
 private const val SETTINGS_SCREEN_ROUTE = "settings_screen"
 
 @Composable
@@ -34,11 +34,11 @@ fun BudgetCalcNavHost(
         exitTransition = { MaterialTheme.motion.sharedAxis(density).initialContentExit },
         popEnterTransition = { MaterialTheme.motion.sharedAxis(density, reverse = true).targetContentEnter },
         popExitTransition = { MaterialTheme.motion.sharedAxis(density, reverse = true).initialContentExit },
-        startDestination = MAIN_SCREEN_ROUTE,
+        startDestination = HOME_SCREEN_ROUTE,
         modifier = modifier
     ) {
-        composable(route = MAIN_SCREEN_ROUTE) {
-            val viewModel: MainScreenViewModel = hiltViewModel()
+        composable(route = HOME_SCREEN_ROUTE) {
+            val viewModel: HomeScreenViewModel = hiltViewModel()
             val state by viewModel.viewState.collectAsStateWithLifecycle()
 
             LifecycleEffect(
@@ -47,7 +47,7 @@ fun BudgetCalcNavHost(
                 }
             )
 
-            MainScreen(
+            HomeScreen(
                 viewState = state,
                 onJumpToTodayClick = viewModel::onResetTargetDate,
                 onSettingsClick = navController::navigateToSettingsScreen,

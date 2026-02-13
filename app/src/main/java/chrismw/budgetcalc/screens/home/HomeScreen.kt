@@ -1,4 +1,4 @@
-package chrismw.budgetcalc.screens
+package chrismw.budgetcalc.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -56,11 +56,12 @@ import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
+import kotlin.text.iterator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainScreen(
-    viewState: MainScreenViewModel.ViewState,
+internal fun HomeScreen(
+    viewState: HomeScreenViewModel.ViewState,
     onJumpToTodayClick: () -> Unit,
     onSettingsClick: () -> Unit,
     toggleShowDetails: () -> Unit,
@@ -123,7 +124,7 @@ internal fun MainScreen(
 @Composable
 private fun MainScreenContent(
     contentPadding: PaddingValues,
-    viewState: MainScreenViewModel.ViewState,
+    viewState: HomeScreenViewModel.ViewState,
     toggleShowDetails: () -> Unit,
     onPickTargetDate: (LocalDate) -> Unit,
     onShowDatePicker: () -> Unit,
@@ -373,8 +374,8 @@ private fun DatePickerModal(
 @Composable
 fun DefaultPreview() {
     BudgetCalcTheme {
-        MainScreen(
-            viewState = MainScreenViewModel.ViewState(
+        HomeScreen(
+            viewState = HomeScreenViewModel.ViewState(
                 isLoading = false,
 
                 targetDate = LocalDate.of(2023, 9, 16),
@@ -406,8 +407,8 @@ fun DefaultPreview() {
 @Composable
 fun MissingDataPreview() {
     BudgetCalcTheme {
-        MainScreen(
-            viewState = MainScreenViewModel.ViewState(
+        HomeScreen(
+            viewState = HomeScreenViewModel.ViewState(
                 isLoading = false,
                 hasIncompleteData = true
             ),
