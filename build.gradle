@@ -9,17 +9,18 @@ buildscript {
 
         androidx_lifecycle_version = '2.6.1'
 
-        androidx_navigation_version = '2.8.1'
+        androidx_navigation_version = '2.9.7'
         androidx_hilt_navigation_version = '1.2.0'
 
         kotlinx_immutable_collections_version = '0.3.5'
 
         accompanist_version = '0.34.0'
 
-        protobuf_version = '4.33.4'
+        protobuf_javalite_version = '4.33.5'
+        protobuf_protoc_version = '4.33.5'
         datastore_version = '1.0.0'
 
-        moshi_version = '1.15.0'
+        moshi_version = '1.15.2'
     }
 
     dependencies {

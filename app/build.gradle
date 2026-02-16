@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId "chrismw.budgetcalc"
-        minSdk 21
+        minSdk 23
         targetSdk 36
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -27,6 +27,7 @@ android {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -56,7 +57,7 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$protobuf_version"
+        artifact = "com.google.protobuf:protoc:$protobuf_protoc_version"
     }
     // Generates the java Protobuf-lite code for the Protobufs in this project. See
     // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
@@ -93,15 +94,14 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
-    implementation "androidx.datastore:datastore-preferences:1.1.1"
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Data store
-    implementation  "androidx.datastore:datastore:1.0.0"
-    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
+    implementation  "androidx.datastore:datastore:$datastore_version"
+    implementation "com.google.protobuf:protobuf-javalite:$protobuf_javalite_version"
 
     //Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"
