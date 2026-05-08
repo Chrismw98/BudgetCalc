@@ -1,5 +1,6 @@
 package chrismw.budgetcalc.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
@@ -11,7 +12,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -35,14 +35,16 @@ internal fun <T> GenericDropDownMenu(
             it?.toString().orEmpty()
         }
     },
+    leadingIcon: @Composable (() -> Unit)? = null,
     onExpandedMenuChanged: (DropDown) -> Unit,
     dropDownType: DropDown,
     isExpanded: Boolean,
     enabled: Boolean = true,
     isError: Boolean = false,
     labelText: String,
+    placeholderText: String? = null,
+    supportingText: String? = null,
 ) {
-
     val dropDownTextFieldValue = onParseOptionToString(selectedOption)
 
     if (enabled) {
@@ -59,7 +61,10 @@ internal fun <T> GenericDropDownMenu(
                 labelText = labelText,
                 isExpanded = isExpanded,
                 isError = isError,
-                contentDescription = labelText,
+                leadingIcon = leadingIcon,
+                trailingIconContentDescription = labelText,
+                placeholderText = placeholderText,
+                supportingText = supportingText,
             )
 //        Cannot use ExposedDropdownMenu due to this bug:
 //        https://issuetracker.google.com/issues/205589613
@@ -98,7 +103,10 @@ internal fun <T> GenericDropDownMenu(
             labelText = labelText,
             isExpanded = isExpanded,
             isError = isError,
-            contentDescription = labelText,
+            leadingIcon = leadingIcon,
+            trailingIconContentDescription = labelText,
+            placeholderText = placeholderText,
+            supportingText = supportingText,
         )
     }
 }
@@ -108,33 +116,41 @@ private fun DropDownMenuTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     value: String,
-    labelText: String,
+    labelText: String?,
+    placeholderText: String? = null,
     isExpanded: Boolean,
     isError: Boolean = false,
-    contentDescription: String?,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIconContentDescription: String?,
+    supportingText: String? = null,
 ) {
-    OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
-        singleLine = true,
-        value = value,
-        onValueChange = {},
-        readOnly = true,
-        label = {
-            Text(text = labelText)
-        },
-        enabled = enabled,
-        trailingIcon = {
-            Icon(
-                imageVector = if (isExpanded) {
-                    Icons.Outlined.KeyboardArrowUp
-                } else {
-                    Icons.Outlined.KeyboardArrowDown
-                },
-                contentDescription = contentDescription
-            )
-        },
-        isError = isError,
-    )
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        CustomTextField(
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            value = value,
+            onValueChange = {},
+            readOnly = true,
+            enabled = enabled,
+            labelText = labelText,
+            leadingIcon = leadingIcon,
+            trailingIcon = {
+                Icon(
+                    imageVector = if (isExpanded) {
+                        Icons.Outlined.KeyboardArrowUp
+                    } else {
+                        Icons.Outlined.KeyboardArrowDown
+                    },
+                    contentDescription = trailingIconContentDescription
+                )
+            },
+            placeholderText = placeholderText,
+            isError = isError,
+            supportingText = supportingText,
+        )
+    }
 }
 
 @Composable
@@ -149,6 +165,10 @@ private fun PreviewGenericDropDownMenu() {
             selectedOption = "Test Option",
             isExpanded = false,
             labelText = "Test Label",
+            placeholderText = "Placeholder text",
+            leadingIcon = {
+                Text(text = "EG")
+            },
         )
     }
 }
@@ -164,7 +184,11 @@ private fun PreviewEnabledEmptyGenericDropDownMenu() {
             dropDownType = DropDown.NONE,
             selectedOption = null,
             isExpanded = false,
-            labelText = "Test Label"
+            labelText = "Test Label",
+            placeholderText = "Placeholder text",
+            leadingIcon = {
+                Text(text = "EG")
+            },
         )
     }
 }
@@ -182,6 +206,10 @@ private fun PreviewDisabledEmptyGenericDropDownMenu() {
             isExpanded = false,
             enabled = false,
             labelText = "Test Label",
+            placeholderText = "Placeholder text",
+            leadingIcon = {
+                Text(text = "EG")
+            },
         )
     }
 }
