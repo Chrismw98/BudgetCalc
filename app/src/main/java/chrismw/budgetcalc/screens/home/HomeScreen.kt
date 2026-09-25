@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.CircularProgressbar
@@ -406,7 +407,7 @@ private fun WelcomeInfoCard(
                 Icon(
                     painter = painterResource(iconResId),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
 
@@ -514,7 +515,7 @@ fun DefaultPreview() {
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun MissingDataPreview() {
     BudgetCalcTheme {
