@@ -1,18 +1,18 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt' // Kotlin support with annotation processing
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
-    id 'com.google.protobuf' version "0.9.6"
+    id 'com.google.protobuf' version "0.10.0"
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId "chrismw.budgetcalc"
         minSdk 23
-        targetSdk 36
+        targetSdk 37
         versionCode 7
         versionName "1.0.6"
 
@@ -36,16 +36,10 @@ android {
 
         coreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        jvmTarget = '17'
-    }
 
     buildFeatures {
         viewBinding true
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.8'
     }
     packagingOptions {
         resources {
@@ -97,7 +91,7 @@ dependencies {
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     //Data store
     implementation  "androidx.datastore:datastore:$datastore_version"
@@ -106,7 +100,7 @@ dependencies {
     //Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     //Navigation
     implementation "androidx.navigation:navigation-compose:$androidx_navigation_version"
