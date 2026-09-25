@@ -87,6 +87,8 @@ fun ClickableDatePickerTextField(
     initialDate: LocalDate,
     allowedDateValidator: (LocalDate) -> Boolean = { true },
     placeholderText: String? = null,
+    isError: Boolean = false,
+    supportingText: String? = null,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     if (showDatePicker) {
@@ -119,6 +121,8 @@ fun ClickableDatePickerTextField(
             showDatePicker = true
         },
         placeholderText = placeholderText,
+        isError = isError,
+        supportingText = supportingText,
     )
 }
 

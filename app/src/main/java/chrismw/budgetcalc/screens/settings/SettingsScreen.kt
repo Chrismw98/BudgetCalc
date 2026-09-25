@@ -3,6 +3,8 @@ package chrismw.budgetcalc.screens.settings
 import MonetaryAmountVisualTransformation
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +35,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,15 +64,16 @@ import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun SettingsScreen(
     viewState: SettingsViewModel.ViewState,
     onNavigateBack: () -> Unit,
-    onSaveChanges: () -> Unit,
+    onAttemptSave: () -> SettingsErrorState,
     onClickConstantBudget: () -> Unit,
     onClickBudgetRate: () -> Unit,
     onConstantBudgetAmountChanged: (String) -> Unit,
@@ -90,6 +97,15 @@ internal fun SettingsScreen(
 
     BackHandler {
         onBackPressed()
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+    val sectionScrollTargets = remember {
+        SectionScrollTargets(
+            definition = BringIntoViewRequester(),
+            details = BringIntoViewRequester(),
+            period = BringIntoViewRequester(),
+        )
     }
 
     Scaffold(
@@ -121,16 +137,13 @@ internal fun SettingsScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            if (viewState.isLoading) {
-                LoadingOverlay(
-                    modifier = Modifier.fillMaxSize(),
-                    visible = viewState.isLoading,
-                )
-            } else {
+            if (!viewState.isLoading) {
                 VerticalSpacer(6.dp)
 
                 DefinitionSection(
+                    modifier = Modifier.bringIntoViewRequester(sectionScrollTargets.definition),
                     isBudgetConstant = viewState.isBudgetConstant,
+                    errors = viewState.errors,
                     onClickConstantBudget = onClickConstantBudget,
                     onClickBudgetRate = onClickBudgetRate,
                 )
@@ -138,6 +151,7 @@ internal fun SettingsScreen(
                 VerticalSpacer(18.dp)
 
                 DetailsSection(
+                    modifier = Modifier.bringIntoViewRequester(sectionScrollTargets.details),
                     currencySymbol = viewState.selectedCurrency?.symbol ?: "$",
                     selectedCurrency = viewState.selectedCurrency,
                     availableCurrencies = viewState.availableCurrencies,
@@ -145,6 +159,7 @@ internal fun SettingsScreen(
                     isBudgetConstant = viewState.isBudgetConstant,
                     constantBudgetAmount = viewState.constantBudgetAmount,
                     budgetRateAmount = viewState.budgetRateAmount,
+                    errors = viewState.errors,
                     onCurrencyChanged = onCurrencyChanged,
                     onUpdateExpandedDropDown = onUpdateExpandedDropDown,
                     onConstantBudgetAmountChanged = onConstantBudgetAmountChanged,
@@ -154,6 +169,7 @@ internal fun SettingsScreen(
                 VerticalSpacer(18.dp)
 
                 PeriodSection(
+                    modifier = Modifier.bringIntoViewRequester(sectionScrollTargets.period),
                     budgetType = viewState.budgetType,
                     defaultPaymentDayOfMonth = viewState.defaultPaymentDayOfMonth,
                     defaultPaymentDayOfWeek = viewState.defaultPaymentDayOfWeek,
@@ -162,6 +178,7 @@ internal fun SettingsScreen(
                     endDate = viewState.endDate,
                     today = viewState.today,
                     currentlyExpandedDropDown = viewState.currentlyExpandedDropDown,
+                    errors = viewState.errors,
                     onBudgetTypeChanged = onBudgetTypeChanged,
                     onDefaultPaymentDayChanged = onDefaultPaymentDayChanged,
                     onDayOfWeekChanged = onDayOfWeekChanged,
@@ -176,8 +193,14 @@ internal fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = R.string.settings_save_btn_label),
                     onClick = {
-                        onSaveChanges()
-                        onNavigateBack()
+                        val errors = onAttemptSave()
+                        if (errors.hasAnyError) {
+                            coroutineScope.launch {
+                                scrollToFirstErrorSection(errors, sectionScrollTargets)
+                            }
+                        } else {
+                            onNavigateBack()
+                        }
                     }
                 )
 
@@ -195,8 +218,30 @@ internal fun SettingsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+private data class SectionScrollTargets(
+    val definition: BringIntoViewRequester,
+    val details: BringIntoViewRequester,
+    val period: BringIntoViewRequester,
+)
+
+@OptIn(ExperimentalFoundationApi::class)
+private suspend fun scrollToFirstErrorSection(
+    errors: SettingsErrorState,
+    sectionScrollTargets: SectionScrollTargets,
+) {
+    when {
+        errors.isBudgetMethodMissing -> sectionScrollTargets.definition.bringIntoView()
+        errors.isBudgetDetailsMissing || errors.isCurrencyMissing || errors.isBudgetAmountMissing ->
+            sectionScrollTargets.details.bringIntoView()
+
+        else -> sectionScrollTargets.period.bringIntoView()
+    }
+}
+
 @Composable
 private fun PeriodSection(
+    modifier: Modifier = Modifier,
     budgetType: BudgetType?,
     defaultPaymentDayOfMonth: String?,
     defaultPaymentDayOfWeek: DayOfWeek?,
@@ -205,6 +250,7 @@ private fun PeriodSection(
     endDate: LocalDate?,
     today: LocalDate,
     currentlyExpandedDropDown: DropDown,
+    errors: SettingsErrorState,
     onBudgetTypeChanged: (BudgetType) -> Unit,
     onDefaultPaymentDayChanged: (String) -> Unit,
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
@@ -213,9 +259,14 @@ private fun PeriodSection(
     onEndDateChanged: (LocalDate) -> Unit
 ) {
     SettingsSection(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         titleResId = R.string.settings_period_title,
         descriptionResId = R.string.settings_period_description,
+        errorMessage = if (errors.isBudgetPeriodMissing) {
+            stringResource(id = R.string.settings_period_error)
+        } else {
+            null
+        },
     ) {
         Text(
             text = stringResource(R.string.settings_period_chips_subtitle),
@@ -238,7 +289,14 @@ private fun PeriodSection(
                     onValueChange = onDefaultPaymentDayChanged,
                     labelText = stringResource(R.string.settings_period_reset_monthly_subtitle),
                     placeholderText = stringResource(R.string.settings_period_reset_monthly_hint),
-                    supportingText = stringResource(R.string.settings_period_reset_monthly_description),
+                    isError = errors.isPaymentDayOfMonthMissing || errors.isPaymentDayOfMonthInvalid,
+                    supportingText = when {
+                        errors.isPaymentDayOfMonthMissing -> stringResource(R.string.settings_period_reset_monthly_error)
+                        errors.isPaymentDayOfMonthInvalid ->
+                            stringResource(R.string.settings_period_reset_monthly_invalid_error)
+
+                        else -> stringResource(R.string.settings_period_reset_monthly_description)
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
@@ -257,9 +315,14 @@ private fun PeriodSection(
                     onExpandedMenuChanged = onUpdateExpandedDropDown,
                     dropDownType = DropDown.PAYMENT_DAY_OF_WEEK,
                     isExpanded = currentlyExpandedDropDown == DropDown.PAYMENT_DAY_OF_WEEK,
+                    isError = errors.isPaymentDayOfWeekMissing,
                     labelText = stringResource(R.string.settings_period_reset_weekly_subtitle),
                     placeholderText = stringResource(R.string.settings_period_reset_weekly_hint),
-                    supportingText = stringResource(R.string.settings_period_reset_weekly_description),
+                    supportingText = if (errors.isPaymentDayOfWeekMissing) {
+                        stringResource(R.string.settings_period_reset_weekly_error)
+                    } else {
+                        stringResource(R.string.settings_period_reset_weekly_description)
+                    },
                 )
             }
 
@@ -279,7 +342,13 @@ private fun PeriodSection(
                     initialDate = startDate ?: if (endDate != null) endDate.minusDays(1) else today,
                     allowedDateValidator = {
                         if (endDate != null) !it.isAfter(endDate) else true
-                    }
+                    },
+                    isError = errors.isStartDateMissing,
+                    supportingText = if (errors.isStartDateMissing) {
+                        stringResource(R.string.settings_period_reset_once_only_start_error)
+                    } else {
+                        null
+                    },
                 )
 
                 VerticalSpacer(16.dp)
@@ -300,7 +369,13 @@ private fun PeriodSection(
                     ),
                     allowedDateValidator = {
                         if (startDate != null) !it.isBefore(startDate) else true
-                    }
+                    },
+                    isError = errors.isEndDateMissing,
+                    supportingText = if (errors.isEndDateMissing) {
+                        stringResource(R.string.settings_period_reset_once_only_end_error)
+                    } else {
+                        null
+                    },
                 )
             }
 
@@ -378,6 +453,7 @@ private fun BudgetTypeChip(
 
 @Composable
 private fun DetailsSection(
+    modifier: Modifier = Modifier,
     currencySymbol: String,
     selectedCurrency: Currency?,
     availableCurrencies: ImmutableList<Currency>,
@@ -385,15 +461,21 @@ private fun DetailsSection(
     isBudgetConstant: Boolean?,
     constantBudgetAmount: String?,
     budgetRateAmount: String?,
+    errors: SettingsErrorState,
     onCurrencyChanged: (Currency) -> Unit,
     onUpdateExpandedDropDown: (DropDown) -> Unit,
     onConstantBudgetAmountChanged: (String) -> Unit,
     onBudgetRateAmountChanged: (String) -> Unit
 ) {
     SettingsSection(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         titleResId = R.string.settings_details_title,
         descriptionResId = R.string.settings_details_description,
+        errorMessage = if (errors.isBudgetDetailsMissing) {
+            stringResource(id = R.string.settings_details_error)
+        } else {
+            null
+        },
     ) {
         val leadingIconStyle = if (currencySymbol.length <= 2) {
             MaterialTheme.typography.titleLarge
@@ -412,8 +494,14 @@ private fun DetailsSection(
             onExpandedMenuChanged = onUpdateExpandedDropDown,
             dropDownType = DropDown.CURRENCY,
             isExpanded = isExpanded,
+            isError = errors.isCurrencyMissing,
             labelText = stringResource(R.string.settings_details_currency_label),
             placeholderText = stringResource(R.string.settings_details_currency_hint),
+            supportingText = if (errors.isCurrencyMissing) {
+                stringResource(R.string.settings_details_currency_error)
+            } else {
+                null
+            },
             leadingIcon = {
                 Text(
                     text = currencySymbol,
@@ -451,6 +539,12 @@ private fun DetailsSection(
                     else -> R.string.settings_details_amount_defined_hint
                 }
             ),
+            isError = errors.isBudgetAmountMissing,
+            supportingText = if (errors.isBudgetAmountMissing) {
+                stringResource(R.string.settings_details_amount_error)
+            } else {
+                null
+            },
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_budget_amount),
@@ -468,14 +562,21 @@ private fun DetailsSection(
 
 @Composable
 private fun DefinitionSection(
+    modifier: Modifier = Modifier,
     isBudgetConstant: Boolean?,
+    errors: SettingsErrorState,
     onClickConstantBudget: () -> Unit,
     onClickBudgetRate: () -> Unit,
 ) {
     SettingsSection(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         titleResId = R.string.settings_definition_title,
         descriptionResId = R.string.settings_definition_description,
+        errorMessage = if (errors.isBudgetMethodMissing) {
+            stringResource(id = R.string.settings_definition_error)
+        } else {
+            null
+        },
     ) {
         BudgetDefinitionCard(
             labelResId = R.string.settings_definition_constant_label,
@@ -502,10 +603,12 @@ private fun SettingsSection(
     modifier: Modifier = Modifier,
     @StringRes titleResId: Int,
     @StringRes descriptionResId: Int,
+    errorMessage: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SettingsCard(
         modifier = modifier,
+        isError = errorMessage != null,
     ) {
         Text(
             modifier = Modifier
@@ -526,6 +629,19 @@ private fun SettingsSection(
             color = MaterialTheme.colorScheme.outline,
         )
 
+        if (errorMessage != null) {
+            VerticalSpacer(6.dp)
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                text = errorMessage,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
         VerticalSpacer(16.dp)
 
         HorizontalDivider(
@@ -542,6 +658,7 @@ private fun SettingsSection(
 @Composable
 private fun SettingsCard(
     modifier: Modifier = Modifier,
+    isError: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
@@ -550,7 +667,12 @@ private fun SettingsCard(
         elevation = CardDefaults.cardElevation(1.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
-        )
+        ),
+        border = if (isError) {
+            BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.error)
+        } else {
+            null
+        },
     ) {
         Column(
             modifier = Modifier
@@ -575,7 +697,39 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
                 budgetType = BudgetType.OnceOnly,
             ),
             onNavigateBack = {},
-            onSaveChanges = {},
+            onAttemptSave = { SettingsErrorState() },
+            onClickConstantBudget = {},
+            onClickBudgetRate = {},
+            onBudgetRateAmountChanged = {},
+            onConstantBudgetAmountChanged = {},
+            onCurrencyChanged = {},
+            onDefaultPaymentDayChanged = {},
+            onBudgetTypeChanged = {},
+            onDayOfWeekChanged = {},
+            onStartDateChanged = {},
+            onEndDateChanged = {},
+            onUpdateExpandedDropDown = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingsScreenPreviewConstantBudget_MonthlyBudget_Error() {
+    BudgetCalcTheme {
+        SettingsScreen(
+            viewState = SettingsViewModel.ViewState(
+                isLoading = false,
+                isBudgetConstant = true,
+                constantBudgetAmount = null,
+                budgetType = BudgetType.Monthly,
+                errors = SettingsErrorState(
+                    isBudgetPeriodMissing = true,
+                    isPaymentDayOfMonthMissing = true,
+                ),
+            ),
+            onNavigateBack = {},
+            onAttemptSave = { SettingsErrorState() },
             onClickConstantBudget = {},
             onClickBudgetRate = {},
             onBudgetRateAmountChanged = {},
@@ -608,7 +762,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
 //                )
 //            ),
 //            onNavigateBack = {},
-//            onSaveChanges = {},
+//            onAttemptSave = { SettingsErrorState() },
 //            onClickConstantBudget = {},
 //            onClickBudgetRate = {},
 //            onBudgetRateAmountChanged = {},
@@ -635,7 +789,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
 //                budgetType = BudgetType.OnceOnly
 //            ),
 //            onNavigateBack = {},
-//            onSaveChanges = {},
+//            onAttemptSave = { SettingsErrorState() },
 //            onClickConstantBudget = {},
 //            onClickBudgetRate = {},
 //            onBudgetRateAmountChanged = {},

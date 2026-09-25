@@ -38,15 +38,19 @@ class SettingsViewModel @Inject constructor(
     @DateNow private val nowDateProvider: Provider<LocalDate>
 ) : ViewModel() {
 
-    companion object {
+    internal companion object {
 
         val DAY_OF_WEEK_LIST = DayOfWeek.values().toList().toImmutableList()
         val BUDGET_TYPES_LIST = persistentListOf(BudgetType.OnceOnly, BudgetType.Weekly, BudgetType.Monthly)
+
+        const val MIN_PAYMENT_DAY_OF_MONTH = 1
+        const val MAX_PAYMENT_DAY_OF_MONTH = 31
     }
 
     private val uiBudgetDataStateFlow: MutableStateFlow<UiBudgetData> = MutableStateFlow(UiBudgetData())
     private val initialUiBudgetDataStateFlow: MutableStateFlow<UiBudgetData> = MutableStateFlow(UiBudgetData())
     private val currentlyExpandedDropDownStateFlow: MutableStateFlow<DropDown> = MutableStateFlow(DropDown.NONE)
+    private val lastAttemptedUiBudgetDataStateFlow: MutableStateFlow<UiBudgetData?> = MutableStateFlow(null)
 
     private val hasBudgetDataDTOChangedFlow: Flow<Boolean> = combine(
         uiBudgetDataStateFlow,
@@ -64,10 +68,12 @@ class SettingsViewModel @Inject constructor(
         hasBudgetDataDTOChangedFlow,
         currentlyExpandedDropDownStateFlow,
         currencyRepository.currenciesFlow,
+        lastAttemptedUiBudgetDataStateFlow,
     ) { uiBudgetData,
         hasDataChanged,
         currentlyExpandedDropDown,
-        currencies ->
+        currencies,
+        lastAttemptedUiBudgetData ->
 
         ViewState(
             isLoading = false,
@@ -89,7 +95,9 @@ class SettingsViewModel @Inject constructor(
             budgetTypeOptions = BUDGET_TYPES_LIST,
             dayOfWeekOptions = DAY_OF_WEEK_LIST,
             currentlyExpandedDropDown = currentlyExpandedDropDown,
-            showConfirmExitDialog = hasDataChanged
+            showConfirmExitDialog = hasDataChanged,
+            errors = lastAttemptedUiBudgetData?.let { uiBudgetData.toErrorState(lastAttempted = it) }
+                ?: SettingsErrorState()
         )
     }.stateIn(
         scope = viewModelScope,
@@ -112,12 +120,18 @@ class SettingsViewModel @Inject constructor(
         uiBudgetDataStateFlow.update { callback(it) }
     }
 
-    fun saveSettings() {
-        viewModelScope.launch {
-            val currentUiBudgetData = uiBudgetDataStateFlow.value
-            initialUiBudgetDataStateFlow.value = currentUiBudgetData
-            budgetDataRepository.saveBudgetData(currentUiBudgetData.toDTO())
+    fun onSaveClicked(): SettingsErrorState {
+        val currentUiBudgetData = uiBudgetDataStateFlow.value
+        lastAttemptedUiBudgetDataStateFlow.value = currentUiBudgetData
+
+        val errors = currentUiBudgetData.toErrorState(lastAttempted = currentUiBudgetData)
+        if (!errors.hasAnyError) {
+            viewModelScope.launch {
+                initialUiBudgetDataStateFlow.value = currentUiBudgetData
+                budgetDataRepository.saveBudgetData(currentUiBudgetData.toDTO())
+            }
         }
+        return errors
     }
 
     fun setIsBudgetConstant(value: Boolean) {
@@ -160,13 +174,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setDefaultPaymentDayOfMonth(value: String) {
         if (value.isDigitsOnly()) {
-            val defaultPaymentDay = value.trimZeros().toIntOrNull()
-            if (defaultPaymentDay == null || defaultPaymentDay in 1..31) { //TODO: Remove this in favor of error states
-                updateUiBudgetData {
-                    it.copy(
-                        defaultPaymentDayOfMonth = value
-                    )
-                }
+            updateUiBudgetData {
+                it.copy(
+                    defaultPaymentDayOfMonth = value
+                )
             }
         }
     }
@@ -234,5 +245,70 @@ class SettingsViewModel @Inject constructor(
         val currentlyExpandedDropDown: DropDown = DropDown.NONE,
 
         val showConfirmExitDialog: Boolean = false,
+
+        val errors: SettingsErrorState = SettingsErrorState(),
+    )
+}
+
+@Immutable
+data class SettingsErrorState(
+    val isBudgetMethodMissing: Boolean = false,
+
+    val isBudgetDetailsMissing: Boolean = false,
+    val isCurrencyMissing: Boolean = false,
+    val isBudgetAmountMissing: Boolean = false,
+
+    val isBudgetPeriodMissing: Boolean = false,
+    val isPaymentDayOfMonthMissing: Boolean = false,
+    val isPaymentDayOfMonthInvalid: Boolean = false,
+    val isPaymentDayOfWeekMissing: Boolean = false,
+    val isStartDateMissing: Boolean = false,
+    val isEndDateMissing: Boolean = false,
+) {
+
+    val hasAnyError: Boolean
+        get() = isBudgetMethodMissing ||
+            isBudgetDetailsMissing || isCurrencyMissing || isBudgetAmountMissing ||
+            isBudgetPeriodMissing || isPaymentDayOfMonthMissing || isPaymentDayOfMonthInvalid ||
+            isPaymentDayOfWeekMissing || isStartDateMissing || isEndDateMissing
+}
+
+private fun UiBudgetData.toErrorState(lastAttempted: UiBudgetData): SettingsErrorState {
+    val isBudgetMethodMissing = isBudgetConstant == null
+
+    val methodCheckedAtCurrentValue = isBudgetConstant == lastAttempted.isBudgetConstant
+    val periodCheckedAtCurrentValue = budgetType == lastAttempted.budgetType
+
+    val isBudgetDetailsMissing = isBudgetMethodMissing
+    val isCurrencyMissing = !isBudgetMethodMissing && methodCheckedAtCurrentValue && currency == null
+    val isBudgetAmountMissing = !isBudgetMethodMissing && methodCheckedAtCurrentValue && when (isBudgetConstant) {
+        true -> constantBudgetAmount.isNullOrBlank()
+        false -> budgetRateAmount.isNullOrBlank()
+        null -> false
+    }
+
+    val isBudgetPeriodMissing = budgetType == null
+    val isPaymentDayOfMonthMissing = budgetType == BudgetType.Monthly && periodCheckedAtCurrentValue &&
+        defaultPaymentDayOfMonth.isNullOrBlank()
+    val isPaymentDayOfMonthInvalid = budgetType == BudgetType.Monthly && periodCheckedAtCurrentValue &&
+        !defaultPaymentDayOfMonth.isNullOrBlank() &&
+        (defaultPaymentDayOfMonth.toIntOrNull() ?: -1) !in
+            SettingsViewModel.MIN_PAYMENT_DAY_OF_MONTH..SettingsViewModel.MAX_PAYMENT_DAY_OF_MONTH
+    val isPaymentDayOfWeekMissing = budgetType == BudgetType.Weekly && periodCheckedAtCurrentValue &&
+        defaultPaymentDayOfWeek == null
+    val isStartDateMissing = budgetType == BudgetType.OnceOnly && periodCheckedAtCurrentValue && startDate == null
+    val isEndDateMissing = budgetType == BudgetType.OnceOnly && periodCheckedAtCurrentValue && endDate == null
+
+    return SettingsErrorState(
+        isBudgetMethodMissing = isBudgetMethodMissing,
+        isBudgetDetailsMissing = isBudgetDetailsMissing,
+        isCurrencyMissing = isCurrencyMissing,
+        isBudgetAmountMissing = isBudgetAmountMissing,
+        isBudgetPeriodMissing = isBudgetPeriodMissing,
+        isPaymentDayOfMonthMissing = isPaymentDayOfMonthMissing,
+        isPaymentDayOfMonthInvalid = isPaymentDayOfMonthInvalid,
+        isPaymentDayOfWeekMissing = isPaymentDayOfWeekMissing,
+        isStartDateMissing = isStartDateMissing,
+        isEndDateMissing = isEndDateMissing,
     )
 }

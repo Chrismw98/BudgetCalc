@@ -68,7 +68,7 @@ fun BudgetCalcNavHost(
             SettingsScreen(
                 viewState = state,
                 onNavigateBack = { navController.popBackStackIfResumed() },
-                onSaveChanges = viewModel::saveSettings,
+                onAttemptSave = viewModel::onSaveClicked,
                 onClickConstantBudget = { viewModel.setIsBudgetConstant(true) },
                 onClickBudgetRate = { viewModel.setIsBudgetConstant(false) },
                 onConstantBudgetAmountChanged = viewModel::setConstantBudgetAmount,

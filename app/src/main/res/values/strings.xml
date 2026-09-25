@@ -70,8 +70,8 @@
     <string name="settings_period_chips_weekly">Weekly</string>
     <string name="settings_period_chips_once_only">Once Only</string>
     <string name="settings_period_reset_monthly_subtitle">Payment Day of Month</string>
-    <string name="settings_period_reset_monthly_hint">e.g., 1, 15, 30</string>
-    <string name="settings_period_reset_monthly_description">The day your budget resets each month (1-31)</string>
+    <string name="settings_period_reset_monthly_hint">e.g. 1, 15, 30</string>
+    <string name="settings_period_reset_monthly_description">The day your budget starts each month</string>
     <string name="settings_period_reset_weekly_subtitle">Payment Day of Week</string>
     <string name="settings_period_reset_weekly_description">The day your budget resets each week</string>
     <string name="settings_period_reset_once_only_start_subtitle">Start Date</string>
@@ -83,4 +83,14 @@
     <string name="settings_details_amount_undefined_hint">Select a budget type first</string>
     <string name="settings_details_amount_defined_hint">Enter amount</string>
     <string name="settings_period_reset_weekly_hint">Select Day of Week</string>
+    <string name="settings_definition_error">Budget method is required</string>
+    <string name="settings_details_error">Budget details are required</string>
+    <string name="settings_details_currency_error">Currency is required</string>
+    <string name="settings_details_amount_error">Budget amount is required</string>
+    <string name="settings_period_error">Budget period is required</string>
+    <string name="settings_period_reset_monthly_error">The day your budget starts each month is required</string>
+    <string name="settings_period_reset_monthly_invalid_error">The day your budget starts each month must be a number from 1 to 31</string>
+    <string name="settings_period_reset_weekly_error">The day your budget resets each week is required</string>
+    <string name="settings_period_reset_once_only_start_error">Start date is required</string>
+    <string name="settings_period_reset_once_only_end_error">End date is required</string>
 </resources>
