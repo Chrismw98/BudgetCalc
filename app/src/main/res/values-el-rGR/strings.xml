@@ -36,8 +36,14 @@
     <string name="label_end_date">Ημερομηνία λήξης</string>
     <string name="dialog_title_pick_target_date">Επιλογή ημερομηνίας</string>
     <string name="title_welcome">Καλωσορίσατε στο BudgetCalc!</string>
-    <string name="text_enter_your_data">Για να ξεκινήσετε, παρακαλώ εισάγετε τα δεδομένα του budget σας.</string>
-    <string name="label_enter_data">Εισαγωγή δεδομένων</string>
+    <string name="home_welcome_card_your_way_label">Το budget σας, με τον δικό σας τρόπο</string>
+    <string name="home_welcome_card_your_way_description">Δημιουργήστε ένα απλό πλάνο που ταιριάζει σε εσάς</string>
+    <string name="home_welcome_card_basics_label">Μόνο τα βασικά</string>
+    <string name="home_welcome_card_basics_description">Εισάγετε μερικά βασικά στοιχεία κι εμείς αναλαμβάνουμε τα υπόλοιπα</string>
+    <string name="home_welcome_card_check_in_label">Ρίξτε μια ματιά όποτε θέλετε</string>
+    <string name="home_welcome_card_check_in_description">Ανοίξτε την εφαρμογή για μια άμεση εικόνα του budget σας</string>
+    <string name="home_welcome_get_started_btn_label">Πάμε να ξεκινήσουμε</string>
+    <string name="home_welcome_footer_description">Λίγα μόνο βήματα για να ρυθμίσετε το budget σας</string>
     <string name="dialog_title_unsaved_changes">Αναποθήκευτες αλλαγές</string>
     <string name="dialog_text_unsaved_changes">Φεύγετε από τις ρυθμίσεις με αναποθήκευτες αλλαγές. Οι αλλαγές σας θα χαθούν αν δεν τις αποθηκεύσετε.</string>
     <string name="label_leave_without_saving">Συνέχεια χωρίς αποθήκευση</string>
@@ -65,7 +71,7 @@
     <string name="settings_definition_title">Πώς θέλετε να ορίσετε το budget σας;</string>
     <string name="settings_definition_description">Επιλέξτε τον τρόπο που σας ταιριάζει</string>
     <string name="settings_definition_constant_label">Σταθερό ποσό</string>
-    <string name="settings_definition_constant_description">Ορίστε το συνολικό ποσό του χρονικού διαστήματος</string>
+    <string name="settings_definition_constant_description">Ορίστε το συνολικό ποσό για όλο το χρονικό διάστημα</string>
     <string name="settings_definition_daily_label">Ημερήσιο ποσό</string>
     <string name="settings_definition_daily_description">Το συνολικό ποσό θα υπολογιστεί αυτόματα με βάση το ημερήσιο ποσό</string>
     <string name="settings_details_title">Λεπτομέρειες του budget</string>

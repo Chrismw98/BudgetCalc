@@ -432,7 +432,7 @@ private fun BudgetTypeChip(
             containerColor = if (selected) {
                 MaterialTheme.colorScheme.surface
             } else {
-                Color.White
+                MaterialTheme.colorScheme.surfaceContainerLowest
             },
             labelColor = if (selected) {
                 MaterialTheme.colorScheme.accent
@@ -551,7 +551,7 @@ private fun DetailsSection(
                     contentDescription = null,
                 )
             },
-            visualTransformation = MonetaryAmountVisualTransformation(),
+            visualTransformation = MonetaryAmountVisualTransformation(currencySymbol = selectedCurrency?.symbol),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Next,
@@ -666,7 +666,7 @@ private fun SettingsCard(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(1.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         ),
         border = if (isError) {
             BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.error)

@@ -38,8 +38,14 @@
     <string name="label_end_date">Enddatum</string>
     <string name="dialog_title_pick_target_date">Zieldatum auswählen</string>
     <string name="title_welcome">Willkommen zu BudgetCalc!</string>
-    <string name="text_enter_your_data">Um loszulegen, geben Sie bitte Ihre Budgetdaten ein.</string>
-    <string name="label_enter_data">Daten eingeben</string>
+    <string name="home_welcome_card_your_way_label">Ihr Budget, Ihre Regeln</string>
+    <string name="home_welcome_card_your_way_description">Erstellen Sie einen einfachen Plan, der zu Ihnen passt</string>
+    <string name="home_welcome_card_basics_label">Nur das Wesentliche</string>
+    <string name="home_welcome_card_basics_description">Geben Sie uns ein paar Eckdaten, und wir kümmern uns um den Rest</string>
+    <string name="home_welcome_card_check_in_label">Jederzeit im Blick</string>
+    <string name="home_welcome_card_check_in_description">Öffnen Sie die App für einen schnellen Blick auf Ihr Budget</string>
+    <string name="home_welcome_get_started_btn_label">Los geht\'s</string>
+    <string name="home_welcome_footer_description">Nur wenige Schritte bis zu Ihrem Budget</string>
     <string name="dialog_title_unsaved_changes">Ungespeicherte Änderungen</string>
     <string name="dialog_text_unsaved_changes">Sie verlassen die Einstellungen ohne gespeichert zu haben. Alle Änderungen werden verworfen wenn Sie sie nicht speichern.</string>
     <string name="label_leave_without_saving">Ohne Speichern fortfahren</string>
@@ -67,7 +73,7 @@
     <string name="settings_definition_title">Wie wollen Sie das Budget definieren?</string>
     <string name="settings_definition_description">Wählen Sie die Methode die Ihnen am besten passt</string>
     <string name="settings_definition_constant_label">Fester Betrag</string>
-    <string name="settings_definition_constant_description">Legen Sie den Gesamtbetrag für den Zeitraum fest</string>
+    <string name="settings_definition_constant_description">Legen Sie den Gesamtbetrag für den ganzen Zeitraum fest</string>
     <string name="settings_definition_daily_label">Tagesrate</string>
     <string name="settings_definition_daily_description">Der Gesamtbetrag wir automatisch anhand der Tagesrate berechnet</string>
     <string name="settings_details_title">Budgetdetails</string>

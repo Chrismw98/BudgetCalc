@@ -28,7 +28,8 @@ import java.util.Locale
  * "12345678" -> "1,23,456.78" (locale-specific grouping)
  */
 class MonetaryAmountVisualTransformation(
-    private val locale: Locale = Locale.getDefault()
+    private val locale: Locale = Locale.getDefault(),
+    private val currencySymbol: String? = null,
 ) : VisualTransformation {
 
     val decimalSeparator = DecimalFormatSymbols(locale).decimalSeparator
@@ -41,17 +42,22 @@ class MonetaryAmountVisualTransformation(
             return TransformedText(AnnotatedString(""), OffsetMapping.Identity)
         }
 
-        val formatted = formatAsCentsLocaleAware(raw, locale)
+        // The editable, digit-derived portion of the display text.
+        val numberPart = formatAsCentsLocaleAware(raw, locale)
+        // A read-only suffix showing the currency, appended after numberPart. It is never
+        // reachable by the cursor: all offsets below are clamped to numberPart's bounds.
+        val suffix = currencySymbol?.let { " $it" }.orEmpty()
+        val displayText = numberPart + suffix
 
         val mapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (offset == 0) return 0
-                if (offset >= raw.length) return formatted.length
+                if (offset >= raw.length) return numberPart.length
 
                 // Find where the Nth digit appears in the formatted string
                 var digitsFound = 0
-                for (i in formatted.indices) {
-                    if (formatted[i] !in separators) {
+                for (i in numberPart.indices) {
+                    if (numberPart[i] !in separators) {
                         digitsFound++
                         if (digitsFound == offset) {
                             // Return position after this digit
@@ -59,16 +65,17 @@ class MonetaryAmountVisualTransformation(
                         }
                     }
                 }
-                return formatted.length
+                return numberPart.length
             }
 
             override fun transformedToOriginal(offset: Int): Int {
                 if (offset == 0) return 0
-                return formatted.take(offset).count { it !in separators }.coerceIn(0, raw.length)
+                val clampedOffset = offset.coerceAtMost(numberPart.length)
+                return numberPart.take(clampedOffset).count { it !in separators }.coerceIn(0, raw.length)
             }
         }
 
-        return TransformedText(AnnotatedString(formatted), mapping)
+        return TransformedText(AnnotatedString(displayText), mapping)
     }
 }
 

@@ -1,26 +1,33 @@
 package chrismw.budgetcalc.screens.home
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Today
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -38,6 +46,9 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,8 +56,11 @@ import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.CircularProgressbar
 import chrismw.budgetcalc.components.CircularTextOverview
+import chrismw.budgetcalc.components.EmphasisButton
 import chrismw.budgetcalc.components.MetricItemCard
 import chrismw.budgetcalc.components.VerticalSpacer
+import chrismw.budgetcalc.extensions.accent
+import chrismw.budgetcalc.extensions.accentVariant
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.extensions.toLocalDate
 import chrismw.budgetcalc.helpers.BudgetState
@@ -267,29 +281,150 @@ private fun MissingDataContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(contentPadding)
-            .padding(vertical = 6.dp, horizontal = 12.dp),
+            .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        VerticalSpacer(24.dp)
+
+        WelcomeHeroIcon()
+
+        VerticalSpacer(18.dp)
 
         Text(
             text = stringResource(R.string.title_welcome),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        VerticalSpacer(24.dp)
+
+        WelcomeInfoCard(
+            iconResId = R.drawable.ic_wallet,
+            titleResId = R.string.home_welcome_card_your_way_label,
+            descriptionResId = R.string.home_welcome_card_your_way_description,
+        )
+
+        VerticalSpacer(12.dp)
+
+        WelcomeInfoCard(
+            iconResId = R.drawable.ic_tune,
+            titleResId = R.string.home_welcome_card_basics_label,
+            descriptionResId = R.string.home_welcome_card_basics_description,
+        )
+
+        VerticalSpacer(12.dp)
+
+        WelcomeInfoCard(
+            iconResId = R.drawable.ic_overview_circle,
+            titleResId = R.string.home_welcome_card_check_in_label,
+            descriptionResId = R.string.home_welcome_card_check_in_description,
+        )
+
+        VerticalSpacer(24.dp)
+
+        EmphasisButton(
+            text = stringResource(R.string.home_welcome_get_started_btn_label),
+            onClick = onSettingsClick,
+            shape = CircleShape,
+            contentPadding = PaddingValues(horizontal = 30.dp, vertical = 16.dp),
+            textStyle = MaterialTheme.typography.titleMedium,
+            elevation = 6.dp,
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+            },
+        )
+
+        VerticalSpacer(12.dp)
 
         Text(
-            text = stringResource(R.string.text_enter_your_data),
+            text = stringResource(R.string.home_welcome_footer_description),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        VerticalSpacer(24.dp)
+    }
+}
 
-        Button(onClick = onSettingsClick) {
-            Text(text = stringResource(R.string.label_enter_data))
+@Composable
+private fun WelcomeHeroIcon() {
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .background(
+                color = MaterialTheme.colorScheme.accentVariant,
+                shape = CircleShape,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_icon_welcome),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(0.64f),
+            contentScale = ContentScale.Fit,
+        )
+    }
+}
+
+@Composable
+private fun WelcomeInfoCard(
+    @DrawableRes iconResId: Int,
+    @StringRes titleResId: Int,
+    @StringRes descriptionResId: Int,
+) {
+    val shape = RoundedCornerShape(12.dp)
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(84.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = shape,
+        shadowElevation = 3.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.accentVariant,
+                        shape = CircleShape,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(iconResId),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = stringResource(titleResId),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+
+                Text(
+                    text = stringResource(descriptionResId),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ internal fun BudgetDefinitionCard(
     val backgroundColor = if (selected) {
         MaterialTheme.colorScheme.surface
     } else {
-        Color.White
+        MaterialTheme.colorScheme.surfaceContainerLowest
     }
     val outlineColor = if (selected) {
         MaterialTheme.colorScheme.accent

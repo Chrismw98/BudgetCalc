@@ -42,8 +42,14 @@
     <string name="label_end_date">End date</string>
     <string name="dialog_title_pick_target_date">Pick a target date</string>
     <string name="title_welcome">Welcome to BudgetCalc!</string>
-    <string name="text_enter_your_data">To get started, please provide us with the budget data.</string>
-    <string name="label_enter_data">Enter data</string>
+    <string name="home_welcome_card_your_way_label">Your budget, your way</string>
+    <string name="home_welcome_card_your_way_description">Set up a simple plan that works for you</string>
+    <string name="home_welcome_card_basics_label">Just the basics</string>
+    <string name="home_welcome_card_basics_description">Tell us a few basics and we\'ll handle the rest</string>
+    <string name="home_welcome_card_check_in_label">Check in anytime</string>
+    <string name="home_welcome_card_check_in_description">Open the app for an instant look at your budget status</string>
+    <string name="home_welcome_get_started_btn_label">Get started</string>
+    <string name="home_welcome_footer_description">A few quick steps to set up your budget</string>
     <string name="label_leave_without_saving">Leave without saving</string>
     <string name="label_save_changes">Save changes</string>
     <string name="title_home">Home</string>
