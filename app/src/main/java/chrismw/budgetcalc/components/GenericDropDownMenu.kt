@@ -15,7 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import chrismw.budgetcalc.helpers.DropDown
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -154,7 +154,7 @@ private fun DropDownMenuTextField(
 }
 
 @Composable
-@Preview(showBackground = true, name = "Chosen Option")
+@PreviewLightDark
 private fun PreviewGenericDropDownMenu() {
     BudgetCalcTheme {
         GenericDropDownMenu(
@@ -174,7 +174,7 @@ private fun PreviewGenericDropDownMenu() {
 }
 
 @Composable
-@Preview(showBackground = true, name = "No chosen option, Enabled")
+@PreviewLightDark
 private fun PreviewEnabledEmptyGenericDropDownMenu() {
     BudgetCalcTheme {
         GenericDropDownMenu(
@@ -194,7 +194,7 @@ private fun PreviewEnabledEmptyGenericDropDownMenu() {
 }
 
 @Composable
-@Preview(showBackground = true, name = "No chosen option, Disabled")
+@PreviewLightDark
 private fun PreviewDisabledEmptyGenericDropDownMenu() {
     BudgetCalcTheme {
         GenericDropDownMenu(

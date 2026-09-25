@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
@@ -96,12 +96,14 @@ private fun DisplayNumberText(
             text = targetDateString,
             style = MaterialTheme.typography.titleMedium
         )
+
+        VerticalSpacer(6.dp)
+
+        TapToEditHint()
     }
 }
 
-@Preview(showBackground = true, widthDp = 100, heightDp = 100)
-@Preview(showBackground = true, widthDp = 250, heightDp = 250)
-@Preview(showBackground = true, widthDp = 500, heightDp = 500)
+@PreviewLightDark
 @Composable
 private fun CircularTextOverviewPreview() {
     BudgetCalcTheme {

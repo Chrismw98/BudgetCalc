@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.helpers.Metric
 import chrismw.budgetcalc.helpers.MetricUnit
@@ -87,7 +87,7 @@ fun MetricItemCard(
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 fun MetricItemWithVectorIconPreview() {
     val testMetric = Metric.DaysRemaining(19)
@@ -100,7 +100,7 @@ fun MetricItemWithVectorIconPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 fun MetricItemWithDrawableResPreview() {
     val testMetric = Metric.DaysUntilStart(10)

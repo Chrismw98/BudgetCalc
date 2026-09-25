@@ -27,7 +27,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +49,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
@@ -92,8 +90,9 @@ internal fun HomeScreen(
                             onClick = onJumpToTodayClick
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Today,
-                                contentDescription = null
+                                painter = painterResource(R.drawable.ic_start_date),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
                             )
                         }
                     }
@@ -175,7 +174,7 @@ private fun MainScreenContent(
                             .aspectRatio(1f),
                         targetDateString = dateString(viewState.targetDate.toEpochMillis()),
                         currency = viewState.currencySymbol,
-                        onClick = onShowDatePicker
+                        onClick = onShowDatePicker,
                     )
                 }
 
@@ -191,7 +190,7 @@ private fun MainScreenContent(
                         } else {
                             MaterialTheme.colorScheme.surfaceVariant
                         },
-                        onClick = onShowDatePicker
+                        onClick = onShowDatePicker,
                     )
                 }
             }
@@ -482,7 +481,7 @@ private fun DatePickerModal(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun DefaultPreview() {
     BudgetCalcTheme {

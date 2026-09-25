@@ -21,6 +21,7 @@
     <string name="label_ok">OK</string>
     <string name="label_cancel">Cancel</string>
     <string name="label_remaining_as_of">Remaining, as of</string>
+    <string name="label_tap_to_edit">Tap to edit</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
     <string name="dialog_text_unsaved_changes">You are leaving the settings with unsaved changes. Your changes will be lost if you do not save them.</string>
     <string name="label_is_budget_constant">Specify budget as constant amount</string>

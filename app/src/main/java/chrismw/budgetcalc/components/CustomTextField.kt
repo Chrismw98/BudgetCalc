@@ -12,14 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 
@@ -123,7 +123,7 @@ fun CustomTextField(
 }
 
 @Composable
-@Preview(showBackground = true, name = "With value")
+@PreviewLightDark
 private fun PreviewGenericDropDownMenu() {
     BudgetCalcTheme {
         CustomTextField(
@@ -140,7 +140,7 @@ private fun PreviewGenericDropDownMenu() {
 }
 
 @Composable
-@Preview(showBackground = true, name = "No value, Enabled")
+@PreviewLightDark
 private fun PreviewDisabledEmptyGenericDropDownMenu() {
     BudgetCalcTheme {
         CustomTextField(
@@ -158,7 +158,7 @@ private fun PreviewDisabledEmptyGenericDropDownMenu() {
 
 
 @Composable
-@Preview(showBackground = true, name = "No value, Disabled")
+@PreviewLightDark
 private fun PreviewDisabledDisabledGenericDropDownMenu() {
     BudgetCalcTheme {
         CustomTextField(
@@ -176,7 +176,7 @@ private fun PreviewDisabledDisabledGenericDropDownMenu() {
 }
 
 @Composable
-@Preview(showBackground = true, name = "Error")
+@PreviewLightDark
 private fun PreviewErrorGenericDropDownMenu() {
     BudgetCalcTheme {
         CustomTextField(

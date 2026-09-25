@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.helpers.DoubleAnimatable
@@ -186,10 +186,14 @@ private fun DisplayNumberText(
             text = targetDateString,
             style = MaterialTheme.typography.titleMedium
         )
+
+        VerticalSpacer(6.dp)
+
+        TapToEditHint()
     }
 }
 
-@Preview(showBackground = true, widthDp = 100, heightDp = 100)
+@PreviewLightDark
 @Composable
 private fun CircularProgressBarPreviewSmall() {
     BudgetCalcTheme {
@@ -203,7 +207,7 @@ private fun CircularProgressBarPreviewSmall() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 250, heightDp = 250)
+@PreviewLightDark
 @Composable
 private fun CircularProgressBarPreviewNormal() {
     BudgetCalcTheme {
@@ -217,7 +221,7 @@ private fun CircularProgressBarPreviewNormal() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 500, heightDp = 500)
+@PreviewLightDark
 @Composable
 private fun CircularProgressBarPreviewLarge() {
     BudgetCalcTheme {
@@ -231,7 +235,7 @@ private fun CircularProgressBarPreviewLarge() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 500, heightDp = 800)
+@PreviewLightDark
 @Composable
 private fun CircularProgressBarPreviewCustom() {
     BudgetCalcTheme {

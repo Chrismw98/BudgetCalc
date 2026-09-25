@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -44,7 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.components.ClickableDatePickerTextField
@@ -685,7 +684,7 @@ private fun SettingsCard(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     BudgetCalcTheme {
@@ -713,7 +712,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget() {
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun SettingsScreenPreviewConstantBudget_MonthlyBudget_Error() {
     BudgetCalcTheme {
@@ -745,7 +744,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget_Error() {
     }
 }
 
-//@Preview
+//@PreviewLightDark
 //@Composable
 //fun SettingsScreenPreviewBudgetRate_WeeklyBudget() {
 //    BudgetCalcTheme {
@@ -778,7 +777,7 @@ fun SettingsScreenPreviewConstantBudget_MonthlyBudget_Error() {
 //    }
 //}
 //
-//@Preview
+//@PreviewLightDark
 //@Composable
 //fun SettingsScreenPreviewBudgetRate_OnceOnlyBudget() {
 //    BudgetCalcTheme {

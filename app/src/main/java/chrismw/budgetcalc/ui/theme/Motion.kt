@@ -19,7 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
@@ -179,7 +179,7 @@ public val MaterialTheme.motion: Motion
     }
 
 @ExperimentalAnimationApi
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PreviewSharedAxis() {
     MaterialTheme {
@@ -204,7 +204,7 @@ private fun PreviewSharedAxis() {
 }
 
 @ExperimentalAnimationApi
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 private fun PreviewFadeThrough() {
     MaterialTheme {

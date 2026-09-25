@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.R
 import chrismw.budgetcalc.extensions.accent
@@ -142,7 +142,7 @@ private fun IconBubble(
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 private fun PreviewSelectedBudgetDefinitionCard() {
     BudgetCalcTheme {
         BudgetDefinitionCard(
@@ -156,7 +156,7 @@ private fun PreviewSelectedBudgetDefinitionCard() {
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 private fun PreviewUnselectedBudgetDefinitionCard() {
     BudgetCalcTheme {
         BudgetDefinitionCard(

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import chrismw.budgetcalc.extensions.accent
@@ -81,7 +81,7 @@ fun EmphasisButton(
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 private fun EmphasisButtonPreview() {
     EmphasisButton(
         text = "Emphasis Button",
