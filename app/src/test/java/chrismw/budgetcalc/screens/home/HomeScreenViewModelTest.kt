@@ -304,4 +304,104 @@ class HomeScreenViewModelTest {
             }
         }
     }
+
+    @Test
+    fun `ViewModel reports incomplete data when budget data is invalid`() = runTest {
+        viewModel.viewState.test {
+            Truth.assertThat(awaitItem()).isEqualTo(HomeScreenViewModel.ViewState())
+
+            with(awaitItem()) {
+                Truth.assertThat(isLoading).isFalse()
+                Truth.assertThat(hasIncompleteData).isTrue()
+            }
+        }
+    }
+
+    @Test
+    fun `updateCurrentDate updates today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            Truth.assertThat(awaitItem().today).isEqualTo(TEST_DATE)
+
+            nowDate = TEST_DATE.plusDays(3)
+            viewModel.updateCurrentDate()
+            Truth.assertThat(awaitItem().today).isEqualTo(nowDate)
+        }
+    }
+
+    @Test
+    fun `onResetTargetDate resets target date to today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            awaitItem()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            val newTargetDate = nowDate.plusDays(3)
+            viewModel.onPickTargetDate(newTargetDate)
+            Truth.assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onResetTargetDate()
+            Truth.assertThat(awaitItem().targetDate).isEqualTo(nowDate)
+        }
+    }
+
+    @Test
+    fun `onSetShowDatePicker toggles showDatePicker`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            Truth.assertThat(awaitItem().showDatePicker).isFalse()
+
+            viewModel.onSetShowDatePicker(true)
+            Truth.assertThat(awaitItem().showDatePicker).isTrue()
+
+            viewModel.onSetShowDatePicker(false)
+            Truth.assertThat(awaitItem().showDatePicker).isFalse()
+        }
+    }
+
+    @Test
+    fun `showJumpToTodayButton is true only once target date diverges from today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            Truth.assertThat(awaitItem().showJumpToTodayButton).isFalse()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onPickTargetDate(nowDate.plusDays(3))
+            Truth.assertThat(awaitItem().showJumpToTodayButton).isTrue()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onResetTargetDate()
+            Truth.assertThat(awaitItem().showJumpToTodayButton).isFalse()
+        }
+    }
+
+    @Test
+    fun `remainingBudgetPercentage defaults to full when total budget is zero`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            val zeroBudget = BudgetDataDTO(
+                isBudgetConstant = true,
+                constantBudgetAmount = 0.0,
+                currencyCode = "EUR",
+                budgetType = BudgetType.Monthly,
+                defaultPaymentDayOfMonth = 1
+            )
+            budgetDataRepository.saveBudgetData(zeroBudget)
+
+            with(awaitItem()) {
+                Truth.assertThat(remainingBudget).isEqualTo(0.0)
+                Truth.assertThat(remainingBudgetPercentage).isEqualTo(1F)
+            }
+        }
+    }
 }
