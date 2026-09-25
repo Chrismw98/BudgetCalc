@@ -47,7 +47,6 @@ import chrismw.budgetcalc.components.CircularProgressbar
 import chrismw.budgetcalc.components.CircularTextOverview
 import chrismw.budgetcalc.components.MetricItemCard
 import chrismw.budgetcalc.components.VerticalSpacer
-import chrismw.budgetcalc.decimalFormatSymbols
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.extensions.toLocalDate
 import chrismw.budgetcalc.helpers.BudgetState
@@ -56,7 +55,6 @@ import chrismw.budgetcalc.helpers.dateString
 import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
-import kotlin.text.iterator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -258,26 +256,6 @@ private fun ToggleDetailsButton(
             }
         )
     }
-}
-
-private fun validateNumberInputString(
-    numberInputString: String,
-    allowDecimalSeparator: Boolean = false
-): Boolean {
-    val maxDecimalSeparatorCount = if (allowDecimalSeparator) 1 else 0
-    var decimalSeparatorCounter = 0
-    for (char in numberInputString) {
-        if (char == decimalFormatSymbols.decimalSeparator) {
-            if (decimalSeparatorCounter < maxDecimalSeparatorCount) {
-                decimalSeparatorCounter++
-            } else {
-                return false
-            }
-        } else if (!char.isDigit()) {
-            return false
-        }
-    }
-    return true
 }
 
 @Composable

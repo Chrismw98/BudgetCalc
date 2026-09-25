@@ -9,7 +9,7 @@ import chrismw.budgetcalc.data.repository.FakeCurrencyRepository
 import chrismw.budgetcalc.helpers.BudgetDataDTO
 import chrismw.budgetcalc.helpers.BudgetState
 import chrismw.budgetcalc.helpers.BudgetType
-import com.google.common.truth.Truth
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -73,7 +73,7 @@ class HomeScreenViewModelTest {
     fun `ViewModel starts with empty ViewState`() =
         runTest {
             viewModel.viewState.test {
-                Truth.assertThat(awaitItem()).isEqualTo(HomeScreenViewModel.ViewState())
+                assertThat(awaitItem()).isEqualTo(HomeScreenViewModel.ViewState())
             }
         }
 
@@ -83,10 +83,10 @@ class HomeScreenViewModelTest {
             awaitItem()
 
             createValidUIState()
-            Truth.assertThat(awaitItem().isExpanded).isTrue()
+            assertThat(awaitItem().isExpanded).isTrue()
 
             viewModel.toggleDetailsExpanded()
-            Truth.assertThat(awaitItem().isExpanded).isFalse()
+            assertThat(awaitItem().isExpanded).isFalse()
         }
     }
 
@@ -98,18 +98,18 @@ class HomeScreenViewModelTest {
 
             createValidUIState()
 
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(nowDate)
+            assertThat(awaitItem().targetDate).isEqualTo(nowDate)
 
             nowDateTime = nowDateTime.plusMinutes(1)
 
             viewModel.onPickTargetDate(newDate)
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(newDate)
+            assertThat(awaitItem().targetDate).isEqualTo(newDate)
         }
     }
 
     @Test
     fun `ViewModel creates correct ViewState for constant monthly budget`() =
-        runTest { //TODO: Test metrics calculation individually
+        runTest {
             viewModel.viewState.test {
                 awaitItem()
 
@@ -124,18 +124,18 @@ class HomeScreenViewModelTest {
 
                 val resultingViewState: HomeScreenViewModel.ViewState = awaitItem()
 
-                Truth.assertThat(resultingViewState.isLoading).isFalse()
-                Truth.assertThat(resultingViewState.hasIncompleteData).isFalse()
-                Truth.assertThat(resultingViewState.datePickerMinDate).isEqualTo(TEST_DATE)
-                Truth.assertThat(resultingViewState.targetDate).isEqualTo(TEST_DATE)
-                Truth.assertThat(resultingViewState.datePickerMaxDate).isEqualTo(
+                assertThat(resultingViewState.isLoading).isFalse()
+                assertThat(resultingViewState.hasIncompleteData).isFalse()
+                assertThat(resultingViewState.datePickerMinDate).isEqualTo(TEST_DATE)
+                assertThat(resultingViewState.targetDate).isEqualTo(TEST_DATE)
+                assertThat(resultingViewState.datePickerMaxDate).isEqualTo(
                     TEST_DATE.plusMonths(1).minusDays(1)
                 )
-                Truth.assertThat(resultingViewState.remainingBudget).isEqualTo(290.0)
-                Truth.assertThat(resultingViewState.remainingBudgetPercentage).isWithin(0.0001F).of(290F / 300F)
-                Truth.assertThat(resultingViewState.currencySymbol).isEqualTo("€")
-                Truth.assertThat(resultingViewState.metrics).isNotEmpty()//TODO: Specify the exact metrics when metrics are refactored
-                Truth.assertThat(resultingViewState.isExpanded).isTrue()
+                assertThat(resultingViewState.remainingBudget).isEqualTo(290.0)
+                assertThat(resultingViewState.remainingBudgetPercentage).isWithin(0.0001F).of(290F / 300F)
+                assertThat(resultingViewState.currencySymbol).isEqualTo("€")
+                assertThat(resultingViewState.metrics).isNotEmpty()//TODO: Specify the exact metrics when metrics are refactored
+                assertThat(resultingViewState.isExpanded).isTrue()
             }
         }
 
@@ -163,20 +163,20 @@ class HomeScreenViewModelTest {
                 awaitItem()
 
                 budgetDataRepository.saveBudgetData(constantMonthlyBudget)
-                Truth.assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
+                assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
 
                 nowDateTime = nowDateTime.plusMinutes(1)
 
                 val newTargetDate = nowDate.minusDays(2)
                 viewModel.onPickTargetDate(newTargetDate)
-                Truth.assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+                assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
 
                 nowDateTime = nowDateTime.plusMinutes(1)
 
                 budgetDataRepository.saveBudgetData(onceOnlyBudget)
                 with(awaitItem()) {
-                    Truth.assertThat(targetDate).isEqualTo(TEST_DATE)
-                    Truth.assertThat(budgetState).isInstanceOf(BudgetState.Ongoing::class.java)
+                    assertThat(targetDate).isEqualTo(TEST_DATE)
+                    assertThat(budgetState).isInstanceOf(BudgetState.Ongoing::class.java)
                 }
             }
         }
@@ -205,20 +205,20 @@ class HomeScreenViewModelTest {
                 awaitItem()
 
                 budgetDataRepository.saveBudgetData(constantMonthlyBudget)
-                Truth.assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
+                assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
 
                 nowDateTime = nowDateTime.plusMinutes(1)
 
                 val newTargetDate = nowDate.plusDays(2)
                 viewModel.onPickTargetDate(newTargetDate)
-                Truth.assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+                assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
 
                 nowDateTime = nowDateTime.plusMinutes(1)
 
                 budgetDataRepository.saveBudgetData(onceOnlyBudget)
                 with(awaitItem()) {
-                    Truth.assertThat(targetDate).isEqualTo(TEST_DATE)
-                    Truth.assertThat(budgetState).isInstanceOf(BudgetState.HasNotStarted::class.java)
+                    assertThat(targetDate).isEqualTo(TEST_DATE)
+                    assertThat(budgetState).isInstanceOf(BudgetState.HasNotStarted::class.java)
                 }
             }
         }
@@ -246,20 +246,20 @@ class HomeScreenViewModelTest {
             awaitItem()
 
             budgetDataRepository.saveBudgetData(constantMonthlyBudget)
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
+            assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
 
             nowDateTime = nowDateTime.plusMinutes(1)
 
             val newTargetDate = nowDate.plusDays(10)
             viewModel.onPickTargetDate(newTargetDate)
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+            assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
 
             nowDateTime = nowDateTime.plusMinutes(1)
 
             budgetDataRepository.saveBudgetData(onceOnlyBudget)
             with(awaitItem()) {
-                Truth.assertThat(targetDate).isEqualTo(TEST_DATE)
-                Truth.assertThat(budgetState).isInstanceOf(BudgetState.Expired::class.java)
+                assertThat(targetDate).isEqualTo(TEST_DATE)
+                assertThat(budgetState).isInstanceOf(BudgetState.Expired::class.java)
             }
         }
     }
@@ -287,20 +287,120 @@ class HomeScreenViewModelTest {
             awaitItem()
 
             budgetDataRepository.saveBudgetData(constantMonthlyBudget)
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
+            assertThat(awaitItem().targetDate).isEqualTo(TEST_DATE)
 
             nowDateTime = nowDateTime.plusMinutes(1)
 
             val newTargetDate = nowDate.plusDays(10)
             viewModel.onPickTargetDate(newTargetDate)
-            Truth.assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+            assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
 
             nowDateTime = nowDateTime.plusMinutes(1)
 
             budgetDataRepository.saveBudgetData(onceOnlyBudget)
             with(awaitItem()) {
-                Truth.assertThat(targetDate).isEqualTo(TEST_DATE)
-                Truth.assertThat(budgetState).isInstanceOf(BudgetState.LastDay::class.java)
+                assertThat(targetDate).isEqualTo(TEST_DATE)
+                assertThat(budgetState).isInstanceOf(BudgetState.LastDay::class.java)
+            }
+        }
+    }
+
+    @Test
+    fun `ViewModel reports incomplete data when budget data is invalid`() = runTest {
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isEqualTo(HomeScreenViewModel.ViewState())
+
+            with(awaitItem()) {
+                assertThat(isLoading).isFalse()
+                assertThat(hasIncompleteData).isTrue()
+            }
+        }
+    }
+
+    @Test
+    fun `updateCurrentDate updates today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            assertThat(awaitItem().today).isEqualTo(TEST_DATE)
+
+            nowDate = TEST_DATE.plusDays(3)
+            viewModel.updateCurrentDate()
+            assertThat(awaitItem().today).isEqualTo(nowDate)
+        }
+    }
+
+    @Test
+    fun `onResetTargetDate resets target date to today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            awaitItem()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            val newTargetDate = nowDate.plusDays(3)
+            viewModel.onPickTargetDate(newTargetDate)
+            assertThat(awaitItem().targetDate).isEqualTo(newTargetDate)
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onResetTargetDate()
+            assertThat(awaitItem().targetDate).isEqualTo(nowDate)
+        }
+    }
+
+    @Test
+    fun `onSetShowDatePicker toggles showDatePicker`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            assertThat(awaitItem().showDatePicker).isFalse()
+
+            viewModel.onSetShowDatePicker(true)
+            assertThat(awaitItem().showDatePicker).isTrue()
+
+            viewModel.onSetShowDatePicker(false)
+            assertThat(awaitItem().showDatePicker).isFalse()
+        }
+    }
+
+    @Test
+    fun `showJumpToTodayButton is true only once target date diverges from today`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            createValidUIState()
+            assertThat(awaitItem().showJumpToTodayButton).isFalse()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onPickTargetDate(nowDate.plusDays(3))
+            assertThat(awaitItem().showJumpToTodayButton).isTrue()
+
+            nowDateTime = nowDateTime.plusMinutes(1)
+            viewModel.onResetTargetDate()
+            assertThat(awaitItem().showJumpToTodayButton).isFalse()
+        }
+    }
+
+    @Test
+    fun `remainingBudgetPercentage defaults to full when total budget is zero`() = runTest {
+        viewModel.viewState.test {
+            awaitItem()
+
+            val zeroBudget = BudgetDataDTO(
+                isBudgetConstant = true,
+                constantBudgetAmount = 0.0,
+                currencyCode = "EUR",
+                budgetType = BudgetType.Monthly,
+                defaultPaymentDayOfMonth = 1
+            )
+            budgetDataRepository.saveBudgetData(zeroBudget)
+
+            with(awaitItem()) {
+                assertThat(remainingBudget).isEqualTo(0.0)
+                assertThat(remainingBudgetPercentage).isEqualTo(1F)
             }
         }
     }
