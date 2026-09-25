@@ -46,7 +46,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,7 +58,6 @@ import chrismw.budgetcalc.components.CircularTextOverview
 import chrismw.budgetcalc.components.EmphasisButton
 import chrismw.budgetcalc.components.MetricItemCard
 import chrismw.budgetcalc.components.VerticalSpacer
-import chrismw.budgetcalc.extensions.accent
 import chrismw.budgetcalc.extensions.accentVariant
 import chrismw.budgetcalc.extensions.toEpochMillis
 import chrismw.budgetcalc.extensions.toLocalDate

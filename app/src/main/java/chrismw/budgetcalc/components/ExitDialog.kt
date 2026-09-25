@@ -10,9 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import chrismw.budgetcalc.R
-import chrismw.budgetcalc.ui.theme.BudgetCalcTheme
 
 @Composable
 internal fun ExitDialog(
