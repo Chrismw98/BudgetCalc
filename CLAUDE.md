@@ -16,4 +16,10 @@ Single-module Android app (module `app`). Use the wrapper (`./gradlew`), not a g
 
 Jetpack Compose UI, Hilt for DI, MVVM (`ViewModel` exposing `StateFlow<ViewState>` per screen).
 
+## Changelog
+
+After finishing a Trello ticket (e.g. `BC-30`), always add a changelog entry: run
+`./add-changelog-entry.sh` interactively. Upon preparation of a release, entries are later collapsed
+into `CHANGELOG.md` by `./release-changelog.sh`.
+
 This file is intentionally minimal for now — add conventions and gotchas here as they come up.

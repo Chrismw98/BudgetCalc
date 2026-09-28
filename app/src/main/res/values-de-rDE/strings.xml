@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BudgetCalc</string>
-    <string name="budget_amount">Budgetbetrag</string>
 
     <string name="metric_text_days_since_start">Tage seit Start</string>
     <string name="metric_text_days_remaining">Übrige Tage</string>
@@ -10,18 +9,12 @@
     <string name="metric_text_remaining_budget">Übriges Budget</string>
 
     <string name="day">Tag</string>
-    <string name="label_payment_day_of_week">Zahlungstag der Woche</string>
-    <string name="label_payment_day_of_month">Zahlungstag des Monats</string>
-    <string name="budget_in_monetary_units_per_day">Budget pro Tag</string>
-    <string name="currency">Währung</string>
     <string name="settings">Einstellungen</string>
     <string name="show_less">Details ausblenden</string>
     <string name="show_more">Details anzeigen</string>
     <string name="label_ok">OK</string>
     <string name="label_cancel">Abbrechen</string>
     <string name="label_remaining_as_of">Übrig, Stand</string>
-    <string name="label_is_budget_constant">Konstanten Budgetbetrag festlegen</string>
-    <string name="label_is_budget_rate">Budget als Tagesrate festlegen</string>
     <string name="label_monthly">Monatlich</string>
     <string name="label_weekly">Wöchentlich</string>
     <string name="label_once_only">Einmalig</string>
@@ -32,7 +25,6 @@
     <string name="label_friday">Freitag</string>
     <string name="label_saturday">Samstag</string>
     <string name="label_sunday">Sonntag</string>
-    <string name="label_budget_type">Budgettyp</string>
     <string name="label_select_date">Datum wählen</string>
     <string name="label_start_date">Startdatum</string>
     <string name="label_end_date">Enddatum</string>
@@ -46,10 +38,10 @@
     <string name="home_welcome_card_check_in_description">Öffnen Sie die App für einen schnellen Blick auf Ihr Budget</string>
     <string name="home_welcome_get_started_btn_label">Los geht\'s</string>
     <string name="home_welcome_footer_description">Nur wenige Schritte bis zu Ihrem Budget</string>
+    <string name="label_tap_to_edit">Bearbeiten</string>
     <string name="dialog_title_unsaved_changes">Ungespeicherte Änderungen</string>
     <string name="dialog_text_unsaved_changes">Sie verlassen die Einstellungen ohne gespeichert zu haben. Alle Änderungen werden verworfen wenn Sie sie nicht speichern.</string>
     <string name="label_leave_without_saving">Ohne Speichern fortfahren</string>
-    <string name="label_save_changes">Änderungen speichern</string>
     <string name="title_home">Übersicht</string>
     <string name="metric_text_total_budget">Gesamtbudget</string>
     <string name="text_loading">Lädt …</string>
