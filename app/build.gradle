@@ -1,9 +1,14 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.plugin.compose'
-    id 'com.google.devtools.ksp'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.ksp)
     id 'dagger.hilt.android.plugin'
-    id 'com.google.protobuf' version "0.10.0"
+    alias(libs.plugins.protobuf)
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = libs.versions.jacocoTool.get()
 }
 
 android {
@@ -51,7 +56,7 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$protobuf_protoc_version"
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobufProtoc.get()}"
     }
     // Generates the java Protobuf-lite code for the Protobufs in this project. See
     // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
@@ -69,57 +74,101 @@ protobuf {
 
 dependencies {
 
-    implementation "androidx.appcompat:appcompat:1.7.0"
-    implementation "com.google.android.material:material:1.12.0"
+    implementation libs.androidx.appcompat
+    implementation libs.material
 
-    implementation "androidx.core:core-ktx:1.13.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$androidx_lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:$androidx_lifecycle_version"
-    implementation "androidx.activity:activity-compose:1.9.2"
-    implementation platform("androidx.compose:compose-bom:2024.09.02")
-    implementation "androidx.compose.ui:ui:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-graphics:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation("androidx.compose.material3:material3:$compose_material3_version")
-    implementation("androidx.compose.material3:material3-window-size-class:$compose_material3_version")
-    implementation "androidx.compose.material:material-icons-extended:$compose_material_version"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.activity.compose
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.graphics
+    implementation libs.androidx.compose.ui.tooling.preview
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material3.windowsizeclass
+    implementation libs.androidx.compose.material.icons.extended
+    implementation libs.accompanist.systemuicontroller
 
-    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+    implementation libs.androidx.constraintlayout
+    debugImplementation libs.androidx.compose.ui.tooling
+    debugImplementation libs.androidx.compose.ui.test.manifest
 
     //Hilt
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+    implementation libs.hilt.android
+    ksp libs.hilt.android.compiler
 
     //Data store
-    implementation  "androidx.datastore:datastore:$datastore_version"
-    implementation "com.google.protobuf:protobuf-javalite:$protobuf_javalite_version"
+    implementation libs.androidx.datastore
+    implementation libs.protobuf.javalite
 
     //Moshi
-    implementation "com.squareup.moshi:moshi:$moshi_version"
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    implementation libs.moshi
+    implementation libs.moshi.kotlin
+    ksp libs.moshi.kotlin.codegen
 
     //Navigation
-    implementation "androidx.navigation:navigation-compose:$androidx_navigation_version"
-    implementation "androidx.hilt:hilt-navigation-compose:$androidx_hilt_navigation_version"
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.navigation.compose
 
-    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:$kotlinx_immutable_collections_version"
+    implementation libs.kotlinx.collections.immutable
 
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
-    androidTestImplementation "androidx.test.ext:junit:1.2.1"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.androidx.test.espresso.core
 
     // Local unit tests
-    testImplementation "androidx.test:core:1.6.1"
-    testImplementation "junit:junit:4.13.2"
-    testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0"
-    testImplementation "com.google.truth:truth:1.4.4"
-//    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.1"
-    testImplementation "io.mockk:mockk:1.13.13"
-    testImplementation("app.cash.turbine:turbine:1.2.0")
+    testImplementation libs.androidx.test.core
+    testImplementation libs.junit
+    testImplementation libs.androidx.arch.core.testing
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.truth
+    testImplementation libs.mockk
+    testImplementation(libs.turbine)
+}
+
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn 'testDebugUnitTest'
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+            '**/*Test*.*', 'android/**/*.*',
+            '**/*_Factory.class', '**/*_MembersInjector.class',
+            '**/Hilt_*.class', '**/*_HiltModules*.class', '**/*_HiltComponents*.class',
+            '**/dagger/**', '**/hilt_aggregated_deps/**',
+            '**/*Dagger*.*', '**/*Hilt*.*',
+            '**/*ComposableSingletons*.*',
+            '**/databinding/**/*.*', '**/android/databinding/*Binding.*',
+            '**/*$Lambda$*.*', '**/*$inlined$*.*',
+            '**/*_Impl.*',
+
+            // Generated Protobuf DataStore schema classes (app/build/generated/**/proto/**)
+            '**/BudgetData.class', '**/BudgetData$*.class',
+            '**/BudgetDataPreferences.class', '**/BudgetDataPreferences$*.class', '**/BudgetDataPreferencesOrBuilder.class',
+            '**/BudgetTypePreferences.class', '**/BudgetTypePreferences$*.class',
+
+            // Generated Moshi JSON adapters (KSP codegen)
+            '**/*JsonAdapter.class',
+    ]
+
+    // Must be the classes actually loaded at test runtime (post Hilt/Compose ASM transform),
+    // not the raw kotlinc output - otherwise Jacoco's class IDs won't match the execution data.
+    def debugTree = fileTree(
+            dir: "$project.buildDir/intermediates/classes/debug/transformDebugClassesWithAsm/dirs",
+            excludes: fileFilter,
+    )
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec',
+            'outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec',
+    ]))
 }

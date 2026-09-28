@@ -70,7 +70,7 @@
     <string name="settings_period_reset_once_only_end_error">Απαιτείται ημερομηνία λήξης</string>
     <string name="settings_definition_title">Πώς θέλετε να ορίσετε το budget σας;</string>
     <string name="settings_definition_description">Επιλέξτε τον τρόπο που σας ταιριάζει</string>
-    <string name="settings_definition_constant_label">Σταθερό ποσό</string>
+    <string name="settings_definition_constant_label">Συνολικό ποσό</string>
     <string name="settings_definition_constant_description">Ορίστε το συνολικό ποσό για όλο το χρονικό διάστημα</string>
     <string name="settings_definition_daily_label">Ημερήσιο ποσό</string>
     <string name="settings_definition_daily_description">Το συνολικό ποσό θα υπολογιστεί αυτόματα με βάση το ημερήσιο ποσό</string>
@@ -79,7 +79,7 @@
     <string name="settings_details_currency_label">Νόμισμα</string>
     <string name="settings_details_currency_hint">Επιλέξτε νόμισμα</string>
     <string name="settings_details_amount_undefined_label">Ποσό</string>
-    <string name="settings_period_title">Χρονικό διάστημα του budget</string>
+    <string name="settings_period_title">Χρόνος ανανέωσης του budget</string>
     <string name="settings_period_description">Πόσο συχνά ανανεώνεται το budget σας;</string>
     <string name="settings_period_chips_subtitle">Χρονικό διάστημα</string>
     <string name="settings_period_chips_monthly">Μηνιαία</string>
